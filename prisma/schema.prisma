@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  username           String
+  password           String
+  role               Role
+  email              String              @default("")
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @default(now()) @updatedAt
+  inventoryMovements InventoryMovement[]
+  invoices           Invoice[]
+  cashDrawerSessions CashDrawerSession[]
+}
+
+enum Role {
+  ADMIN
+  CAJERO
+  SUPERVISOR
+}
+
+//Clientes - Cajeros
+model Clients {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  identify  String    @default("")
+  phone     String    @default("")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  invoices  Invoice[]
+}
+
+//Pagos - Divisas - Cuentas
+model ExchangeRate {
+  id        Int              @id @default(autoincrement())
+  name      String
+  currency  ExchangeRateType // USD o EUR
+  rate      Decimal // Ejemplo: 40.50
+  isDefault Boolean          @default(false)
+  createdAt DateTime         @default(now()) // Esto nos dirá cuál es la más reciente
+}
+
+enum ExchangeRateType {
+  BS
+  USD
+  EUR
+}
+
+model TypePayment {
+  id             Int             @id @default(autoincrement())
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now()) @updatedAt
+  paymentDetails PaymentDetail[]
+}
+
+//Productos - Inventario - Facturas
+model Product {
+  id           Int              @id @default(autoincrement())
+  name         String
+  presentation String
+  barcode      String           @unique
+  price        Decimal
+  currency     ExchangeRateType @default(USD)
+  stock        Int              @default(0) // Cantidad disponible en esta unidad
+  isDetail     Boolean          @default(false)
+
+  // Relación Padre-Hijo (Unidad Mayor -> Unidad Detalle)
+  parentId      Int?     @unique
+  productParent Product? @relation("ConvertUnits", fields: [parentId], references: [id])
+  productChild  Product? @relation("ConvertUnits")
+
+  // Cuántas unidades del hijo salen del padre (ej: 20 cigarros por 1 caja)
+  unitsDetail Int?
+
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @default(now()) @updatedAt
+  historyMovements InventoryMovement[]
+  invoiceItems     InvoiceItem[]
+}
+
+model InventoryMovement {
+  id        Int          @id @default(autoincrement())
+  productId Int
+  product   Product      @relation(fields: [productId], references: [id])
+  quantity  Int // Positivo para entradas, negativo para salidas
+  type      MovementType
+  reason    String? // Ej: "Conversion from Box to Unit"
+  userId    Int // ¿Quién realizó el movimiento?
+  user      Users        @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now())
+}
+
+enum MovementType {
+  SALE // Venta de productos
+  RESTOCK // Entrada de mercancía (compra a proveedores)
+  CONVERSION // El proceso de pasar de Caja -> Detalle
+  ADJUSTMENT // Ajustes manuales (por pérdida, daño o error de conteo)
+  RETURN // Devolución de un cliente
+}
+
+model Invoice {
+  id              Int     @id @default(autoincrement())
+  invoiceNumber   String  @unique
+  totalAmountBs   Decimal
+  exchangeRateUsd Decimal
+  exchangeRateEur Decimal
+  totalAmountUsd  Decimal
+
+  // Totales consolidados en Bs para el reporte rápido
+  totalReceivedBs Decimal // Suma de todo lo que entregó el cliente (en Bs)
+  totalChangeBs   Decimal // Suma de todo lo que se devolvió (en Bs)
+
+  status         InvoiceStatus     @default(PAID)
+  userId         Int
+  user           Users             @relation(fields: [userId], references: [id])
+  customerId     Int
+  customer       Clients           @relation(fields: [customerId], references: [id])
+  items          InvoiceItem[]
+  sessionId      Int // <--- Agregar esto
+  session        CashDrawerSession @relation(fields: [sessionId], references: [id])
+  paymentDetails PaymentDetail[]
+  createdAt      DateTime          @default(now())
+}
+
+model InvoiceItem {
+  id        Int      @id @default(autoincrement())
+  invoiceId Int
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  unitPrice Decimal // Guardamos el precio al momento de la venta (por si cambia el precio del producto mañana)
+  quantity  Int
+  subtotal  Decimal
+  createdAt DateTime @default(now())
+}
+
+enum InvoiceStatus {
+  PAID
+  PENDING
+  CANCELLED
+}
+
+model PaymentDetail {
+  id            Int         @id @default(autoincrement())
+  invoiceId     Int
+  invoice       Invoice     @relation(fields: [invoiceId], references: [id])
+  paymentTypeId Int
+  paymentType   TypePayment @relation(fields: [paymentTypeId], references: [id])
+
+  // Montos en la moneda original del pago
+  // Usamos Decimal (estándar de Prisma) para todos los montos
+  // Estos se guardan en la moneda original (USD, EUR o BS)
+  amountReceived Decimal @default(0) // Lo que el cliente entregó
+  amountChange   Decimal @default(0) // El vuelto que se dio en esa moneda
+  amountNet      Decimal @default(0) // El neto (Received - Change)
+
+  // Referencia en Bs al momento de la venta para el cierre de caja
+  amountNetBs   Decimal
+  currency      ExchangeRateType
+  denominations Json? // Ej: {"10_usd": 1, "5_usd": 2}
+}
+
+model CurrencyDenomination {
+  id       Int              @id @default(autoincrement())
+  currency ExchangeRateType
+  value    Decimal // 1, 5, 10, 20, 50, 100
+  active   Boolean          @default(true)
+}
+
+//Cierre de caja - Reportes
+
+model CashDrawerSession {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  user     Users     @relation(fields: [userId], references: [id])
+  openedAt DateTime  @default(now())
+  closedAt DateTime?
+
+  openingBalance Decimal // Con cuánto dinero empezó el cajero (fondo de caja)
+  closingBalance Decimal? // Lo que el cajero dice que hay al final
+
+  // Totales calculados por el sistema automáticamente
+  totalSales Decimal @default(0)
+  totalInUsd Decimal @default(0)
+  totalInBs  Decimal @default(0)
+
+  invoices Invoice[]
+  status   SessionStatus @default(OPEN)
+}
+
+enum SessionStatus {
+  OPEN
+  CLOSED
+}
