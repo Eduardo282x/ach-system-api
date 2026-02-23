@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
-import { ProductDto } from './products.dto';
+import { ExchangeRateDto, ProductDto } from './products.dto';
 import { ProductsService } from './products.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -19,6 +19,11 @@ export class ProductsController {
         return await this.productsService.getExchangeRateToday();
     }
 
+    @Get('/barcode')
+    async generateBarCode() {
+        return await this.productsService.generateBarCode();
+    }
+
     @Post('/breakdown')
     async breakDownParentToChild(@Body('childId') childId: number, @CurrentUser() user,) {
         return await this.productsService.breakDownParentToChild(childId, user.id);
@@ -27,6 +32,16 @@ export class ProductsController {
     @Post()
     async createProduct(@Body() createProductDto: ProductDto) {
         return await this.productsService.createProduct(createProductDto);
+    }
+
+    @Post('/exchange-rate')
+    async saveManualExchangeRate(@Body() exchangeRateDto: ExchangeRateDto) {
+        return await this.productsService.saveManualExchangeRate(exchangeRateDto);
+    }
+
+    @Post('/exchange-rate/automatic')
+    async saveAutomaticExchangeRate() {
+        return await this.productsService.saveAutomaticExchangeRate();
     }
 
     @Put(':id')

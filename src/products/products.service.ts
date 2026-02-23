@@ -1,6 +1,24 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductDto } from './products.dto';
+import { ExchangeRateDto, ProductDto } from './products.dto';
+import axios from 'axios';
+import { ExchangeRateType } from 'src/generated/prisma/enums';
+
+export interface ExchangeRateApi {
+    fuente: string;
+    nombre: string;
+    moneda: string;
+    compra: null;
+    venta: null;
+    promedio: number;
+    fechaActualizacion: Date;
+}
+
 
 @Injectable()
 export class ProductsService {
@@ -30,8 +48,8 @@ export class ProductsService {
                     return {
                         ...pro,
                         exchangeRates: rates.reduce((acc, rate) => {
-                            acc[rate.name.toLocaleLowerCase()] = rate.rate;
-                            acc[`price${this.capitalizeFirstLetter(rate.name.toLocaleLowerCase())}`] = Math.round(Number(pro.price) * Number(rate.rate) * 100) / 100; // Precio convertido con dos decimales
+                            acc[`${rate.name.toLocaleLowerCase()}${rate.currency}`] = rate.rate;
+                            acc[`price${this.capitalizeFirstLetter(rate.name.toLocaleLowerCase())}${rate.currency}`] = Math.round(Number(pro.price) * Number(rate.rate) * 100) / 100; // Precio convertido con dos decimales
                             return acc;
                         }, {})
                     }
@@ -53,23 +71,55 @@ export class ProductsService {
         }
     }
 
+    async generateBarCode() {
+        const maxAttempts = 20;
+
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const timestamp = Date.now().toString(); // Usamos el timestamp actual para garantizar unicidad
+            const randomDigits = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            const generatedCode = timestamp + randomDigits; // Concatenamos el timestamp con los dígitos aleatorios
+
+            const exists = await this.prismaService.product.findUnique({
+                where: { barcode: generatedCode },
+                select: { id: true },
+            });
+
+            if (!exists) {
+                return generatedCode;
+            }
+        }
+
+        throw new InternalServerErrorException(
+            'No se pudo generar un código de barras único, intenta nuevamente',
+        );
+    }
+
     capitalizeFirstLetter(str: string) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     async getExchangeRateToday() {
         try {
-            const exchangeRate = await this.prismaService.exchangeRate.findMany({
-                where: {
-                    createdAt: {
-                        gte: new Date(new Date().setHours(0, 0, 0, 0)), // Desde el inicio del día
-                        lt: new Date(new Date().setHours(24, 0, 0, 0)), // Hasta el final del día
-                    },
-                },
+            const rates = await this.prismaService.exchangeRate.findMany({
                 orderBy: {
                     createdAt: 'desc',
                 },
             });
+
+            const latestByNameAndCurrency = new Map<string, (typeof rates)[number]>();
+
+            for (const rate of rates) {
+                const key = `${rate.name.toLowerCase()}::${rate.currency}`;
+
+                if (!latestByNameAndCurrency.has(key)) {
+                    latestByNameAndCurrency.set(key, rate);
+                }
+            }
+
+            const exchangeRate = Array.from(latestByNameAndCurrency.values()).map((rate) => ({
+                ...rate,
+                rate: Math.round(Number(rate.rate) * 100) / 100, // Redondeamos a dos decimales
+            }));
 
             if (exchangeRate.length === 0) {
                 return {
@@ -80,6 +130,69 @@ export class ProductsService {
             return {
                 exchangeRate,
             };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async saveManualExchangeRate(exchangeRate: ExchangeRateDto) {
+        try {
+            const newRate = await this.prismaService.exchangeRate.create({
+                data: {
+                    name: exchangeRate.name,
+                    rate: exchangeRate.rate,
+                    currency: exchangeRate.currency, // Asumimos que el tipo de cambio se guarda con el mismo nombre que la moneda
+                },
+            });
+
+            return {
+                message: 'Tasa de cambio guardada correctamente',
+                data: newRate,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async saveAutomaticExchangeRate() {
+        try {
+            const urlDolar = 'https://ve.dolarapi.com/v1/dolares';
+            const urlEuro = 'https://ve.dolarapi.com/v1/euros';
+
+            const responseDolar: ExchangeRateApi[] = await axios.get(urlDolar).then(res => res.data);
+            const responseEuro: ExchangeRateApi[] = await axios.get(urlEuro).then(res => res.data);
+
+            const rates = [
+                ...responseDolar.map(rate => ({
+                    name: rate.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : rate.fuente.toUpperCase(),
+                    rate: Math.round(rate.promedio * 100) / 100, // Redondeamos a dos decimales
+                    currency: 'USD',
+                    isDefault: rate.fuente.toLocaleLowerCase() == 'oficial',
+                    createdAt: new Date(rate.fechaActualizacion),
+                })),
+                ...responseEuro.map(rate => ({
+                    name: rate.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : rate.fuente.toUpperCase(),
+                    rate: Math.round(rate.promedio * 100) / 100, // Redondeamos a dos decimales
+                    currency: 'EUR',
+                    isDefault: false,
+                    createdAt: new Date(rate.fechaActualizacion),
+                }))
+            ];
+
+            await this.prismaService.exchangeRate.createMany({
+                data: rates.map(rate => ({
+                    name: rate.name,
+                    rate: rate.rate,
+                    currency: rate.currency as ExchangeRateType,
+                    isDefault: rate.isDefault,
+                    createdAt: rate.createdAt,
+                }))
+            });
+
+            return {
+                message: 'Tasas de cambio guardadas correctamente',
+                data: rates,
+            }
         } catch (error) {
             throw error;
         }
