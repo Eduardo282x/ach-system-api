@@ -1,10 +1,4 @@
-import {
-    BadRequestException,
-    ConflictException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
-import { Prisma } from 'src/generated/prisma/client';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductDto } from './products.dto';
 
@@ -23,14 +17,28 @@ export class ProductsService {
                 ];
             }
 
+            const exchangeRateToday = await this.getExchangeRateToday();
+
             const products = await this.prismaService.product.findMany({
                 where,
                 orderBy: {
                     createdAt: 'desc',
                 },
-            });
+            }).then(async (products) => {
+                const rates = exchangeRateToday.exchangeRate || [];
+                return products.map(pro => {
+                    return {
+                        ...pro,
+                        exchangeRates: rates.reduce((acc, rate) => {
+                            acc[rate.name.toLocaleLowerCase()] = rate.rate;
+                            acc[`price${this.capitalizeFirstLetter(rate.name.toLocaleLowerCase())}`] = Math.round(Number(pro.price) * Number(rate.rate) * 100) / 100; // Precio convertido con dos decimales
+                            return acc;
+                        }, {})
+                    }
+                })
+            })
 
-            if(products.length === 0) {
+            if (products.length === 0) {
                 return {
                     message: 'No se encontraron productos',
                     products: [],
@@ -39,6 +47,38 @@ export class ProductsService {
 
             return {
                 products,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    capitalizeFirstLetter(str: string) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    async getExchangeRateToday() {
+        try {
+            const exchangeRate = await this.prismaService.exchangeRate.findMany({
+                where: {
+                    createdAt: {
+                        gte: new Date(new Date().setHours(0, 0, 0, 0)), // Desde el inicio del día
+                        lt: new Date(new Date().setHours(24, 0, 0, 0)), // Hasta el final del día
+                    },
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+
+            if (exchangeRate.length === 0) {
+                return {
+                    message: 'No se encontró la tasa de cambio',
+                    exchangeRate: null,
+                };
+            }
+            return {
+                exchangeRate,
             };
         } catch (error) {
             throw error;
@@ -170,7 +210,7 @@ export class ProductsService {
                 });
 
                 console.log(childProduct);
-                
+
                 // B. Sumar unidades al Hijo
                 const updatedChild = await tx.product.update({
                     where: { id: childId },

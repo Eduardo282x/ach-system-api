@@ -14,6 +14,11 @@ export class ProductsController {
         return await this.productsService.getProducts(search);
     }
 
+    @Get('/exchange-rate/today')
+    async getExchangeRateToday() {
+        return await this.productsService.getExchangeRateToday();
+    }
+
     @Post('/breakdown')
     async breakDownParentToChild(@Body('childId') childId: number, @CurrentUser() user,) {
         return await this.productsService.breakDownParentToChild(childId, user.id);

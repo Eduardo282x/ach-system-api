@@ -50,7 +50,7 @@ model ExchangeRate {
   id        Int              @id @default(autoincrement())
   name      String
   currency  ExchangeRateType // USD o EUR
-  rate      Decimal // Ejemplo: 40.50
+  rate      Decimal          @db.Decimal(10, 2) // Ejemplo: 40.50
   isDefault Boolean          @default(false)
   createdAt DateTime         @default(now()) // Esto nos dirá cuál es la más reciente
 }
@@ -75,7 +75,7 @@ model Product {
   name         String
   presentation String
   barcode      String           @unique
-  price        Decimal
+  price        Decimal          @db.Decimal(10, 2)
   currency     ExchangeRateType @default(USD)
   stock        Int              @default(0) // Cantidad disponible en esta unidad
   isDetail     Boolean          @default(false)
@@ -117,14 +117,14 @@ enum MovementType {
 model Invoice {
   id              Int     @id @default(autoincrement())
   invoiceNumber   String  @unique
-  totalAmountBs   Decimal
-  exchangeRateUsd Decimal
-  exchangeRateEur Decimal
-  totalAmountUsd  Decimal
+  totalAmountBs   Decimal @db.Decimal(10, 2)
+  exchangeRateUsd Decimal @db.Decimal(10, 2)
+  exchangeRateEur Decimal @db.Decimal(10, 2)
+  totalAmountUsd  Decimal @db.Decimal(10, 2)
 
   // Totales consolidados en Bs para el reporte rápido
-  totalReceivedBs Decimal // Suma de todo lo que entregó el cliente (en Bs)
-  totalChangeBs   Decimal // Suma de todo lo que se devolvió (en Bs)
+  totalReceivedBs Decimal @db.Decimal(10, 2) // Suma de todo lo que entregó el cliente (en Bs)
+  totalChangeBs   Decimal @db.Decimal(10, 2) // Suma de todo lo que se devolvió (en Bs)
 
   status         InvoiceStatus     @default(PAID)
   userId         Int
@@ -144,9 +144,9 @@ model InvoiceItem {
   invoice   Invoice  @relation(fields: [invoiceId], references: [id])
   productId Int
   product   Product  @relation(fields: [productId], references: [id])
-  unitPrice Decimal // Guardamos el precio al momento de la venta (por si cambia el precio del producto mañana)
+  unitPrice Decimal  @db.Decimal(10, 2) // Guardamos el precio al momento de la venta (por si cambia el precio del producto mañana)
   quantity  Int
-  subtotal  Decimal
+  subtotal  Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
 }
 
@@ -166,12 +166,12 @@ model PaymentDetail {
   // Montos en la moneda original del pago
   // Usamos Decimal (estándar de Prisma) para todos los montos
   // Estos se guardan en la moneda original (USD, EUR o BS)
-  amountReceived Decimal @default(0) // Lo que el cliente entregó
-  amountChange   Decimal @default(0) // El vuelto que se dio en esa moneda
-  amountNet      Decimal @default(0) // El neto (Received - Change)
+  amountReceived Decimal @default(0) @db.Decimal(10, 2) // Lo que el cliente entregó
+  amountChange   Decimal @default(0) @db.Decimal(10, 2) // El vuelto que se dio en esa moneda
+  amountNet      Decimal @default(0) @db.Decimal(10, 2) // El neto (Received - Change)
 
   // Referencia en Bs al momento de la venta para el cierre de caja
-  amountNetBs   Decimal
+  amountNetBs   Decimal          @db.Decimal(10, 2)
   currency      ExchangeRateType
   denominations Json? // Ej: {"10_usd": 1, "5_usd": 2}
 }
@@ -179,7 +179,7 @@ model PaymentDetail {
 model CurrencyDenomination {
   id       Int              @id @default(autoincrement())
   currency ExchangeRateType
-  value    Decimal // 1, 5, 10, 20, 50, 100
+  value    Decimal          @db.Decimal(10, 2) // 1, 5, 10, 20, 50, 100
   active   Boolean          @default(true)
 }
 
@@ -192,13 +192,13 @@ model CashDrawerSession {
   openedAt DateTime  @default(now())
   closedAt DateTime?
 
-  openingBalance Decimal // Con cuánto dinero empezó el cajero (fondo de caja)
-  closingBalance Decimal? // Lo que el cajero dice que hay al final
+  openingBalance Decimal  @db.Decimal(10, 2) // Con cuánto dinero empezó el cajero (fondo de caja)
+  closingBalance Decimal? @db.Decimal(10, 2) // Lo que el cajero dice que hay al final
 
   // Totales calculados por el sistema automáticamente
-  totalSales Decimal @default(0)
-  totalInUsd Decimal @default(0)
-  totalInBs  Decimal @default(0)
+  totalSales Decimal @default(0) @db.Decimal(10, 2)
+  totalInUsd Decimal @default(0) @db.Decimal(10, 2)
+  totalInBs  Decimal @default(0) @db.Decimal(10, 2)
 
   invoices Invoice[]
   status   SessionStatus @default(OPEN)

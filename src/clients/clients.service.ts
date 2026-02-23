@@ -22,6 +22,12 @@ export class ClientsService {
 				orderBy: {
 					createdAt: 'desc',
 				},
+                select: {
+                    id: true,
+                    identify: true,
+                    phone: true,
+                    fullName: true,
+                }
 			});
 
 			if (clients.length === 0) {
