@@ -32,7 +32,7 @@ async function bootstrap() {
                 )
                 .join('; ');
 
-            return new BadRequestException(`Errores de validación: ${message}`);
+            return new BadRequestException(`${message}`);
         },
     }));
 

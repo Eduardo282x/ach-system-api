@@ -7,13 +7,15 @@ import {
 	IsNumber,
 	IsOptional,
 	IsString,
+	MaxLength,
 	Min,
+    MinLength,
 } from 'class-validator';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 
 export class ProductDto {
 	@IsString()
-	@IsNotEmpty()
+	@IsNotEmpty({message: 'El nombre del producto es obligatorio'})
 	name!: string;
 
 	@IsString()
@@ -21,12 +23,14 @@ export class ProductDto {
 	presentation!: string;
 
 	@IsString()
+    @MinLength(3, { message: 'El código de barras debe tener al menos 3 caracteres' })
+    @MaxLength(16, { message: 'El código de barras no puede exceder los 16 caracteres' })
 	@IsNotEmpty()
 	barcode!: string;
 
 	@Type(() => Number)
 	@IsNumber({ maxDecimalPlaces: 2 })
-	@Min(0)
+	@Min(0, { message: 'El precio debe ser un número positivo' })
 	price!: number;
 
 	@IsOptional()
@@ -36,7 +40,7 @@ export class ProductDto {
 	@IsOptional()
 	@Type(() => Number)
 	@IsInt()
-	@Min(0)
+	@Min(0, { message: 'El stock debe ser un número positivo' })
 	stock?: number;
 
 	@IsOptional()

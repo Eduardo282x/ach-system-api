@@ -30,8 +30,14 @@ export class ProductsService {
                 },
             });
 
+            if(products.length === 0) {
+                return {
+                    message: 'No se encontraron productos',
+                    products: [],
+                };
+            }
+
             return {
-                message: 'Productos obtenidos correctamente',
                 products,
             };
         } catch (error) {
