@@ -2,15 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        private prismaService: PrismaService,
-        private jwtService: JwtService,
+        private readonly prismaService: PrismaService,
+        private readonly jwtService: JwtService,
     ) {
     }
 
@@ -25,7 +24,7 @@ export class AuthService {
 
             // 2. Si no existe, lanzamos excepción (El Filter la atrapará)
             if (!findUser) {
-                throw new UnauthorizedException('Usuario o contraseña incorrectos');
+                throw new UnauthorizedException('Usuario no encontrado');
             }
 
             // 3. Verificar contraseña con bcrypt
@@ -33,7 +32,7 @@ export class AuthService {
 
             // 4. Si la contraseña no coincide, lanzamos la misma excepción
             if (!isValid) {
-                throw new UnauthorizedException('Usuario o contraseña incorrectos');
+                throw new UnauthorizedException('Contraseña incorrecta');
             }
 
             // 5. Extraer la contraseña para no enviarla en el token ni en la respuesta
