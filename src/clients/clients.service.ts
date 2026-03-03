@@ -8,7 +8,9 @@ export class ClientsService {
 
 	async getClients(search?: string) {
 		try {
-			const where: any = {};
+			const where: any = {
+				deleted: false,
+			};
 
 			if (search) {
 				where.OR = [
@@ -124,8 +126,9 @@ export class ClientsService {
 				throw new NotFoundException(`Cliente con id ${id} no encontrado`);
 			}
 
-			const client = await this.prismaService.clients.delete({
+			const client = await this.prismaService.clients.update({
 				where: { id },
+				data: { deleted: true },
 			});
 
 			return {

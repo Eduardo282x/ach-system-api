@@ -15,7 +15,7 @@ export class UsersService {
         try {
             const users = await this.prismaService.users.findMany({
                 orderBy: {
-                    createdAt: 'desc',
+                    createdAt: 'asc',
                 },
             });
 
@@ -102,28 +102,19 @@ export class UsersService {
                 }
             }
 
-            const hashedPassword = updateUserDto.password
-                ? await bcrypt.hash(updateUserDto.password, 10)
+            const normalizedPassword = updateUserDto.password?.trim();
+            const hashedPassword = normalizedPassword
+                ? await bcrypt.hash(normalizedPassword, 10)
                 : undefined;
 
             const updatedUser = await this.prismaService.users.update({
                 where: { id },
                 data: {
-                    ...(updateUserDto.name !== undefined && {
-                        name: updateUserDto.name,
-                    }),
-                    ...(updateUserDto.username !== undefined && {
-                        username: updateUserDto.username,
-                    }),
-                    ...(hashedPassword !== undefined && {
-                        password: hashedPassword,
-                    }),
-                    ...(updateUserDto.role !== undefined && {
-                        role: updateUserDto.role,
-                    }),
-                    ...(updateUserDto.email !== undefined && {
-                        email: updateUserDto.email,
-                    }),
+                    name: updateUserDto.name,
+                    username: updateUserDto.username,
+                    role: updateUserDto.role,
+                    email: updateUserDto.email,
+                    ...(hashedPassword && { password: hashedPassword }),
                 },
             });
 

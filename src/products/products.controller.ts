@@ -14,6 +14,11 @@ export class ProductsController {
         return await this.productsService.getProducts(search);
     }
 
+    @Get('/inventory/history')
+    async getInventoryHistory() {
+        return await this.productsService.getInventoryHistory();
+    }
+
     @Get('/exchange-rate/today')
     async getExchangeRateToday() {
         return await this.productsService.getExchangeRateToday();

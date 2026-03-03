@@ -43,6 +43,7 @@ export type UsersMinAggregateOutputType = {
   email: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deleted: boolean | null
 }
 
 export type UsersMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type UsersMaxAggregateOutputType = {
   email: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deleted: boolean | null
 }
 
 export type UsersCountAggregateOutputType = {
@@ -65,6 +67,7 @@ export type UsersCountAggregateOutputType = {
   email: number
   createdAt: number
   updatedAt: number
+  deleted: number
   _all: number
 }
 
@@ -86,6 +89,7 @@ export type UsersMinAggregateInputType = {
   email?: true
   createdAt?: true
   updatedAt?: true
+  deleted?: true
 }
 
 export type UsersMaxAggregateInputType = {
@@ -97,6 +101,7 @@ export type UsersMaxAggregateInputType = {
   email?: true
   createdAt?: true
   updatedAt?: true
+  deleted?: true
 }
 
 export type UsersCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type UsersCountAggregateInputType = {
   email?: true
   createdAt?: true
   updatedAt?: true
+  deleted?: true
   _all?: true
 }
 
@@ -206,6 +212,7 @@ export type UsersGroupByOutputType = {
   email: string
   createdAt: Date
   updatedAt: Date
+  deleted: boolean
   _count: UsersCountAggregateOutputType | null
   _avg: UsersAvgAggregateOutputType | null
   _sum: UsersSumAggregateOutputType | null
@@ -240,9 +247,10 @@ export type UsersWhereInput = {
   email?: Prisma.StringFilter<"Users"> | string
   createdAt?: Prisma.DateTimeFilter<"Users"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Users"> | Date | string
+  deleted?: Prisma.BoolFilter<"Users"> | boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
-  cashDrawerSessions?: Prisma.CashDrawerSessionListRelationFilter
 }
 
 export type UsersOrderByWithRelationInput = {
@@ -254,9 +262,10 @@ export type UsersOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
+  cashDrawerSessions?: Prisma.CashDrawerSessionOrderByRelationAggregateInput
   inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
-  cashDrawerSessions?: Prisma.CashDrawerSessionOrderByRelationAggregateInput
 }
 
 export type UsersWhereUniqueInput = Prisma.AtLeast<{
@@ -271,9 +280,10 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   email?: Prisma.StringFilter<"Users"> | string
   createdAt?: Prisma.DateTimeFilter<"Users"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Users"> | Date | string
+  deleted?: Prisma.BoolFilter<"Users"> | boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
-  cashDrawerSessions?: Prisma.CashDrawerSessionListRelationFilter
 }, "id">
 
 export type UsersOrderByWithAggregationInput = {
@@ -285,6 +295,7 @@ export type UsersOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   _count?: Prisma.UsersCountOrderByAggregateInput
   _avg?: Prisma.UsersAvgOrderByAggregateInput
   _max?: Prisma.UsersMaxOrderByAggregateInput
@@ -304,6 +315,7 @@ export type UsersScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"Users"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Users"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Users"> | Date | string
+  deleted?: Prisma.BoolWithAggregatesFilter<"Users"> | boolean
 }
 
 export type UsersCreateInput = {
@@ -314,9 +326,10 @@ export type UsersCreateInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deleted?: boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutUserInput
-  cashDrawerSessions?: Prisma.CashDrawerSessionCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateInput = {
@@ -328,9 +341,10 @@ export type UsersUncheckedCreateInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deleted?: boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutUserInput
-  cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersUpdateInput = {
@@ -341,9 +355,10 @@ export type UsersUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutUserNestedInput
-  cashDrawerSessions?: Prisma.CashDrawerSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateInput = {
@@ -355,9 +370,10 @@ export type UsersUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutUserNestedInput
-  cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateManyInput = {
@@ -369,6 +385,7 @@ export type UsersCreateManyInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deleted?: boolean
 }
 
 export type UsersUpdateManyMutationInput = {
@@ -379,6 +396,7 @@ export type UsersUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UsersUncheckedUpdateManyInput = {
@@ -390,6 +408,7 @@ export type UsersUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UsersCountOrderByAggregateInput = {
@@ -401,6 +420,7 @@ export type UsersCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
 }
 
 export type UsersAvgOrderByAggregateInput = {
@@ -416,6 +436,7 @@ export type UsersMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
 }
 
 export type UsersMinOrderByAggregateInput = {
@@ -427,6 +448,7 @@ export type UsersMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
 }
 
 export type UsersSumOrderByAggregateInput = {
@@ -448,6 +470,10 @@ export type EnumRoleFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -508,8 +534,9 @@ export type UsersCreateWithoutInventoryMovementsInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  invoices?: Prisma.InvoiceCreateNestedManyWithoutUserInput
+  deleted?: boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionCreateNestedManyWithoutUserInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutInventoryMovementsInput = {
@@ -521,8 +548,9 @@ export type UsersUncheckedCreateWithoutInventoryMovementsInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutUserInput
+  deleted?: boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedCreateNestedManyWithoutUserInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutInventoryMovementsInput = {
@@ -549,8 +577,9 @@ export type UsersUpdateWithoutInventoryMovementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoices?: Prisma.InvoiceUpdateManyWithoutUserNestedInput
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUpdateManyWithoutUserNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -562,8 +591,9 @@ export type UsersUncheckedUpdateWithoutInventoryMovementsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutUserNestedInput
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedUpdateManyWithoutUserNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateWithoutInvoicesInput = {
@@ -574,8 +604,9 @@ export type UsersCreateWithoutInvoicesInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
+  deleted?: boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutInvoicesInput = {
@@ -587,8 +618,9 @@ export type UsersUncheckedCreateWithoutInvoicesInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
+  deleted?: boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutInvoicesInput = {
@@ -615,8 +647,9 @@ export type UsersUpdateWithoutInvoicesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutInvoicesInput = {
@@ -628,8 +661,9 @@ export type UsersUncheckedUpdateWithoutInvoicesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   cashDrawerSessions?: Prisma.CashDrawerSessionUncheckedUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateWithoutCashDrawerSessionsInput = {
@@ -640,6 +674,7 @@ export type UsersCreateWithoutCashDrawerSessionsInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deleted?: boolean
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutUserInput
 }
@@ -653,6 +688,7 @@ export type UsersUncheckedCreateWithoutCashDrawerSessionsInput = {
   email?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deleted?: boolean
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutUserInput
 }
@@ -681,6 +717,7 @@ export type UsersUpdateWithoutCashDrawerSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutUserNestedInput
 }
@@ -694,6 +731,7 @@ export type UsersUncheckedUpdateWithoutCashDrawerSessionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -704,15 +742,15 @@ export type UsersUncheckedUpdateWithoutCashDrawerSessionsInput = {
  */
 
 export type UsersCountOutputType = {
+  cashDrawerSessions: number
   inventoryMovements: number
   invoices: number
-  cashDrawerSessions: number
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  cashDrawerSessions?: boolean | UsersCountOutputTypeCountCashDrawerSessionsArgs
   inventoryMovements?: boolean | UsersCountOutputTypeCountInventoryMovementsArgs
   invoices?: boolean | UsersCountOutputTypeCountInvoicesArgs
-  cashDrawerSessions?: boolean | UsersCountOutputTypeCountCashDrawerSessionsArgs
 }
 
 /**
@@ -723,6 +761,13 @@ export type UsersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
    * Select specific fields to fetch from the UsersCountOutputType
    */
   select?: Prisma.UsersCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountCashDrawerSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CashDrawerSessionWhereInput
 }
 
 /**
@@ -739,13 +784,6 @@ export type UsersCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.
   where?: Prisma.InvoiceWhereInput
 }
 
-/**
- * UsersCountOutputType without action
- */
-export type UsersCountOutputTypeCountCashDrawerSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CashDrawerSessionWhereInput
-}
-
 
 export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -756,9 +794,10 @@ export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   email?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deleted?: boolean
+  cashDrawerSessions?: boolean | Prisma.Users$cashDrawerSessionsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Users$inventoryMovementsArgs<ExtArgs>
   invoices?: boolean | Prisma.Users$invoicesArgs<ExtArgs>
-  cashDrawerSessions?: boolean | Prisma.Users$cashDrawerSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -771,6 +810,7 @@ export type UsersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   email?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deleted?: boolean
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -782,6 +822,7 @@ export type UsersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   email?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deleted?: boolean
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectScalar = {
@@ -793,13 +834,14 @@ export type UsersSelectScalar = {
   email?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deleted?: boolean
 }
 
-export type UsersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "username" | "password" | "role" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["users"]>
+export type UsersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "username" | "password" | "role" | "email" | "createdAt" | "updatedAt" | "deleted", ExtArgs["result"]["users"]>
 export type UsersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  cashDrawerSessions?: boolean | Prisma.Users$cashDrawerSessionsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.Users$inventoryMovementsArgs<ExtArgs>
   invoices?: boolean | Prisma.Users$invoicesArgs<ExtArgs>
-  cashDrawerSessions?: boolean | Prisma.Users$cashDrawerSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UsersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -808,9 +850,9 @@ export type UsersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Users"
   objects: {
+    cashDrawerSessions: Prisma.$CashDrawerSessionPayload<ExtArgs>[]
     inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
-    cashDrawerSessions: Prisma.$CashDrawerSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -821,6 +863,7 @@ export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     email: string
     createdAt: Date
     updatedAt: Date
+    deleted: boolean
   }, ExtArgs["result"]["users"]>
   composites: {}
 }
@@ -1215,9 +1258,9 @@ readonly fields: UsersFieldRefs;
  */
 export interface Prisma__UsersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  cashDrawerSessions<T extends Prisma.Users$cashDrawerSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$cashDrawerSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashDrawerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryMovements<T extends Prisma.Users$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.Users$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  cashDrawerSessions<T extends Prisma.Users$cashDrawerSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$cashDrawerSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashDrawerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1255,6 +1298,7 @@ export interface UsersFieldRefs {
   readonly email: Prisma.FieldRef<"Users", 'String'>
   readonly createdAt: Prisma.FieldRef<"Users", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Users", 'DateTime'>
+  readonly deleted: Prisma.FieldRef<"Users", 'Boolean'>
 }
     
 
@@ -1643,6 +1687,30 @@ export type UsersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Users.cashDrawerSessions
+ */
+export type Users$cashDrawerSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CashDrawerSession
+   */
+  select?: Prisma.CashDrawerSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CashDrawerSession
+   */
+  omit?: Prisma.CashDrawerSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashDrawerSessionInclude<ExtArgs> | null
+  where?: Prisma.CashDrawerSessionWhereInput
+  orderBy?: Prisma.CashDrawerSessionOrderByWithRelationInput | Prisma.CashDrawerSessionOrderByWithRelationInput[]
+  cursor?: Prisma.CashDrawerSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CashDrawerSessionScalarFieldEnum | Prisma.CashDrawerSessionScalarFieldEnum[]
+}
+
+/**
  * Users.inventoryMovements
  */
 export type Users$inventoryMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1688,30 +1756,6 @@ export type Users$invoicesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
-}
-
-/**
- * Users.cashDrawerSessions
- */
-export type Users$cashDrawerSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CashDrawerSession
-   */
-  select?: Prisma.CashDrawerSessionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CashDrawerSession
-   */
-  omit?: Prisma.CashDrawerSessionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CashDrawerSessionInclude<ExtArgs> | null
-  where?: Prisma.CashDrawerSessionWhereInput
-  orderBy?: Prisma.CashDrawerSessionOrderByWithRelationInput | Prisma.CashDrawerSessionOrderByWithRelationInput[]
-  cursor?: Prisma.CashDrawerSessionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.CashDrawerSessionScalarFieldEnum | Prisma.CashDrawerSessionScalarFieldEnum[]
 }
 
 /**

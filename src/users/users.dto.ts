@@ -11,13 +11,11 @@ export class UserDto {
 	username!: string;
 
 	@IsString()
-	@IsNotEmpty()
 	password!: string;
 
 	@IsEnum(Role)
 	role!: Role;
 
 	@IsOptional()
-	@IsEmail()
 	email?: string;
 }

@@ -17,6 +17,7 @@ model Users {
   email              String              @default("")
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @default(now()) @updatedAt
+  deleted            Boolean             @default(false)
   cashDrawerSessions CashDrawerSession[]
   inventoryMovements InventoryMovement[]
   invoices           Invoice[]
@@ -27,6 +28,7 @@ model Clients {
   fullName  String
   identify  String    @default("")
   phone     String    @default("")
+  deleted   Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   invoices  Invoice[]
@@ -62,6 +64,7 @@ model Product {
   unitsDetail      Int?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @default(now()) @updatedAt
+  deleted          Boolean             @default(false)
   historyMovements InventoryMovement[]
   invoiceItems     InvoiceItem[]
   productParent    Product?            @relation("ConvertUnits", fields: [parentId], references: [id])
@@ -137,6 +140,7 @@ model CurrencyDenomination {
 model CashDrawerSession {
   id             Int           @id @default(autoincrement())
   userId         Int
+  cashDrawerId   Int
   openedAt       DateTime      @default(now())
   closedAt       DateTime?
   openingBalance Decimal
@@ -146,7 +150,14 @@ model CashDrawerSession {
   totalInBs      Decimal       @default(0)
   status         SessionStatus @default(OPEN)
   user           Users         @relation(fields: [userId], references: [id])
+  cashDrawer     CashDrawer    @relation(fields: [cashDrawerId], references: [id])
   invoices       Invoice[]
+}
+
+model CashDrawer {
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  cashDrawerSessions CashDrawerSession[]
 }
 
 enum Role {

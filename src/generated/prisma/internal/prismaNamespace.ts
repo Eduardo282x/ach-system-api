@@ -394,7 +394,8 @@ export const ModelName = {
   InvoiceItem: 'InvoiceItem',
   PaymentDetail: 'PaymentDetail',
   CurrencyDenomination: 'CurrencyDenomination',
-  CashDrawerSession: 'CashDrawerSession'
+  CashDrawerSession: 'CashDrawerSession',
+  CashDrawer: 'CashDrawer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "users" | "clients" | "exchangeRate" | "typePayment" | "product" | "inventoryMovement" | "invoice" | "invoiceItem" | "paymentDetail" | "currencyDenomination" | "cashDrawerSession"
+    modelProps: "users" | "clients" | "exchangeRate" | "typePayment" | "product" | "inventoryMovement" | "invoice" | "invoiceItem" | "paymentDetail" | "currencyDenomination" | "cashDrawerSession" | "cashDrawer"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1228,6 +1229,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CashDrawer: {
+      payload: Prisma.$CashDrawerPayload<ExtArgs>
+      fields: Prisma.CashDrawerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CashDrawerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CashDrawerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        findFirst: {
+          args: Prisma.CashDrawerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CashDrawerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        findMany: {
+          args: Prisma.CashDrawerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>[]
+        }
+        create: {
+          args: Prisma.CashDrawerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        createMany: {
+          args: Prisma.CashDrawerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CashDrawerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>[]
+        }
+        delete: {
+          args: Prisma.CashDrawerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        update: {
+          args: Prisma.CashDrawerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        deleteMany: {
+          args: Prisma.CashDrawerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CashDrawerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CashDrawerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>[]
+        }
+        upsert: {
+          args: Prisma.CashDrawerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashDrawerPayload>
+        }
+        aggregate: {
+          args: Prisma.CashDrawerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCashDrawer>
+        }
+        groupBy: {
+          args: Prisma.CashDrawerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CashDrawerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CashDrawerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CashDrawerCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1275,7 +1350,8 @@ export const UsersScalarFieldEnum = {
   role: 'role',
   email: 'email',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deleted: 'deleted'
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -1286,6 +1362,7 @@ export const ClientsScalarFieldEnum = {
   fullName: 'fullName',
   identify: 'identify',
   phone: 'phone',
+  deleted: 'deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1327,7 +1404,8 @@ export const ProductScalarFieldEnum = {
   parentId: 'parentId',
   unitsDetail: 'unitsDetail',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deleted: 'deleted'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -1406,6 +1484,7 @@ export type CurrencyDenominationScalarFieldEnum = (typeof CurrencyDenominationSc
 export const CashDrawerSessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  cashDrawerId: 'cashDrawerId',
   openedAt: 'openedAt',
   closedAt: 'closedAt',
   openingBalance: 'openingBalance',
@@ -1417,6 +1496,14 @@ export const CashDrawerSessionScalarFieldEnum = {
 } as const
 
 export type CashDrawerSessionScalarFieldEnum = (typeof CashDrawerSessionScalarFieldEnum)[keyof typeof CashDrawerSessionScalarFieldEnum]
+
+
+export const CashDrawerScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type CashDrawerScalarFieldEnum = (typeof CashDrawerScalarFieldEnum)[keyof typeof CashDrawerScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1523,6 +1610,13 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'ExchangeRateType'
  */
 export type EnumExchangeRateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExchangeRateType'>
@@ -1547,13 +1641,6 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1732,6 +1819,7 @@ export type GlobalOmitConfig = {
   paymentDetail?: Prisma.PaymentDetailOmit
   currencyDenomination?: Prisma.CurrencyDenominationOmit
   cashDrawerSession?: Prisma.CashDrawerSessionOmit
+  cashDrawer?: Prisma.CashDrawerOmit
 }
 
 /* Types for Logging */

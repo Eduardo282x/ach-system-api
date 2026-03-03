@@ -92,3 +92,8 @@ export type CurrencyDenomination = Prisma.CurrencyDenominationModel
  * 
  */
 export type CashDrawerSession = Prisma.CashDrawerSessionModel
+/**
+ * Model CashDrawer
+ * 
+ */
+export type CashDrawer = Prisma.CashDrawerModel

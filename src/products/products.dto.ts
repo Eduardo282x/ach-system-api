@@ -19,7 +19,6 @@ export class ProductDto {
     name!: string;
 
     @IsString()
-    @IsNotEmpty()
     presentation!: string;
 
     @IsString()

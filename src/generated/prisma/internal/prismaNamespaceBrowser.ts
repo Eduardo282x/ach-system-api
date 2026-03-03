@@ -61,7 +61,8 @@ export const ModelName = {
   InvoiceItem: 'InvoiceItem',
   PaymentDetail: 'PaymentDetail',
   CurrencyDenomination: 'CurrencyDenomination',
-  CashDrawerSession: 'CashDrawerSession'
+  CashDrawerSession: 'CashDrawerSession',
+  CashDrawer: 'CashDrawer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -88,7 +89,8 @@ export const UsersScalarFieldEnum = {
   role: 'role',
   email: 'email',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deleted: 'deleted'
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -99,6 +101,7 @@ export const ClientsScalarFieldEnum = {
   fullName: 'fullName',
   identify: 'identify',
   phone: 'phone',
+  deleted: 'deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -140,7 +143,8 @@ export const ProductScalarFieldEnum = {
   parentId: 'parentId',
   unitsDetail: 'unitsDetail',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deleted: 'deleted'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -219,6 +223,7 @@ export type CurrencyDenominationScalarFieldEnum = (typeof CurrencyDenominationSc
 export const CashDrawerSessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  cashDrawerId: 'cashDrawerId',
   openedAt: 'openedAt',
   closedAt: 'closedAt',
   openingBalance: 'openingBalance',
@@ -230,6 +235,14 @@ export const CashDrawerSessionScalarFieldEnum = {
 } as const
 
 export type CashDrawerSessionScalarFieldEnum = (typeof CashDrawerSessionScalarFieldEnum)[keyof typeof CashDrawerSessionScalarFieldEnum]
+
+
+export const CashDrawerScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type CashDrawerScalarFieldEnum = (typeof CashDrawerScalarFieldEnum)[keyof typeof CashDrawerScalarFieldEnum]
 
 
 export const SortOrder = {

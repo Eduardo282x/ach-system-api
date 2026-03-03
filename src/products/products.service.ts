@@ -26,7 +26,9 @@ export class ProductsService {
 
     async getProducts(search?: string) {
         try {
-            const where: any = {};
+            const where: any = {
+                deleted: false,
+            };
 
             if (search) {
                 where.OR = [
@@ -66,6 +68,49 @@ export class ProductsService {
             return {
                 products,
             };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getInventoryHistory() {
+        try {
+            const history = await this.prismaService.inventoryMovement.findMany({
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                include: {
+                    product: {
+                        select: {
+                            id: true,
+                            name: true,
+                            presentation: true,
+                            price: true,
+                            currency: true,
+                        }
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            role: true,
+                        }
+                    },
+                },
+            });
+
+            if (history.length === 0) {
+                return {
+                    message: 'No se encontraron movimientos de inventario',
+                    history: [],
+                };
+            }
+
+            return {
+                history,
+            };
+
         } catch (error) {
             throw error;
         }
@@ -123,7 +168,7 @@ export class ProductsService {
 
             if (exchangeRate.length === 0) {
                 return {
-                    message: 'No se encontró la tasa de cambio',
+                    message: 'No se encontraron las tasas de cambio',
                     exchangeRate: null,
                 };
             }
@@ -156,27 +201,27 @@ export class ProductsService {
 
     async saveAutomaticExchangeRate() {
         try {
-            const urlDolar = 'https://ve.dolarapi.com/v1/dolares';
-            const urlEuro = 'https://ve.dolarapi.com/v1/euros';
+            const urlDolar = 'https://ve.dolarapi.com/v1/dolares/oficial';
+            const urlEuro = 'https://ve.dolarapi.com/v1/euros/oficial';
 
-            const responseDolar: ExchangeRateApi[] = await axios.get(urlDolar).then(res => res.data);
-            const responseEuro: ExchangeRateApi[] = await axios.get(urlEuro).then(res => res.data);
+            const responseDolar: ExchangeRateApi = await axios.get(urlDolar).then(res => res.data);
+            const responseEuro: ExchangeRateApi = await axios.get(urlEuro).then(res => res.data);
 
             const rates = [
-                ...responseDolar.map(rate => ({
-                    name: rate.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : rate.fuente.toUpperCase(),
-                    rate: Math.round(rate.promedio * 100) / 100, // Redondeamos a dos decimales
+                {
+                    name: responseDolar.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseDolar.fuente.toUpperCase(),
+                    rate: Math.round(responseDolar.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'USD',
-                    isDefault: rate.fuente.toLocaleLowerCase() == 'oficial',
-                    createdAt: new Date(rate.fechaActualizacion),
-                })),
-                ...responseEuro.map(rate => ({
-                    name: rate.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : rate.fuente.toUpperCase(),
-                    rate: Math.round(rate.promedio * 100) / 100, // Redondeamos a dos decimales
+                    isDefault: responseDolar.fuente.toLocaleLowerCase() == 'oficial',
+                    createdAt: new Date(responseDolar.fechaActualizacion),
+                },
+                {
+                    name: responseEuro.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseEuro.fuente.toUpperCase(),
+                    rate: Math.round(responseEuro.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'EUR',
                     isDefault: false,
-                    createdAt: new Date(rate.fechaActualizacion),
-                }))
+                    createdAt: new Date(responseEuro.fechaActualizacion),
+                }
             ];
 
             await this.prismaService.exchangeRate.createMany({
@@ -207,6 +252,16 @@ export class ProductsService {
 
             if (exists) {
                 throw new BadRequestException('El código de barras ya está registrado para el producto: ' + exists.name);
+            }
+
+            if (createProductDto.parentId) {
+                const parentId = await this.prismaService.product.findUnique({
+                    where: { parentId: createProductDto.parentId },
+                })
+
+                if (parentId) {
+                    throw new BadRequestException('El producto padre ya tiene un producto detalle asociado. Solo se permite un producto detalle por producto padre.');
+                }
             }
 
             // 2. Crear el producto
@@ -281,8 +336,9 @@ export class ProductsService {
                 throw new NotFoundException(`Producto con id ${id} no encontrado`);
             }
 
-            const product = await this.prismaService.product.delete({
+            const product = await this.prismaService.product.update({
                 where: { id },
+                data: { deleted: true },
             });
 
             return {
@@ -290,6 +346,8 @@ export class ProductsService {
                 data: product,
             };
         } catch (error) {
+            console.log(error);
+            
             throw error;
         }
     }
@@ -321,8 +379,6 @@ export class ProductsService {
                     where: { id: parent.id },
                     data: { stock: { decrement: 1 } },
                 });
-
-                console.log(childProduct);
 
                 // B. Sumar unidades al Hijo
                 const updatedChild = await tx.product.update({

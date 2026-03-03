@@ -29,6 +29,7 @@ export type AggregateCashDrawerSession = {
 export type CashDrawerSessionAvgAggregateOutputType = {
   id: number | null
   userId: number | null
+  cashDrawerId: number | null
   openingBalance: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
   totalSales: runtime.Decimal | null
@@ -39,6 +40,7 @@ export type CashDrawerSessionAvgAggregateOutputType = {
 export type CashDrawerSessionSumAggregateOutputType = {
   id: number | null
   userId: number | null
+  cashDrawerId: number | null
   openingBalance: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
   totalSales: runtime.Decimal | null
@@ -49,6 +51,7 @@ export type CashDrawerSessionSumAggregateOutputType = {
 export type CashDrawerSessionMinAggregateOutputType = {
   id: number | null
   userId: number | null
+  cashDrawerId: number | null
   openedAt: Date | null
   closedAt: Date | null
   openingBalance: runtime.Decimal | null
@@ -62,6 +65,7 @@ export type CashDrawerSessionMinAggregateOutputType = {
 export type CashDrawerSessionMaxAggregateOutputType = {
   id: number | null
   userId: number | null
+  cashDrawerId: number | null
   openedAt: Date | null
   closedAt: Date | null
   openingBalance: runtime.Decimal | null
@@ -75,6 +79,7 @@ export type CashDrawerSessionMaxAggregateOutputType = {
 export type CashDrawerSessionCountAggregateOutputType = {
   id: number
   userId: number
+  cashDrawerId: number
   openedAt: number
   closedAt: number
   openingBalance: number
@@ -90,6 +95,7 @@ export type CashDrawerSessionCountAggregateOutputType = {
 export type CashDrawerSessionAvgAggregateInputType = {
   id?: true
   userId?: true
+  cashDrawerId?: true
   openingBalance?: true
   closingBalance?: true
   totalSales?: true
@@ -100,6 +106,7 @@ export type CashDrawerSessionAvgAggregateInputType = {
 export type CashDrawerSessionSumAggregateInputType = {
   id?: true
   userId?: true
+  cashDrawerId?: true
   openingBalance?: true
   closingBalance?: true
   totalSales?: true
@@ -110,6 +117,7 @@ export type CashDrawerSessionSumAggregateInputType = {
 export type CashDrawerSessionMinAggregateInputType = {
   id?: true
   userId?: true
+  cashDrawerId?: true
   openedAt?: true
   closedAt?: true
   openingBalance?: true
@@ -123,6 +131,7 @@ export type CashDrawerSessionMinAggregateInputType = {
 export type CashDrawerSessionMaxAggregateInputType = {
   id?: true
   userId?: true
+  cashDrawerId?: true
   openedAt?: true
   closedAt?: true
   openingBalance?: true
@@ -136,6 +145,7 @@ export type CashDrawerSessionMaxAggregateInputType = {
 export type CashDrawerSessionCountAggregateInputType = {
   id?: true
   userId?: true
+  cashDrawerId?: true
   openedAt?: true
   closedAt?: true
   openingBalance?: true
@@ -236,6 +246,7 @@ export type CashDrawerSessionGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type CashDrawerSessionGroupByOutputType = {
   id: number
   userId: number
+  cashDrawerId: number
   openedAt: Date
   closedAt: Date | null
   openingBalance: runtime.Decimal
@@ -272,6 +283,7 @@ export type CashDrawerSessionWhereInput = {
   NOT?: Prisma.CashDrawerSessionWhereInput | Prisma.CashDrawerSessionWhereInput[]
   id?: Prisma.IntFilter<"CashDrawerSession"> | number
   userId?: Prisma.IntFilter<"CashDrawerSession"> | number
+  cashDrawerId?: Prisma.IntFilter<"CashDrawerSession"> | number
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -281,12 +293,14 @@ export type CashDrawerSessionWhereInput = {
   totalInBs?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumSessionStatusFilter<"CashDrawerSession"> | $Enums.SessionStatus
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+  cashDrawer?: Prisma.XOR<Prisma.CashDrawerScalarRelationFilter, Prisma.CashDrawerWhereInput>
   invoices?: Prisma.InvoiceListRelationFilter
 }
 
 export type CashDrawerSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
@@ -296,6 +310,7 @@ export type CashDrawerSessionOrderByWithRelationInput = {
   totalInBs?: Prisma.SortOrder
   status?: Prisma.SortOrder
   user?: Prisma.UsersOrderByWithRelationInput
+  cashDrawer?: Prisma.CashDrawerOrderByWithRelationInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
@@ -305,6 +320,7 @@ export type CashDrawerSessionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CashDrawerSessionWhereInput[]
   NOT?: Prisma.CashDrawerSessionWhereInput | Prisma.CashDrawerSessionWhereInput[]
   userId?: Prisma.IntFilter<"CashDrawerSession"> | number
+  cashDrawerId?: Prisma.IntFilter<"CashDrawerSession"> | number
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -314,12 +330,14 @@ export type CashDrawerSessionWhereUniqueInput = Prisma.AtLeast<{
   totalInBs?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumSessionStatusFilter<"CashDrawerSession"> | $Enums.SessionStatus
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+  cashDrawer?: Prisma.XOR<Prisma.CashDrawerScalarRelationFilter, Prisma.CashDrawerWhereInput>
   invoices?: Prisma.InvoiceListRelationFilter
 }, "id">
 
 export type CashDrawerSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
@@ -341,6 +359,7 @@ export type CashDrawerSessionScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CashDrawerSessionScalarWhereWithAggregatesInput | Prisma.CashDrawerSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"CashDrawerSession"> | number
   userId?: Prisma.IntWithAggregatesFilter<"CashDrawerSession"> | number
+  cashDrawerId?: Prisma.IntWithAggregatesFilter<"CashDrawerSession"> | number
   openedAt?: Prisma.DateTimeWithAggregatesFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -361,12 +380,14 @@ export type CashDrawerSessionCreateInput = {
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.SessionStatus
   user: Prisma.UsersCreateNestedOneWithoutCashDrawerSessionsInput
+  cashDrawer: Prisma.CashDrawerCreateNestedOneWithoutCashDrawerSessionsInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutSessionInput
 }
 
 export type CashDrawerSessionUncheckedCreateInput = {
   id?: number
   userId: number
+  cashDrawerId: number
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -388,12 +409,14 @@ export type CashDrawerSessionUpdateInput = {
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   user?: Prisma.UsersUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
+  cashDrawer?: Prisma.CashDrawerUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutSessionNestedInput
 }
 
 export type CashDrawerSessionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  cashDrawerId?: Prisma.IntFieldUpdateOperationsInput | number
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -408,6 +431,7 @@ export type CashDrawerSessionUncheckedUpdateInput = {
 export type CashDrawerSessionCreateManyInput = {
   id?: number
   userId: number
+  cashDrawerId: number
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -432,6 +456,7 @@ export type CashDrawerSessionUpdateManyMutationInput = {
 export type CashDrawerSessionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  cashDrawerId?: Prisma.IntFieldUpdateOperationsInput | number
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -460,6 +485,7 @@ export type CashDrawerSessionScalarRelationFilter = {
 export type CashDrawerSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
@@ -473,6 +499,7 @@ export type CashDrawerSessionCountOrderByAggregateInput = {
 export type CashDrawerSessionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
@@ -483,6 +510,7 @@ export type CashDrawerSessionAvgOrderByAggregateInput = {
 export type CashDrawerSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
@@ -496,6 +524,7 @@ export type CashDrawerSessionMaxOrderByAggregateInput = {
 export type CashDrawerSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
@@ -509,6 +538,7 @@ export type CashDrawerSessionMinOrderByAggregateInput = {
 export type CashDrawerSessionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  cashDrawerId?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
@@ -588,6 +618,48 @@ export type EnumSessionStatusFieldUpdateOperationsInput = {
   set?: $Enums.SessionStatus
 }
 
+export type CashDrawerSessionCreateNestedManyWithoutCashDrawerInput = {
+  create?: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput> | Prisma.CashDrawerSessionCreateWithoutCashDrawerInput[] | Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput[]
+  connectOrCreate?: Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput | Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput[]
+  createMany?: Prisma.CashDrawerSessionCreateManyCashDrawerInputEnvelope
+  connect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+}
+
+export type CashDrawerSessionUncheckedCreateNestedManyWithoutCashDrawerInput = {
+  create?: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput> | Prisma.CashDrawerSessionCreateWithoutCashDrawerInput[] | Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput[]
+  connectOrCreate?: Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput | Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput[]
+  createMany?: Prisma.CashDrawerSessionCreateManyCashDrawerInputEnvelope
+  connect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+}
+
+export type CashDrawerSessionUpdateManyWithoutCashDrawerNestedInput = {
+  create?: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput> | Prisma.CashDrawerSessionCreateWithoutCashDrawerInput[] | Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput[]
+  connectOrCreate?: Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput | Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput[]
+  upsert?: Prisma.CashDrawerSessionUpsertWithWhereUniqueWithoutCashDrawerInput | Prisma.CashDrawerSessionUpsertWithWhereUniqueWithoutCashDrawerInput[]
+  createMany?: Prisma.CashDrawerSessionCreateManyCashDrawerInputEnvelope
+  set?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  disconnect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  delete?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  connect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  update?: Prisma.CashDrawerSessionUpdateWithWhereUniqueWithoutCashDrawerInput | Prisma.CashDrawerSessionUpdateWithWhereUniqueWithoutCashDrawerInput[]
+  updateMany?: Prisma.CashDrawerSessionUpdateManyWithWhereWithoutCashDrawerInput | Prisma.CashDrawerSessionUpdateManyWithWhereWithoutCashDrawerInput[]
+  deleteMany?: Prisma.CashDrawerSessionScalarWhereInput | Prisma.CashDrawerSessionScalarWhereInput[]
+}
+
+export type CashDrawerSessionUncheckedUpdateManyWithoutCashDrawerNestedInput = {
+  create?: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput> | Prisma.CashDrawerSessionCreateWithoutCashDrawerInput[] | Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput[]
+  connectOrCreate?: Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput | Prisma.CashDrawerSessionCreateOrConnectWithoutCashDrawerInput[]
+  upsert?: Prisma.CashDrawerSessionUpsertWithWhereUniqueWithoutCashDrawerInput | Prisma.CashDrawerSessionUpsertWithWhereUniqueWithoutCashDrawerInput[]
+  createMany?: Prisma.CashDrawerSessionCreateManyCashDrawerInputEnvelope
+  set?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  disconnect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  delete?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  connect?: Prisma.CashDrawerSessionWhereUniqueInput | Prisma.CashDrawerSessionWhereUniqueInput[]
+  update?: Prisma.CashDrawerSessionUpdateWithWhereUniqueWithoutCashDrawerInput | Prisma.CashDrawerSessionUpdateWithWhereUniqueWithoutCashDrawerInput[]
+  updateMany?: Prisma.CashDrawerSessionUpdateManyWithWhereWithoutCashDrawerInput | Prisma.CashDrawerSessionUpdateManyWithWhereWithoutCashDrawerInput[]
+  deleteMany?: Prisma.CashDrawerSessionScalarWhereInput | Prisma.CashDrawerSessionScalarWhereInput[]
+}
+
 export type CashDrawerSessionCreateWithoutUserInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
@@ -597,11 +669,13 @@ export type CashDrawerSessionCreateWithoutUserInput = {
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.SessionStatus
+  cashDrawer: Prisma.CashDrawerCreateNestedOneWithoutCashDrawerSessionsInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutSessionInput
 }
 
 export type CashDrawerSessionUncheckedCreateWithoutUserInput = {
   id?: number
+  cashDrawerId: number
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -645,6 +719,7 @@ export type CashDrawerSessionScalarWhereInput = {
   NOT?: Prisma.CashDrawerSessionScalarWhereInput | Prisma.CashDrawerSessionScalarWhereInput[]
   id?: Prisma.IntFilter<"CashDrawerSession"> | number
   userId?: Prisma.IntFilter<"CashDrawerSession"> | number
+  cashDrawerId?: Prisma.IntFilter<"CashDrawerSession"> | number
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -665,11 +740,13 @@ export type CashDrawerSessionCreateWithoutInvoicesInput = {
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.SessionStatus
   user: Prisma.UsersCreateNestedOneWithoutCashDrawerSessionsInput
+  cashDrawer: Prisma.CashDrawerCreateNestedOneWithoutCashDrawerSessionsInput
 }
 
 export type CashDrawerSessionUncheckedCreateWithoutInvoicesInput = {
   id?: number
   userId: number
+  cashDrawerId: number
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -706,11 +783,13 @@ export type CashDrawerSessionUpdateWithoutInvoicesInput = {
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   user?: Prisma.UsersUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
+  cashDrawer?: Prisma.CashDrawerUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
 }
 
 export type CashDrawerSessionUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  cashDrawerId?: Prisma.IntFieldUpdateOperationsInput | number
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -721,8 +800,62 @@ export type CashDrawerSessionUncheckedUpdateWithoutInvoicesInput = {
   status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
 }
 
+export type CashDrawerSessionCreateWithoutCashDrawerInput = {
+  openedAt?: Date | string
+  closedAt?: Date | string | null
+  openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.SessionStatus
+  user: Prisma.UsersCreateNestedOneWithoutCashDrawerSessionsInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutSessionInput
+}
+
+export type CashDrawerSessionUncheckedCreateWithoutCashDrawerInput = {
+  id?: number
+  userId: number
+  openedAt?: Date | string
+  closedAt?: Date | string | null
+  openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.SessionStatus
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type CashDrawerSessionCreateOrConnectWithoutCashDrawerInput = {
+  where: Prisma.CashDrawerSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput>
+}
+
+export type CashDrawerSessionCreateManyCashDrawerInputEnvelope = {
+  data: Prisma.CashDrawerSessionCreateManyCashDrawerInput | Prisma.CashDrawerSessionCreateManyCashDrawerInput[]
+  skipDuplicates?: boolean
+}
+
+export type CashDrawerSessionUpsertWithWhereUniqueWithoutCashDrawerInput = {
+  where: Prisma.CashDrawerSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.CashDrawerSessionUpdateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedUpdateWithoutCashDrawerInput>
+  create: Prisma.XOR<Prisma.CashDrawerSessionCreateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedCreateWithoutCashDrawerInput>
+}
+
+export type CashDrawerSessionUpdateWithWhereUniqueWithoutCashDrawerInput = {
+  where: Prisma.CashDrawerSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.CashDrawerSessionUpdateWithoutCashDrawerInput, Prisma.CashDrawerSessionUncheckedUpdateWithoutCashDrawerInput>
+}
+
+export type CashDrawerSessionUpdateManyWithWhereWithoutCashDrawerInput = {
+  where: Prisma.CashDrawerSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.CashDrawerSessionUpdateManyMutationInput, Prisma.CashDrawerSessionUncheckedUpdateManyWithoutCashDrawerInput>
+}
+
 export type CashDrawerSessionCreateManyUserInput = {
   id?: number
+  cashDrawerId: number
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -742,11 +875,13 @@ export type CashDrawerSessionUpdateWithoutUserInput = {
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
+  cashDrawer?: Prisma.CashDrawerUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutSessionNestedInput
 }
 
 export type CashDrawerSessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  cashDrawerId?: Prisma.IntFieldUpdateOperationsInput | number
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -760,6 +895,60 @@ export type CashDrawerSessionUncheckedUpdateWithoutUserInput = {
 
 export type CashDrawerSessionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  cashDrawerId?: Prisma.IntFieldUpdateOperationsInput | number
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
+}
+
+export type CashDrawerSessionCreateManyCashDrawerInput = {
+  id?: number
+  userId: number
+  openedAt?: Date | string
+  closedAt?: Date | string | null
+  openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.SessionStatus
+}
+
+export type CashDrawerSessionUpdateWithoutCashDrawerInput = {
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
+  user?: Prisma.UsersUpdateOneRequiredWithoutCashDrawerSessionsNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutSessionNestedInput
+}
+
+export type CashDrawerSessionUncheckedUpdateWithoutCashDrawerInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type CashDrawerSessionUncheckedUpdateManyWithoutCashDrawerInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -804,6 +993,7 @@ export type CashDrawerSessionCountOutputTypeCountInvoicesArgs<ExtArgs extends ru
 export type CashDrawerSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  cashDrawerId?: boolean
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
@@ -813,6 +1003,7 @@ export type CashDrawerSessionSelect<ExtArgs extends runtime.Types.Extensions.Int
   totalInBs?: boolean
   status?: boolean
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
   invoices?: boolean | Prisma.CashDrawerSession$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.CashDrawerSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashDrawerSession"]>
@@ -820,6 +1011,7 @@ export type CashDrawerSessionSelect<ExtArgs extends runtime.Types.Extensions.Int
 export type CashDrawerSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  cashDrawerId?: boolean
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
@@ -829,11 +1021,13 @@ export type CashDrawerSessionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   totalInBs?: boolean
   status?: boolean
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashDrawerSession"]>
 
 export type CashDrawerSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  cashDrawerId?: boolean
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
@@ -843,11 +1037,13 @@ export type CashDrawerSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   totalInBs?: boolean
   status?: boolean
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashDrawerSession"]>
 
 export type CashDrawerSessionSelectScalar = {
   id?: boolean
   userId?: boolean
+  cashDrawerId?: boolean
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
@@ -858,28 +1054,33 @@ export type CashDrawerSessionSelectScalar = {
   status?: boolean
 }
 
-export type CashDrawerSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "openedAt" | "closedAt" | "openingBalance" | "closingBalance" | "totalSales" | "totalInUsd" | "totalInBs" | "status", ExtArgs["result"]["cashDrawerSession"]>
+export type CashDrawerSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cashDrawerId" | "openedAt" | "closedAt" | "openingBalance" | "closingBalance" | "totalSales" | "totalInUsd" | "totalInBs" | "status", ExtArgs["result"]["cashDrawerSession"]>
 export type CashDrawerSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
   invoices?: boolean | Prisma.CashDrawerSession$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.CashDrawerSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CashDrawerSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
 }
 export type CashDrawerSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
 }
 
 export type $CashDrawerSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CashDrawerSession"
   objects: {
     user: Prisma.$UsersPayload<ExtArgs>
+    cashDrawer: Prisma.$CashDrawerPayload<ExtArgs>
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     userId: number
+    cashDrawerId: number
     openedAt: Date
     closedAt: Date | null
     openingBalance: runtime.Decimal
@@ -1283,6 +1484,7 @@ readonly fields: CashDrawerSessionFieldRefs;
 export interface Prisma__CashDrawerSessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  cashDrawer<T extends Prisma.CashDrawerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CashDrawerDefaultArgs<ExtArgs>>): Prisma.Prisma__CashDrawerClient<runtime.Types.Result.GetResult<Prisma.$CashDrawerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   invoices<T extends Prisma.CashDrawerSession$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CashDrawerSession$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1315,6 +1517,7 @@ export interface Prisma__CashDrawerSessionClient<T, Null = never, ExtArgs extend
 export interface CashDrawerSessionFieldRefs {
   readonly id: Prisma.FieldRef<"CashDrawerSession", 'Int'>
   readonly userId: Prisma.FieldRef<"CashDrawerSession", 'Int'>
+  readonly cashDrawerId: Prisma.FieldRef<"CashDrawerSession", 'Int'>
   readonly openedAt: Prisma.FieldRef<"CashDrawerSession", 'DateTime'>
   readonly closedAt: Prisma.FieldRef<"CashDrawerSession", 'DateTime'>
   readonly openingBalance: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
