@@ -182,11 +182,16 @@ export class ProductsService {
 
     async saveManualExchangeRate(exchangeRate: ExchangeRateDto) {
         try {
+            await this.prismaService.exchangeRate.updateMany({
+                data: { isDefault: false },
+            });
+
             const newRate = await this.prismaService.exchangeRate.create({
                 data: {
                     name: exchangeRate.name,
                     rate: exchangeRate.rate,
                     currency: exchangeRate.currency, // Asumimos que el tipo de cambio se guarda con el mismo nombre que la moneda
+                    isDefault: true
                 },
             });
 
