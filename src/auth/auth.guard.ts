@@ -9,10 +9,9 @@ export interface ITokenExp {
 
 const routesIgnores = [
   '/api/auth/login',
-  '/api/auth/google',
-  '/api/auth/recover',
   '/api/main-load',
-  '/api/dojos',
+  '/api/excel/clients/upload',
+  '/api/excel/products/upload',
 ];
 
 

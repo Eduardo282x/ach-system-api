@@ -15,8 +15,13 @@ export class ProductsController {
     }
 
     @Get('/inventory/history')
-    async getInventoryHistory() {
-        return await this.productsService.getInventoryHistory();
+    async getInventoryHistory(
+        @Query('page', ParseIntPipe) page: number,
+        @Query('size', ParseIntPipe) size: number,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+    ) {
+        return await this.productsService.getInventoryHistory({ page, size, startDate, endDate });
     }
 
     @Get('/exchange-rate/today')
@@ -47,6 +52,11 @@ export class ProductsController {
     @Post('/exchange-rate/automatic')
     async saveAutomaticExchangeRate() {
         return await this.productsService.saveAutomaticExchangeRate();
+    }
+
+    @Put('/exchange-rate/default/:id')
+    async saveDefaultExchangeRate(@Param('id', ParseIntPipe) id: number) {
+        return await this.productsService.saveDefaultExchangeRate(id);
     }
 
     @Put(':id')

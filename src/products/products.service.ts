@@ -19,6 +19,13 @@ export interface ExchangeRateApi {
     fechaActualizacion: Date;
 }
 
+export interface InventoryHistoryQuery {
+    page: number;
+    size: number;
+    startDate?: string;
+    endDate?: string;
+}
+
 
 @Injectable()
 export class ProductsService {
@@ -73,9 +80,35 @@ export class ProductsService {
         }
     }
 
-    async getInventoryHistory() {
+    private getStartOfDayUtc(date: string) {
+        return new Date(`${date}T00:00:00.000Z`);
+    }
+
+    private getEndOfDayUtc(date: string) {
+        return new Date(`${date}T23:59:59.999Z`);
+    }
+
+    async getInventoryHistory(query: InventoryHistoryQuery) {
+        const { page, size, startDate, endDate } = query;
+        const where: any = {};
+        const skip = (page - 1) * size;
+        const take = size;
+
+        if (startDate && endDate) {
+            const start = this.getStartOfDayUtc(startDate);
+            const end = this.getEndOfDayUtc(endDate);
+
+            where.createdAt = {
+                gte: start,
+                lte: end,
+            };
+        }
+
         try {
             const history = await this.prismaService.inventoryMovement.findMany({
+                skip,
+                take,
+                where,
                 orderBy: {
                     createdAt: 'desc',
                 },
@@ -85,6 +118,7 @@ export class ProductsService {
                             id: true,
                             name: true,
                             presentation: true,
+                            barcode: true,
                             price: true,
                             currency: true,
                         }
@@ -100,15 +134,27 @@ export class ProductsService {
                 },
             });
 
+            const totalElements = await this.prismaService.inventoryMovement.count({ where });
+
             if (history.length === 0) {
                 return {
                     message: 'No se encontraron movimientos de inventario',
                     history: [],
+                    pagination: {
+                        total: 0,
+                        page,
+                        size,
+                    }
                 };
             }
 
             return {
                 history,
+                pagination: {
+                    total: totalElements,
+                    page,
+                    size,
+                }
             };
 
         } catch (error) {
@@ -248,6 +294,24 @@ export class ProductsService {
         }
     }
 
+    async saveDefaultExchangeRate(id: number) {
+        try {
+            await this.prismaService.exchangeRate.updateMany({
+                data: { isDefault: false },
+            });
+            const rateToSetDefault = await this.prismaService.exchangeRate.update({
+                where: { id },
+                data: { isDefault: true },
+            });
+            return {
+                message: 'Tasa de cambio predeterminada actualizada correctamente',
+                data: rateToSetDefault,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async createProduct(createProductDto: ProductDto) {
         try {
             // 1. Verificar si el código de barras ya existe
@@ -260,9 +324,12 @@ export class ProductsService {
             }
 
             if (createProductDto.parentId) {
-                const parentId = await this.prismaService.product.findUnique({
-                    where: { parentId: createProductDto.parentId },
-                })
+                const parentId = await this.prismaService.product.findFirst({
+                    where: {
+                        parentId: createProductDto.parentId,
+                        deleted: false,
+                    },
+                });
 
                 if (parentId) {
                     throw new BadRequestException('El producto padre ya tiene un producto detalle asociado. Solo se permite un producto detalle por producto padre.');
@@ -312,6 +379,22 @@ export class ProductsService {
                 throw new BadRequestException(`El código de barras ya está registrado para el producto: ${exists.name}`);
             }
 
+            if (updateProductDto.parentId) {
+                const parentId = await this.prismaService.product.findFirst({
+                    where: {
+                        parentId: updateProductDto.parentId,
+                        deleted: false,
+                        id: {
+                            not: id,
+                        },
+                    },
+                });
+
+                if (parentId) {
+                    throw new BadRequestException('El producto padre ya tiene un producto detalle asociado. Solo se permite un producto detalle por producto padre.');
+                }
+            }
+
             // 2. Actualizar
             const updatedProduct = await this.prismaService.product.update({
                 where: { id },
@@ -352,7 +435,7 @@ export class ProductsService {
             };
         } catch (error) {
             console.log(error);
-            
+
             throw error;
         }
     }

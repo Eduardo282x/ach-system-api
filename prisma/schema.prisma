@@ -26,7 +26,7 @@ model Users {
 model Clients {
   id        Int       @id @default(autoincrement())
   fullName  String
-  identify  String    @default("")
+  identify  String    @default("") @unique
   phone     String    @default("")
   deleted   Boolean   @default(false)
   createdAt DateTime  @default(now())
@@ -60,7 +60,7 @@ model Product {
   currency         ExchangeRateType    @default(USD)
   stock            Int                 @default(0)
   isDetail         Boolean             @default(false)
-  parentId         Int?                @unique
+  parentId         Int?
   unitsDetail      Int?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @default(now()) @updatedAt
@@ -68,7 +68,9 @@ model Product {
   historyMovements InventoryMovement[]
   invoiceItems     InvoiceItem[]
   productParent    Product?            @relation("ConvertUnits", fields: [parentId], references: [id])
-  productChild     Product?            @relation("ConvertUnits")
+  productChild     Product[]           @relation("ConvertUnits")
+
+  @@index([parentId])
 }
 
 model InventoryMovement {
