@@ -42,11 +42,32 @@ export class SalesService {
 
 	private async generateInvoiceNumber() {
 		const maxAttempts = 20;
+		const maxInvoiceNumber = 99_999_999;
+
+		const lastInvoice = await this.prismaService.invoice.findFirst({
+			orderBy: { id: 'desc' },
+			select: {
+				id: true,
+				invoiceNumber: true,
+			},
+		});
+
+		const lastId = lastInvoice?.id ?? 0;
+		const lastNumericInvoice =
+			lastInvoice && /^\d+$/.test(lastInvoice.invoiceNumber)
+				? Number(lastInvoice.invoiceNumber)
+				: 0;
+
+		let nextNumber = Math.max(lastId, lastNumericInvoice) + 1;
 
 		for (let attempt = 0; attempt < maxAttempts; attempt++) {
-			const generated = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)
-				.toString()
-				.padStart(3, '0')}`;
+			if (nextNumber > maxInvoiceNumber) {
+				throw new BadRequestException(
+					'Se alcanzó el límite máximo de facturas (8 dígitos)',
+				);
+			}
+
+			const generated = nextNumber.toString().padStart(8, '0');
 
 			const exists = await this.prismaService.invoice.findUnique({
 				where: { invoiceNumber: generated },
@@ -56,6 +77,8 @@ export class SalesService {
 			if (!exists) {
 				return generated;
 			}
+
+			nextNumber += 1;
 		}
 
 		throw new BadRequestException('No se pudo generar un número de factura único');
@@ -381,17 +404,52 @@ export class SalesService {
 				return tx.invoice.findUnique({
 					where: { id: createdInvoice.id },
 					include: {
-						customer: true,
-						user: true,
-						session: true,
+						customer: {
+							select: {
+								id: true,
+								fullName: true,
+								identify: true
+							}
+						},
+						user: {
+							select: {
+								id: true,
+								name: true,
+								role: true
+							}
+						},
+						session: {
+							select: {
+								id: true,
+								cashDrawerId: true
+							}
+						},
 						items: {
-							include: {
-								product: true,
+							select: {
+								id: true,
+								quantity: true,
+								unitPrice: true,
+								subtotal: true,
+								product: {
+									select: {
+										id: true,
+										name: true,
+										barcode: true,
+										stock: true,
+										currency: true
+									}
+								},
 							},
 						},
 						paymentDetails: {
 							include: {
-								paymentType: true,
+								paymentType: {
+									select: {
+										id: true,
+										name: true,
+										currency: true
+									}
+								},
 							},
 						},
 					},

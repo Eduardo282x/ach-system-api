@@ -12,6 +12,8 @@ import { SessionsModule } from './sessions/sessions.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ConfigModule } from '@nestjs/config';
 import { ExcelModule } from './excel/excel.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { WebSocketModule } from './web-socket/web-socket.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ExcelModule } from './excel/excel.module';
       isGlobal: true, // Esto hace que esté disponible en todos los módulos sin importarlo de nuevo
     }),
     ExcelModule,
+    ScheduleModule.forRoot(),
+    WebSocketModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

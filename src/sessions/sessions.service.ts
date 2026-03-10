@@ -254,15 +254,13 @@ export class SessionsService {
 					user: session.user,
 				};
 
-				return [openEvent, closeEvent];
+				return [closeEvent, openEvent];
 			});
 
 			return {
 				sessions: sessionEvents,
 			};
 		} catch (error) {
-			console.log(error);
-
 			throw error;
 		}
 	}
