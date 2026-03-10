@@ -1385,6 +1385,7 @@ export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[k
 export const TypePaymentScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  currency: 'currency',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

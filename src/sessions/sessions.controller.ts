@@ -13,9 +13,9 @@ export class SessionsController {
         @Query('status', new ParseEnumPipe(SessionStatus, { optional: true })) status?: SessionStatus,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
-        @Query('cashDrawerId', ParseIntPipe) cashDrawerId?: number,
+        // @Query('cashDrawerId', ParseIntPipe) cashDrawerId?: number,
     ) {
-        return await this.sessionsService.getSessions({status, startDate, endDate, cashDrawerId});
+        return await this.sessionsService.getSessions({status, startDate, endDate});
     }
 
     @Get('/cash-drawer')

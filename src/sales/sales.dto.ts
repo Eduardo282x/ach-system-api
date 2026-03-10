@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
 	ArrayMinSize,
 	IsArray,
-	IsEnum,
 	IsInt,
 	IsNumber,
 	IsObject,
@@ -10,7 +9,6 @@ import {
 	Min,
 	ValidateNested,
 } from 'class-validator';
-import { ExchangeRateType } from 'src/generated/prisma/enums';
 
 export class CreateInvoiceItemDto {
 	@Type(() => Number)
@@ -30,17 +28,14 @@ export class CreatePaymentDetailDto {
 	@Min(1)
 	paymentTypeId!: number;
 
-	@IsEnum(ExchangeRateType)
-	currency!: ExchangeRateType;
-
 	@Type(() => Number)
-	@IsNumber({ maxDecimalPlaces: 2 })
+	@IsNumber()
 	@Min(0)
 	amountReceived!: number;
 
 	@IsOptional()
 	@Type(() => Number)
-	@IsNumber({ maxDecimalPlaces: 2 })
+	@IsNumber()
 	@Min(0)
 	amountChange?: number;
 
@@ -74,13 +69,13 @@ export class CreateInvoiceDto {
 
 	@IsOptional()
 	@Type(() => Number)
-	@IsNumber({ maxDecimalPlaces: 2 })
-	@Min(0)
-	exchangeRateUsd?: number;
+	@IsInt()
+	@Min(1)
+	exchangeRateUsdId?: number;
 
 	@IsOptional()
 	@Type(() => Number)
-	@IsNumber({ maxDecimalPlaces: 2 })
-	@Min(0)
-	exchangeRateEur?: number;
+	@IsInt()
+	@Min(1)
+	exchangeRateEurId?: number;
 }

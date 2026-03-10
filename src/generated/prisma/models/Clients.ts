@@ -248,17 +248,17 @@ export type ClientsOrderByWithRelationInput = {
 
 export type ClientsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  identify?: string
   AND?: Prisma.ClientsWhereInput | Prisma.ClientsWhereInput[]
   OR?: Prisma.ClientsWhereInput[]
   NOT?: Prisma.ClientsWhereInput | Prisma.ClientsWhereInput[]
   fullName?: Prisma.StringFilter<"Clients"> | string
-  identify?: Prisma.StringFilter<"Clients"> | string
   phone?: Prisma.StringFilter<"Clients"> | string
   deleted?: Prisma.BoolFilter<"Clients"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Clients"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Clients"> | Date | string
   invoices?: Prisma.InvoiceListRelationFilter
-}, "id">
+}, "id" | "identify">
 
 export type ClientsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

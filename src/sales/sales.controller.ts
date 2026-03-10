@@ -14,7 +14,7 @@ export class SalesController {
         return await this.salesService.getInvoices(search);
     }
 
-    @Get('/payment-types')
+    @Get('/types-payment')
     async getPaymentTypes() {
         return await this.salesService.getPaymentTypes();
     }

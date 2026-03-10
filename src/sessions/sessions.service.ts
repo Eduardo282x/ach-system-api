@@ -31,6 +31,53 @@ export class SessionsService {
 		return Number(value ?? 0);
 	}
 
+	async refreshSessionTotals(sessionId: number) {
+		const invoicesTotals = await this.prismaService.invoice.aggregate({
+			where: {
+				sessionId,
+			},
+			_sum: {
+				totalAmountBs: true,
+			},
+		});
+
+		const paymentsTotalsBs = await this.prismaService.paymentDetail.aggregate({
+			where: {
+				invoice: {
+					sessionId,
+				},
+			},
+			_sum: {
+				amountNetBs: true,
+			},
+		});
+
+		const paymentsTotalsUsd = await this.prismaService.paymentDetail.aggregate({
+			where: {
+				invoice: {
+					sessionId,
+				},
+				currency: 'USD',
+			},
+			_sum: {
+				amountNet: true,
+			},
+		});
+
+		const totalSales = this.toNumber(invoicesTotals._sum.totalAmountBs);
+		const totalInBs = this.toNumber(paymentsTotalsBs._sum.amountNetBs);
+		const totalInUsd = this.toNumber(paymentsTotalsUsd._sum.amountNet);
+
+		return this.prismaService.cashDrawerSession.update({
+			where: { id: sessionId },
+			data: {
+				totalSales: new Prisma.Decimal(totalSales),
+				totalInBs: new Prisma.Decimal(totalInBs),
+				totalInUsd: new Prisma.Decimal(totalInUsd),
+			},
+		});
+	}
+
 	async getCashDrawer() {
 		try {
 			const cashDrawers = await this.prismaService.cashDrawer.findMany({
@@ -377,50 +424,25 @@ export class SessionsService {
 				throw new BadRequestException('No tienes permisos para cerrar esta caja');
 			}
 
-			const invoicesTotals = await this.prismaService.invoice.aggregate({
-				where: {
-					sessionId: id,
-				},
-				_sum: {
-					totalAmountBs: true,
+			await this.refreshSessionTotals(id);
+
+			const refreshedSession = await this.prismaService.cashDrawerSession.findUnique({
+				where: { id },
+				select: {
+					totalSales: true,
+					totalInBs: true,
+					totalInUsd: true,
 				},
 			});
-
-			const paymentsTotalsBs = await this.prismaService.paymentDetail.aggregate({
-				where: {
-					invoice: {
-						sessionId: id,
-					},
-				},
-				_sum: {
-					amountNetBs: true,
-				},
-			});
-
-			const paymentsTotalsUsd = await this.prismaService.paymentDetail.aggregate({
-				where: {
-					invoice: {
-						sessionId: id,
-					},
-					currency: 'USD',
-				},
-				_sum: {
-					amountNet: true,
-				},
-			});
-
-			const totalSales = this.toNumber(invoicesTotals._sum.totalAmountBs);
-			const totalInBs = this.toNumber(paymentsTotalsBs._sum.amountNetBs);
-			const totalInUsd = this.toNumber(paymentsTotalsUsd._sum.amountNet);
 
 			const updatedSession = await this.prismaService.cashDrawerSession.update({
 				where: { id },
 				data: {
 					closedAt: new Date(),
 					closingBalance: new Prisma.Decimal(closeSessionDto.closingBalance),
-					totalSales: new Prisma.Decimal(totalSales),
-					totalInBs: new Prisma.Decimal(totalInBs),
-					totalInUsd: new Prisma.Decimal(totalInUsd),
+					totalSales: new Prisma.Decimal(this.toNumber(refreshedSession?.totalSales)),
+					totalInBs: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInBs)),
+					totalInUsd: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInUsd)),
 					status: 'CLOSED',
 				},
 				include: {
