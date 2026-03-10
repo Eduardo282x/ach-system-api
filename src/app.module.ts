@@ -6,7 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ClientsModule } from './clients/clients.module';
 import { ProductsModule } from './products/products.module';
-import { InventoryModule } from './inventory/inventory.module';
 import { SalesModule } from './sales/sales.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -21,7 +20,6 @@ import { WebSocketModule } from './web-socket/web-socket.module';
     UsersModule,
     ClientsModule,
     ProductsModule,
-    InventoryModule,
     SalesModule,
     SessionsModule,
     DashboardModule,

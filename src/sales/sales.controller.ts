@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res } from '@nestjs/common';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CreateInvoiceDto } from './sales.dto';
 import { SalesService } from './sales.service';
+import { Response } from 'express';
 
 @Controller('sales')
 export class SalesController {
@@ -12,6 +13,23 @@ export class SalesController {
         @Query('search') search: string,
     ) {
         return await this.salesService.getInvoices(search);
+    }
+
+    @Get('/resumen')
+    async getResumenSales(
+        @Query('date') date: string,
+        @Query('sessionId') sessionId?: string,
+    ) {
+        return await this.salesService.getResumenSales({date, sessionId});
+    }
+
+    @Get('/resumen-excel')
+    async getResumenSalesExcel(
+        @Res() res: Response,
+        @Query('date') date: string,
+        @Query('sessionId') sessionId?: string,
+    ) {
+        return await this.salesService.getResumenSalesExcel({date, sessionId}, res);
     }
 
     @Get('/types-payment')

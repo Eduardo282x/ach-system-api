@@ -4,6 +4,13 @@ import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
 import { CreateInvoiceDto } from './sales.dto';
+import * as ExcelJS from 'exceljs';
+import { Response } from 'express';
+
+interface ResumenFilter {
+	date: string;
+	sessionId?: string;
+}
 
 @Injectable()
 export class SalesService {
@@ -14,6 +21,14 @@ export class SalesService {
 
 	private toTwoDecimals(value: number) {
 		return Math.round(value * 100) / 100;
+	}
+
+	private getStartOfDayUtc(date: string) {
+		return new Date(`${date}T00:00:00.000Z`);
+	}
+
+	private getEndOfDayUtc(date: string) {
+		return new Date(`${date}T23:59:59.999Z`);
 	}
 
 	private async getLatestExchangeRatesByCurrency() {
@@ -84,13 +99,33 @@ export class SalesService {
 		throw new BadRequestException('No se pudo generar un número de factura único');
 	}
 
-	async getInvoices(search?: string) {
+	async getInvoices(search?: string, date?: string, sessionId?: string) {
 		const where: any = {};
 
 		if (search) {
 			where.OR = [
 				{ invoiceNumber: { contains: search, mode: 'insensitive' } },
 			]
+		}
+
+		if (date) {
+			const startDate = this.getStartOfDayUtc(date);
+			const endDate = this.getEndOfDayUtc(date);
+
+			where.createdAt = {
+				gte: startDate,
+				lte: endDate,
+			};
+		}
+
+		if (sessionId !== undefined && sessionId !== '') {
+			const parsedSessionId = Number(sessionId);
+
+			if (!Number.isInteger(parsedSessionId) || parsedSessionId <= 0) {
+				throw new BadRequestException('sessionId inválido');
+			}
+
+			where.sessionId = parsedSessionId;
 		}
 
 		try {
@@ -100,17 +135,58 @@ export class SalesService {
 					createdAt: 'desc',
 				},
 				include: {
-					customer: true,
-					user: true,
-					session: true,
+					customer: {
+						select: {
+							id: true,
+							fullName: true,
+							identify: true
+						}
+					},
+					user: {
+						select: {
+							id: true,
+							name: true,
+							role: true
+						}
+					},
+					session: {
+						select: {
+							id: true,
+							cashDrawerId: true,
+							cashDrawer: {
+								select: {
+									id: true,
+									name: true,
+								}
+							}
+						}
+					},
 					items: {
-						include: {
-							product: true,
+						select: {
+							id: true,
+							quantity: true,
+							unitPrice: true,
+							subtotal: true,
+							product: {
+								select: {
+									id: true,
+									name: true,
+									barcode: true,
+									stock: true,
+									currency: true
+								}
+							},
 						},
 					},
 					paymentDetails: {
 						include: {
-							paymentType: true,
+							paymentType: {
+								select: {
+									id: true,
+									name: true,
+									currency: true
+								}
+							},
 						},
 					},
 				},
@@ -121,6 +197,338 @@ export class SalesService {
 			};
 		} catch (error) {
 			throw error;
+		}
+	}
+
+	async getResumenSales(filter: ResumenFilter) {
+		try {
+			const { date, sessionId } = filter;
+			if (!date) {
+				throw new BadRequestException('La fecha es requerida');
+			}
+
+			const startDate = this.getStartOfDayUtc(date);
+			const endDate = this.getEndOfDayUtc(date);
+
+			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
+			}
+
+			let parsedSessionId: number | undefined;
+			if (sessionId !== undefined && sessionId !== '') {
+				parsedSessionId = Number(sessionId);
+
+				if (!Number.isInteger(parsedSessionId) || parsedSessionId <= 0) {
+					throw new BadRequestException('sessionId inválido');
+				}
+			}
+
+			const invoiceWhere: any = {
+				createdAt: {
+					gte: startDate,
+					lte: endDate,
+				},
+				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
+			};
+
+			const [invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
+				this.prismaService.invoice.count({ where: invoiceWhere }),
+				this.prismaService.paymentDetail.findMany({
+					where: {
+						invoice: invoiceWhere,
+					},
+					select: {
+						currency: true,
+						amountReceived: true,
+						amountChange: true,
+						invoice: {
+							select: {
+								exchangeRateUsd: true,
+								exchangeRateEur: true,
+							},
+						},
+						paymentType: {
+							select: {
+								id: true,
+								name: true,
+								currency: true
+							},
+						},
+					},
+				}),
+				this.prismaService.typePayment.findMany({
+					orderBy: {
+						createdAt: 'asc',
+					},
+					select: {
+						id: true,
+						name: true,
+						currency: true,
+					},
+				}),
+			]);
+
+			const grouped = new Map<number, {
+				payment: string;
+				currency: string;
+				amountBs: number;
+				amountUsd: number;
+				changeAmountBs: number;
+				changeAmountUsd: number;
+			}>();
+
+			for (const paymentType of paymentTypes) {
+				grouped.set(paymentType.id, {
+					payment: paymentType.name,
+					currency: paymentType.currency,
+					amountBs: 0,
+					amountUsd: 0,
+					changeAmountBs: 0,
+					changeAmountUsd: 0,
+				});
+			}
+
+			for (const paymentDetail of paymentDetails) {
+				const paymentTypeId = paymentDetail.paymentType.id;
+				const paymentCurrency = paymentDetail.currency as ExchangeRateType;
+				const amount = Number(paymentDetail.amountReceived);
+				const changeAmount = Number(paymentDetail.amountChange);
+				const usdRate = Number(paymentDetail.invoice.exchangeRateUsd);
+				const eurRate = Number(paymentDetail.invoice.exchangeRateEur);
+
+				const current = grouped.get(paymentTypeId) ?? {
+					payment: paymentDetail.paymentType.name,
+					currency: paymentDetail.paymentType.currency,
+					amountBs: 0,
+					amountUsd: 0,
+					changeAmountBs: 0,
+					changeAmountUsd: 0,
+				};
+
+				let amountBs = 0;
+				let changeAmountBs = 0;
+
+				if (paymentCurrency === 'BS') {
+					amountBs = amount;
+					changeAmountBs = changeAmount;
+				} else if (paymentCurrency === 'USD') {
+					amountBs = amount * usdRate;
+					changeAmountBs = changeAmount * usdRate;
+				} else {
+					amountBs = amount * eurRate;
+					changeAmountBs = changeAmount * eurRate;
+				}
+
+				const amountUsd = usdRate > 0 ? amountBs / usdRate : 0;
+				const changeAmountUsd = usdRate > 0 ? changeAmountBs / usdRate : 0;
+
+				current.amountBs += amountBs;
+				current.amountUsd += amountUsd;
+				current.changeAmountBs += changeAmountBs;
+				current.changeAmountUsd += changeAmountUsd;
+
+				grouped.set(paymentTypeId, current);
+			}
+
+			const resumen = Array.from(grouped.entries()).map(([paymentTypeId, data]) => ({
+				paymentTypeId,
+				payment: data.payment,
+				currency: data.currency,
+				amount: this.toTwoDecimals(data.amountBs),
+				amountUsd: this.toTwoDecimals(data.amountUsd),
+				changeAmount: this.toTwoDecimals(data.changeAmountBs),
+				changeAmountUsd: this.toTwoDecimals(data.changeAmountUsd),
+				totalAmount: this.toTwoDecimals(data.amountBs - data.changeAmountBs),
+				totalAmountUsd: this.toTwoDecimals(data.amountUsd - data.changeAmountUsd),
+			}));
+
+			const totalAmountBs = resumen.reduce((sum, item) => sum + item.amount, 0);
+			const totalChangeAmountBs = resumen.reduce((sum, item) => sum + item.changeAmount, 0);
+			const totalAmountUsd = resumen.reduce((sum, item) => sum + item.amountUsd, 0);
+			const totalChangeAmountUsd = resumen.reduce((sum, item) => sum + item.changeAmountUsd, 0);
+
+			return {
+				date,
+				sessionId: parsedSessionId ?? null,
+				totalInvoice: invoiceCount,
+				total: {
+					amount: this.toTwoDecimals(totalAmountBs),
+					changeAmount: this.toTwoDecimals(totalChangeAmountBs),
+					totalAmount: this.toTwoDecimals(totalAmountBs - totalChangeAmountBs),
+					amountBs: this.toTwoDecimals(totalAmountBs),
+					changeAmountBs: this.toTwoDecimals(totalChangeAmountBs),
+					totalAmountBs: this.toTwoDecimals(totalAmountBs - totalChangeAmountBs),
+					amountUsd: this.toTwoDecimals(totalAmountUsd),
+					changeAmountUsd: this.toTwoDecimals(totalChangeAmountUsd),
+					totalAmountUsd: this.toTwoDecimals(totalAmountUsd - totalChangeAmountUsd),
+				},
+				resumen,
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	private formatDateWithTime(dateString: Date | string) {
+		const date = new Date(dateString);
+		const hours24 = date.getHours();
+		const period = hours24 >= 12 ? 'pm' : 'am';
+		const hours12 = hours24 % 12 || 12;
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		const hours = String(hours12).padStart(2, '0');
+		const minutes = String(date.getMinutes()).padStart(2, '0');
+		return `${day}/${month}/${year} ${hours}:${minutes} ${period}`;
+	}
+
+	private formatNumberWithDots(number: number | string, prefix?: string, suffix?: string, isRif?: boolean): string {
+		const text = isRif ?
+			`${number.toString().slice(0, 1)}-${number.toString().slice(1).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`
+			:
+			number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+		return `${prefix}${text}${suffix}`;
+	}
+
+	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
+		try {
+			const resumenData = await this.getResumenSales(filter);
+			const invoices = await this.getInvoices('', filter.date, filter.sessionId);
+
+			const workbook = new ExcelJS.Workbook();
+			const resumenSheet = workbook.addWorksheet('Resumen de Pagos');
+			const detalleSheet = workbook.addWorksheet('Detalle de Facturas');
+
+			resumenSheet.addRow(['Fecha', this.formatDateWithTime(resumenData.date)]);
+			resumenSheet.addRow(['Sesión', resumenData.sessionId ?? 'TODAS']);
+			resumenSheet.addRow(['Cantidad de facturas', resumenData.totalInvoice]);
+			resumenSheet.addRow([]);
+
+			resumenSheet.addRow([
+				'Método de pago',
+				'Moneda',
+				'Monto (Bs)',
+				'Monto (USD)',
+				'Vuelto (Bs)',
+				'Vuelto (USD)',
+				'Total (Bs)',
+				'Total (USD)',
+			]);
+
+			for (const item of resumenData.resumen) {
+				resumenSheet.addRow([
+					item.payment,
+					item.currency,
+					item.amount,
+					item.amountUsd,
+					item.changeAmount,
+					item.changeAmountUsd,
+					item.totalAmount,
+					item.totalAmountUsd,
+				]);
+			}
+
+			resumenSheet.addRow([]);
+			resumenSheet.addRow([
+				'TOTAL GENERAL',
+				'',
+				resumenData.total.amountBs,
+				resumenData.total.amountUsd,
+				resumenData.total.changeAmountBs,
+				resumenData.total.changeAmountUsd,
+				resumenData.total.totalAmountBs,
+				resumenData.total.totalAmountUsd,
+			]);
+
+			resumenSheet.getRow(5).font = { bold: true };
+			resumenSheet.getRow(resumenSheet.rowCount).font = { bold: true };
+
+			resumenSheet.columns = [
+				{ width: 24 },
+				{ width: 12 },
+				{ width: 15 },
+				{ width: 15 },
+				{ width: 15 },
+				{ width: 15 },
+				{ width: 15 },
+				{ width: 15 },
+			];
+
+			detalleSheet.addRow([
+				'Factura',
+				'Fecha',
+				'Cliente',
+				'Cédula/RIF',
+				'Cajero',
+				'Caja',
+				'Sesión',
+				'Total (Bs)',
+				'Total (USD)',
+				'Recibido (Bs)',
+				'Vuelto (Bs)',
+				'Pagos',
+				'Productos',
+			]);
+
+			for (const invoice of invoices.invoices) {
+				const payments = invoice.paymentDetails
+					.map((p) => `${p.paymentType.name}: ${Number(p.amountNet)} ${p.currency}`)
+					.join(' | ');
+
+				const products = invoice.items
+					.map((item) => `${item.product.name} x${item.quantity}`)
+					.join(' | ');
+
+				detalleSheet.addRow([
+					invoice.invoiceNumber,
+					this.formatDateWithTime(invoice.createdAt),
+					invoice.customer.fullName,
+					this.formatNumberWithDots(invoice.customer.identify, '', '', true),
+					invoice.user.name,
+					invoice.session.cashDrawer.name,
+					invoice.session.id,
+					Number(invoice.totalAmountBs),
+					Number(invoice.totalAmountUsd),
+					Number(invoice.totalReceivedBs),
+					Number(invoice.totalChangeBs),
+					payments,
+					products,
+				]);
+			}
+
+			detalleSheet.getRow(1).font = { bold: true };
+			detalleSheet.columns = [
+				{ width: 14 },
+				{ width: 24 },
+				{ width: 26 },
+				{ width: 18 },
+				{ width: 20 },
+				{ width: 10 },
+				{ width: 14 },
+				{ width: 14 },
+				{ width: 14 },
+				{ width: 14 },
+				{ width: 14 },
+				{ width: 50 },
+				{ width: 50 },
+			];
+
+			const fileName = `resumen-ventas-${filter.date}${filter.sessionId ? `-session-${filter.sessionId}` : ''}.xlsx`;
+			res.setHeader(
+				'Content-Type',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			);
+			res.setHeader(
+				'Content-Disposition',
+				`attachment; filename="${fileName}"`,
+			);
+
+			await workbook.xlsx.write(res);
+			res.end();
+		} catch (error) {
+			{
+				throw error;
+			}
 		}
 	}
 
@@ -162,7 +570,7 @@ export class SalesService {
 				);
 			}
 
-			if(session.closedAt !== null) {
+			if (session.closedAt !== null) {
 				throw new BadRequestException(
 					`La sesión de caja con id ${createInvoiceDto.sessionId} ya está cerrada`,
 				);
