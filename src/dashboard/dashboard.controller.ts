@@ -1,4 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
+import { DashboardService } from './dashboard.service';
 
 @Controller('dashboard')
-export class DashboardController {}
+export class DashboardController {
+	constructor(private readonly dashboardService: DashboardService) { }
+
+	@Get('/summary')
+	async getSummary(
+		@Query('startDate') startDate: string,
+		@Query('endDate') endDate: string,
+	) {
+		return await this.dashboardService.getSummaryByDateRange({ startDate, endDate });
+	}
+}
