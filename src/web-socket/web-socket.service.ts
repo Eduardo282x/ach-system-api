@@ -12,6 +12,10 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     @WebSocketServer()
     server!: Server;
 
+    emitReminder(channel: string, data: any) {
+        this.server.emit(channel, data);
+    }
+
     handleConnection(client: Socket) {
         console.log(`Client connected ${client.id}`);
     }
