@@ -1376,6 +1376,7 @@ export const ExchangeRateScalarFieldEnum = {
   currency: 'currency',
   rate: 'rate',
   isDefault: 'isDefault',
+  date: 'date',
   createdAt: 'createdAt'
 } as const
 
@@ -1429,11 +1430,13 @@ export const InvoiceScalarFieldEnum = {
   id: 'id',
   invoiceNumber: 'invoiceNumber',
   totalAmountBs: 'totalAmountBs',
-  exchangeRateUsd: 'exchangeRateUsd',
-  exchangeRateEur: 'exchangeRateEur',
   totalAmountUsd: 'totalAmountUsd',
   totalReceivedBs: 'totalReceivedBs',
+  totalReceivedUsd: 'totalReceivedUsd',
   totalChangeBs: 'totalChangeBs',
+  totalChangeUsd: 'totalChangeUsd',
+  exchangeRateUsdId: 'exchangeRateUsdId',
+  exchangeRateEurId: 'exchangeRateEurId',
   status: 'status',
   userId: 'userId',
   customerId: 'customerId',

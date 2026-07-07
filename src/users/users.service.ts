@@ -57,7 +57,7 @@ export class UsersService {
                 throw new ConflictException('El nombre de usuario ya está registrado');
             }
 
-            const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+            const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
 
             const user = await this.prismaService.users.create({
                 data: {
@@ -104,7 +104,7 @@ export class UsersService {
 
             const normalizedPassword = updateUserDto.password?.trim();
             const hashedPassword = normalizedPassword
-                ? await bcrypt.hash(normalizedPassword, 10)
+                ? await bcrypt.hash(normalizedPassword, 12)
                 : undefined;
 
             const updatedUser = await this.prismaService.users.update({

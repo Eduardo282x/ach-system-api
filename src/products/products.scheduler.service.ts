@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ProductsService } from './products.service';
 import { WebsocketGateway } from 'src/web-socket/web-socket.service';
 import { SessionsService } from 'src/sessions/sessions.service';
 
 @Injectable()
-export class ProductsSchedulerService {
+export class ProductsSchedulerService implements OnApplicationBootstrap {
     private readonly logger = new Logger(ProductsSchedulerService.name);
 
     constructor(
@@ -14,17 +14,32 @@ export class ProductsSchedulerService {
         private readonly websocketGateway: WebsocketGateway,
     ) { }
 
+    async onApplicationBootstrap() {
+        await this.runAutomaticExchangeRate('inicio de la aplicacion');
+    }
+
     @Cron('0 8,13 * * *', {
         timeZone: 'America/Caracas',
     })
     async handleAutomaticExchangeRate() {
+        await this.runAutomaticExchangeRate('cron');
+    }
+
+    private async runAutomaticExchangeRate(source: string) {
         try {
             const result = await this.productsService.saveAutomaticExchangeRate();
-            this.websocketGateway.emitReminder('exchangeRateUpdate', { data: result.data, message: 'Tasas actualizadas automáticamente.' });
-            this.logger.log(result?.message || 'Tasas automáticas actualizadas');
+            const message = result?.message || 'Tasas actualizadas automáticamente.';
+
+            if (this.websocketGateway.server) {
+                this.websocketGateway.emitReminder('exchangeRateUpdate', {
+                    data: result.exchangeRate || [],
+                    message,
+                });
+            }
+            this.logger.log(message);
         } catch (error: any) {
             this.logger.error(
-                'Error ejecutando cron de tasa automática',
+                `Error ejecutando actualizacion automatica de tasa (${source})`,
                 error?.stack || error?.message || String(error),
             );
         }

@@ -29,11 +29,13 @@ export type AggregateInvoice = {
 export type InvoiceAvgAggregateOutputType = {
   id: number | null
   totalAmountBs: runtime.Decimal | null
-  exchangeRateUsd: runtime.Decimal | null
-  exchangeRateEur: runtime.Decimal | null
   totalAmountUsd: runtime.Decimal | null
   totalReceivedBs: runtime.Decimal | null
+  totalReceivedUsd: runtime.Decimal | null
   totalChangeBs: runtime.Decimal | null
+  totalChangeUsd: runtime.Decimal | null
+  exchangeRateUsdId: number | null
+  exchangeRateEurId: number | null
   userId: number | null
   customerId: number | null
   sessionId: number | null
@@ -42,11 +44,13 @@ export type InvoiceAvgAggregateOutputType = {
 export type InvoiceSumAggregateOutputType = {
   id: number | null
   totalAmountBs: runtime.Decimal | null
-  exchangeRateUsd: runtime.Decimal | null
-  exchangeRateEur: runtime.Decimal | null
   totalAmountUsd: runtime.Decimal | null
   totalReceivedBs: runtime.Decimal | null
+  totalReceivedUsd: runtime.Decimal | null
   totalChangeBs: runtime.Decimal | null
+  totalChangeUsd: runtime.Decimal | null
+  exchangeRateUsdId: number | null
+  exchangeRateEurId: number | null
   userId: number | null
   customerId: number | null
   sessionId: number | null
@@ -56,11 +60,13 @@ export type InvoiceMinAggregateOutputType = {
   id: number | null
   invoiceNumber: string | null
   totalAmountBs: runtime.Decimal | null
-  exchangeRateUsd: runtime.Decimal | null
-  exchangeRateEur: runtime.Decimal | null
   totalAmountUsd: runtime.Decimal | null
   totalReceivedBs: runtime.Decimal | null
+  totalReceivedUsd: runtime.Decimal | null
   totalChangeBs: runtime.Decimal | null
+  totalChangeUsd: runtime.Decimal | null
+  exchangeRateUsdId: number | null
+  exchangeRateEurId: number | null
   status: $Enums.InvoiceStatus | null
   userId: number | null
   customerId: number | null
@@ -72,11 +78,13 @@ export type InvoiceMaxAggregateOutputType = {
   id: number | null
   invoiceNumber: string | null
   totalAmountBs: runtime.Decimal | null
-  exchangeRateUsd: runtime.Decimal | null
-  exchangeRateEur: runtime.Decimal | null
   totalAmountUsd: runtime.Decimal | null
   totalReceivedBs: runtime.Decimal | null
+  totalReceivedUsd: runtime.Decimal | null
   totalChangeBs: runtime.Decimal | null
+  totalChangeUsd: runtime.Decimal | null
+  exchangeRateUsdId: number | null
+  exchangeRateEurId: number | null
   status: $Enums.InvoiceStatus | null
   userId: number | null
   customerId: number | null
@@ -88,11 +96,13 @@ export type InvoiceCountAggregateOutputType = {
   id: number
   invoiceNumber: number
   totalAmountBs: number
-  exchangeRateUsd: number
-  exchangeRateEur: number
   totalAmountUsd: number
   totalReceivedBs: number
+  totalReceivedUsd: number
   totalChangeBs: number
+  totalChangeUsd: number
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status: number
   userId: number
   customerId: number
@@ -105,11 +115,13 @@ export type InvoiceCountAggregateOutputType = {
 export type InvoiceAvgAggregateInputType = {
   id?: true
   totalAmountBs?: true
-  exchangeRateUsd?: true
-  exchangeRateEur?: true
   totalAmountUsd?: true
   totalReceivedBs?: true
+  totalReceivedUsd?: true
   totalChangeBs?: true
+  totalChangeUsd?: true
+  exchangeRateUsdId?: true
+  exchangeRateEurId?: true
   userId?: true
   customerId?: true
   sessionId?: true
@@ -118,11 +130,13 @@ export type InvoiceAvgAggregateInputType = {
 export type InvoiceSumAggregateInputType = {
   id?: true
   totalAmountBs?: true
-  exchangeRateUsd?: true
-  exchangeRateEur?: true
   totalAmountUsd?: true
   totalReceivedBs?: true
+  totalReceivedUsd?: true
   totalChangeBs?: true
+  totalChangeUsd?: true
+  exchangeRateUsdId?: true
+  exchangeRateEurId?: true
   userId?: true
   customerId?: true
   sessionId?: true
@@ -132,11 +146,13 @@ export type InvoiceMinAggregateInputType = {
   id?: true
   invoiceNumber?: true
   totalAmountBs?: true
-  exchangeRateUsd?: true
-  exchangeRateEur?: true
   totalAmountUsd?: true
   totalReceivedBs?: true
+  totalReceivedUsd?: true
   totalChangeBs?: true
+  totalChangeUsd?: true
+  exchangeRateUsdId?: true
+  exchangeRateEurId?: true
   status?: true
   userId?: true
   customerId?: true
@@ -148,11 +164,13 @@ export type InvoiceMaxAggregateInputType = {
   id?: true
   invoiceNumber?: true
   totalAmountBs?: true
-  exchangeRateUsd?: true
-  exchangeRateEur?: true
   totalAmountUsd?: true
   totalReceivedBs?: true
+  totalReceivedUsd?: true
   totalChangeBs?: true
+  totalChangeUsd?: true
+  exchangeRateUsdId?: true
+  exchangeRateEurId?: true
   status?: true
   userId?: true
   customerId?: true
@@ -164,11 +182,13 @@ export type InvoiceCountAggregateInputType = {
   id?: true
   invoiceNumber?: true
   totalAmountBs?: true
-  exchangeRateUsd?: true
-  exchangeRateEur?: true
   totalAmountUsd?: true
   totalReceivedBs?: true
+  totalReceivedUsd?: true
   totalChangeBs?: true
+  totalChangeUsd?: true
+  exchangeRateUsdId?: true
+  exchangeRateEurId?: true
   status?: true
   userId?: true
   customerId?: true
@@ -267,11 +287,13 @@ export type InvoiceGroupByOutputType = {
   id: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal
-  exchangeRateUsd: runtime.Decimal
-  exchangeRateEur: runtime.Decimal
   totalAmountUsd: runtime.Decimal
   totalReceivedBs: runtime.Decimal
+  totalReceivedUsd: runtime.Decimal
   totalChangeBs: runtime.Decimal
+  totalChangeUsd: runtime.Decimal
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -306,16 +328,20 @@ export type InvoiceWhereInput = {
   id?: Prisma.IntFilter<"Invoice"> | number
   invoiceNumber?: Prisma.StringFilter<"Invoice"> | string
   totalAmountBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFilter<"Invoice"> | number
+  exchangeRateEurId?: Prisma.IntFilter<"Invoice"> | number
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
   sessionId?: Prisma.IntFilter<"Invoice"> | number
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
+  exchangeRateUsd?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
+  exchangeRateEur?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   customer?: Prisma.XOR<Prisma.ClientsScalarRelationFilter, Prisma.ClientsWhereInput>
   session?: Prisma.XOR<Prisma.CashDrawerSessionScalarRelationFilter, Prisma.CashDrawerSessionWhereInput>
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
@@ -327,16 +353,20 @@ export type InvoiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   invoiceNumber?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  exchangeRateUsd?: Prisma.ExchangeRateOrderByWithRelationInput
+  exchangeRateEur?: Prisma.ExchangeRateOrderByWithRelationInput
   customer?: Prisma.ClientsOrderByWithRelationInput
   session?: Prisma.CashDrawerSessionOrderByWithRelationInput
   user?: Prisma.UsersOrderByWithRelationInput
@@ -351,16 +381,20 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.InvoiceWhereInput[]
   NOT?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   totalAmountBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFilter<"Invoice"> | number
+  exchangeRateEurId?: Prisma.IntFilter<"Invoice"> | number
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
   sessionId?: Prisma.IntFilter<"Invoice"> | number
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
+  exchangeRateUsd?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
+  exchangeRateEur?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   customer?: Prisma.XOR<Prisma.ClientsScalarRelationFilter, Prisma.ClientsWhereInput>
   session?: Prisma.XOR<Prisma.CashDrawerSessionScalarRelationFilter, Prisma.CashDrawerSessionWhereInput>
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
@@ -372,11 +406,13 @@ export type InvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   invoiceNumber?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -396,11 +432,13 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
   invoiceNumber?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   totalAmountBs?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
+  exchangeRateEurId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
   status?: Prisma.EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
   userId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
   customerId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
@@ -411,13 +449,15 @@ export type InvoiceScalarWhereWithAggregatesInput = {
 export type InvoiceCreateInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
@@ -429,11 +469,13 @@ export type InvoiceUncheckedCreateInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -446,13 +488,15 @@ export type InvoiceUncheckedCreateInput = {
 export type InvoiceUpdateInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
@@ -464,11 +508,13 @@ export type InvoiceUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -482,11 +528,13 @@ export type InvoiceCreateManyInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -497,11 +545,11 @@ export type InvoiceCreateManyInput = {
 export type InvoiceUpdateManyMutationInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -510,11 +558,13 @@ export type InvoiceUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -536,11 +586,13 @@ export type InvoiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceNumber?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -551,11 +603,13 @@ export type InvoiceCountOrderByAggregateInput = {
 export type InvoiceAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
@@ -565,11 +619,13 @@ export type InvoiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceNumber?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -581,11 +637,13 @@ export type InvoiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceNumber?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
@@ -596,11 +654,13 @@ export type InvoiceMinOrderByAggregateInput = {
 export type InvoiceSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   totalAmountBs?: Prisma.SortOrder
-  exchangeRateUsd?: Prisma.SortOrder
-  exchangeRateEur?: Prisma.SortOrder
   totalAmountUsd?: Prisma.SortOrder
   totalReceivedBs?: Prisma.SortOrder
+  totalReceivedUsd?: Prisma.SortOrder
   totalChangeBs?: Prisma.SortOrder
+  totalChangeUsd?: Prisma.SortOrder
+  exchangeRateUsdId?: Prisma.SortOrder
+  exchangeRateEurId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
@@ -695,6 +755,90 @@ export type InvoiceUncheckedUpdateManyWithoutCustomerNestedInput = {
   deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
 }
 
+export type InvoiceCreateNestedManyWithoutExchangeRateUsdInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput> | Prisma.InvoiceCreateWithoutExchangeRateUsdInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateUsdInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceCreateNestedManyWithoutExchangeRateEurInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput> | Prisma.InvoiceCreateWithoutExchangeRateEurInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateEurInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUncheckedCreateNestedManyWithoutExchangeRateUsdInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput> | Prisma.InvoiceCreateWithoutExchangeRateUsdInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateUsdInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUncheckedCreateNestedManyWithoutExchangeRateEurInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput> | Prisma.InvoiceCreateWithoutExchangeRateEurInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateEurInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUpdateManyWithoutExchangeRateUsdNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput> | Prisma.InvoiceCreateWithoutExchangeRateUsdInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateUsdInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateUsdInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateUsdInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateUsdInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateUsdInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateUsdInput | Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateUsdInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
+export type InvoiceUpdateManyWithoutExchangeRateEurNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput> | Prisma.InvoiceCreateWithoutExchangeRateEurInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateEurInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateEurInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateEurInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateEurInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateEurInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateEurInput | Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateEurInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
+export type InvoiceUncheckedUpdateManyWithoutExchangeRateUsdNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput> | Prisma.InvoiceCreateWithoutExchangeRateUsdInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateUsdInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateUsdInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateUsdInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateUsdInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateUsdInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateUsdInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateUsdInput | Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateUsdInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
+export type InvoiceUncheckedUpdateManyWithoutExchangeRateEurNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput> | Prisma.InvoiceCreateWithoutExchangeRateEurInput[] | Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput | Prisma.InvoiceCreateOrConnectWithoutExchangeRateEurInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateEurInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutExchangeRateEurInput[]
+  createMany?: Prisma.InvoiceCreateManyExchangeRateEurInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateEurInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutExchangeRateEurInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateEurInput | Prisma.InvoiceUpdateManyWithWhereWithoutExchangeRateEurInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
 export type EnumInvoiceStatusFieldUpdateOperationsInput = {
   set?: $Enums.InvoiceStatus
 }
@@ -772,13 +916,15 @@ export type InvoiceUncheckedUpdateManyWithoutSessionNestedInput = {
 export type InvoiceCreateWithoutUserInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -789,11 +935,13 @@ export type InvoiceUncheckedCreateWithoutUserInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   customerId: number
   sessionId: number
@@ -835,11 +983,13 @@ export type InvoiceScalarWhereInput = {
   id?: Prisma.IntFilter<"Invoice"> | number
   invoiceNumber?: Prisma.StringFilter<"Invoice"> | string
   totalAmountBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFilter<"Invoice"> | number
+  exchangeRateEurId?: Prisma.IntFilter<"Invoice"> | number
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
@@ -850,13 +1000,15 @@ export type InvoiceScalarWhereInput = {
 export type InvoiceCreateWithoutCustomerInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -867,11 +1019,13 @@ export type InvoiceUncheckedCreateWithoutCustomerInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   sessionId: number
@@ -906,16 +1060,144 @@ export type InvoiceUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type InvoiceCreateWithoutExchangeRateUsdInput = {
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.InvoiceStatus
+  createdAt?: Date | string
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
+  customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
+  session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
+  items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceUncheckedCreateWithoutExchangeRateUsdInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateEurId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+  items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceCreateOrConnectWithoutExchangeRateUsdInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput>
+}
+
+export type InvoiceCreateManyExchangeRateUsdInputEnvelope = {
+  data: Prisma.InvoiceCreateManyExchangeRateUsdInput | Prisma.InvoiceCreateManyExchangeRateUsdInput[]
+  skipDuplicates?: boolean
+}
+
+export type InvoiceCreateWithoutExchangeRateEurInput = {
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.InvoiceStatus
+  createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
+  session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
+  items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceUncheckedCreateWithoutExchangeRateEurInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+  items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceCreateOrConnectWithoutExchangeRateEurInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput>
+}
+
+export type InvoiceCreateManyExchangeRateEurInputEnvelope = {
+  data: Prisma.InvoiceCreateManyExchangeRateEurInput | Prisma.InvoiceCreateManyExchangeRateEurInput[]
+  skipDuplicates?: boolean
+}
+
+export type InvoiceUpsertWithWhereUniqueWithoutExchangeRateUsdInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.InvoiceUpdateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedUpdateWithoutExchangeRateUsdInput>
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateUsdInput>
+}
+
+export type InvoiceUpdateWithWhereUniqueWithoutExchangeRateUsdInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateWithoutExchangeRateUsdInput, Prisma.InvoiceUncheckedUpdateWithoutExchangeRateUsdInput>
+}
+
+export type InvoiceUpdateManyWithWhereWithoutExchangeRateUsdInput = {
+  where: Prisma.InvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateUsdInput>
+}
+
+export type InvoiceUpsertWithWhereUniqueWithoutExchangeRateEurInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.InvoiceUpdateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedUpdateWithoutExchangeRateEurInput>
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedCreateWithoutExchangeRateEurInput>
+}
+
+export type InvoiceUpdateWithWhereUniqueWithoutExchangeRateEurInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateWithoutExchangeRateEurInput, Prisma.InvoiceUncheckedUpdateWithoutExchangeRateEurInput>
+}
+
+export type InvoiceUpdateManyWithWhereWithoutExchangeRateEurInput = {
+  where: Prisma.InvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateEurInput>
+}
+
 export type InvoiceCreateWithoutItemsInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
@@ -926,11 +1208,13 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -958,13 +1242,15 @@ export type InvoiceUpdateToOneWithWhereWithoutItemsInput = {
 export type InvoiceUpdateWithoutItemsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
@@ -975,11 +1261,13 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -991,13 +1279,15 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
 export type InvoiceCreateWithoutPaymentDetailsInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
@@ -1008,11 +1298,13 @@ export type InvoiceUncheckedCreateWithoutPaymentDetailsInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -1040,13 +1332,15 @@ export type InvoiceUpdateToOneWithWhereWithoutPaymentDetailsInput = {
 export type InvoiceUpdateWithoutPaymentDetailsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
@@ -1057,11 +1351,13 @@ export type InvoiceUncheckedUpdateWithoutPaymentDetailsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1073,13 +1369,15 @@ export type InvoiceUncheckedUpdateWithoutPaymentDetailsInput = {
 export type InvoiceCreateWithoutSessionInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.InvoiceStatus
   createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -1090,11 +1388,13 @@ export type InvoiceUncheckedCreateWithoutSessionInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -1133,11 +1433,13 @@ export type InvoiceCreateManyUserInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   customerId: number
   sessionId: number
@@ -1147,13 +1449,15 @@ export type InvoiceCreateManyUserInput = {
 export type InvoiceUpdateWithoutUserInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -1164,11 +1468,13 @@ export type InvoiceUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1181,11 +1487,13 @@ export type InvoiceUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1196,11 +1504,13 @@ export type InvoiceCreateManyCustomerInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   sessionId: number
@@ -1210,13 +1520,15 @@ export type InvoiceCreateManyCustomerInput = {
 export type InvoiceUpdateWithoutCustomerInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -1227,11 +1539,13 @@ export type InvoiceUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1244,13 +1558,157 @@ export type InvoiceUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceCreateManyExchangeRateUsdInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateEurId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+}
+
+export type InvoiceCreateManyExchangeRateEurInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+}
+
+export type InvoiceUpdateWithoutExchangeRateUsdInput = {
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
+  customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
+  session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
+  items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateWithoutExchangeRateUsdInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateManyWithoutExchangeRateUsdInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceUpdateWithoutExchangeRateEurInput = {
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
+  session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
+  items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateWithoutExchangeRateEurInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateManyWithoutExchangeRateEurInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1259,11 +1717,13 @@ export type InvoiceCreateManySessionInput = {
   id?: number
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
@@ -1273,13 +1733,15 @@ export type InvoiceCreateManySessionInput = {
 export type InvoiceUpdateWithoutSessionInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -1290,11 +1752,13 @@ export type InvoiceUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1307,11 +1771,13 @@ export type InvoiceUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  exchangeRateEur?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1362,16 +1828,20 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   invoiceNumber?: boolean
   totalAmountBs?: boolean
-  exchangeRateUsd?: boolean
-  exchangeRateEur?: boolean
   totalAmountUsd?: boolean
   totalReceivedBs?: boolean
+  totalReceivedUsd?: boolean
   totalChangeBs?: boolean
+  totalChangeUsd?: boolean
+  exchangeRateUsdId?: boolean
+  exchangeRateEurId?: boolean
   status?: boolean
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
   createdAt?: boolean
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
@@ -1384,16 +1854,20 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   invoiceNumber?: boolean
   totalAmountBs?: boolean
-  exchangeRateUsd?: boolean
-  exchangeRateEur?: boolean
   totalAmountUsd?: boolean
   totalReceivedBs?: boolean
+  totalReceivedUsd?: boolean
   totalChangeBs?: boolean
+  totalChangeUsd?: boolean
+  exchangeRateUsdId?: boolean
+  exchangeRateEurId?: boolean
   status?: boolean
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
   createdAt?: boolean
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
@@ -1403,16 +1877,20 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   invoiceNumber?: boolean
   totalAmountBs?: boolean
-  exchangeRateUsd?: boolean
-  exchangeRateEur?: boolean
   totalAmountUsd?: boolean
   totalReceivedBs?: boolean
+  totalReceivedUsd?: boolean
   totalChangeBs?: boolean
+  totalChangeUsd?: boolean
+  exchangeRateUsdId?: boolean
+  exchangeRateEurId?: boolean
   status?: boolean
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
   createdAt?: boolean
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
@@ -1422,11 +1900,13 @@ export type InvoiceSelectScalar = {
   id?: boolean
   invoiceNumber?: boolean
   totalAmountBs?: boolean
-  exchangeRateUsd?: boolean
-  exchangeRateEur?: boolean
   totalAmountUsd?: boolean
   totalReceivedBs?: boolean
+  totalReceivedUsd?: boolean
   totalChangeBs?: boolean
+  totalChangeUsd?: boolean
+  exchangeRateUsdId?: boolean
+  exchangeRateEurId?: boolean
   status?: boolean
   userId?: boolean
   customerId?: boolean
@@ -1434,8 +1914,10 @@ export type InvoiceSelectScalar = {
   createdAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "totalAmountBs" | "exchangeRateUsd" | "exchangeRateEur" | "totalAmountUsd" | "totalReceivedBs" | "totalChangeBs" | "status" | "userId" | "customerId" | "sessionId" | "createdAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "totalAmountBs" | "totalAmountUsd" | "totalReceivedBs" | "totalReceivedUsd" | "totalChangeBs" | "totalChangeUsd" | "exchangeRateUsdId" | "exchangeRateEurId" | "status" | "userId" | "customerId" | "sessionId" | "createdAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
@@ -1444,11 +1926,15 @@ export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   _count?: boolean | Prisma.InvoiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type InvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
+  exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
@@ -1457,6 +1943,8 @@ export type InvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Invoice"
   objects: {
+    exchangeRateUsd: Prisma.$ExchangeRatePayload<ExtArgs>
+    exchangeRateEur: Prisma.$ExchangeRatePayload<ExtArgs>
     customer: Prisma.$ClientsPayload<ExtArgs>
     session: Prisma.$CashDrawerSessionPayload<ExtArgs>
     user: Prisma.$UsersPayload<ExtArgs>
@@ -1467,11 +1955,13 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: number
     invoiceNumber: string
     totalAmountBs: runtime.Decimal
-    exchangeRateUsd: runtime.Decimal
-    exchangeRateEur: runtime.Decimal
     totalAmountUsd: runtime.Decimal
     totalReceivedBs: runtime.Decimal
+    totalReceivedUsd: runtime.Decimal
     totalChangeBs: runtime.Decimal
+    totalChangeUsd: runtime.Decimal
+    exchangeRateUsdId: number
+    exchangeRateEurId: number
     status: $Enums.InvoiceStatus
     userId: number
     customerId: number
@@ -1871,6 +2361,8 @@ readonly fields: InvoiceFieldRefs;
  */
 export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  exchangeRateUsd<T extends Prisma.ExchangeRateDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExchangeRateDefaultArgs<ExtArgs>>): Prisma.Prisma__ExchangeRateClient<runtime.Types.Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  exchangeRateEur<T extends Prisma.ExchangeRateDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExchangeRateDefaultArgs<ExtArgs>>): Prisma.Prisma__ExchangeRateClient<runtime.Types.Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.ClientsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientsDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientsClient<runtime.Types.Result.GetResult<Prisma.$ClientsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   session<T extends Prisma.CashDrawerSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CashDrawerSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__CashDrawerSessionClient<runtime.Types.Result.GetResult<Prisma.$CashDrawerSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -1908,11 +2400,13 @@ export interface InvoiceFieldRefs {
   readonly id: Prisma.FieldRef<"Invoice", 'Int'>
   readonly invoiceNumber: Prisma.FieldRef<"Invoice", 'String'>
   readonly totalAmountBs: Prisma.FieldRef<"Invoice", 'Decimal'>
-  readonly exchangeRateUsd: Prisma.FieldRef<"Invoice", 'Decimal'>
-  readonly exchangeRateEur: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly totalAmountUsd: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly totalReceivedBs: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly totalReceivedUsd: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly totalChangeBs: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly totalChangeUsd: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly exchangeRateUsdId: Prisma.FieldRef<"Invoice", 'Int'>
+  readonly exchangeRateEurId: Prisma.FieldRef<"Invoice", 'Int'>
   readonly status: Prisma.FieldRef<"Invoice", 'InvoiceStatus'>
   readonly userId: Prisma.FieldRef<"Invoice", 'Int'>
   readonly customerId: Prisma.FieldRef<"Invoice", 'Int'>

@@ -1,0 +1,11 @@
+ALTER TABLE "Invoice"
+ADD COLUMN IF NOT EXISTS "totalReceivedUsd" DECIMAL(65,2) NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS "totalChangeUsd" DECIMAL(65,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE "Invoice"
+ALTER COLUMN "totalAmountBs" TYPE DECIMAL(65,2) USING ROUND("totalAmountBs", 2),
+ALTER COLUMN "totalAmountUsd" TYPE DECIMAL(65,2) USING ROUND("totalAmountUsd", 2),
+ALTER COLUMN "totalReceivedBs" TYPE DECIMAL(65,2) USING ROUND("totalReceivedBs", 2),
+ALTER COLUMN "totalChangeBs" TYPE DECIMAL(65,2) USING ROUND("totalChangeBs", 2),
+ALTER COLUMN "exchangeRateUsd" TYPE DECIMAL(65,2) USING ROUND("exchangeRateUsd", 2),
+ALTER COLUMN "exchangeRateEur" TYPE DECIMAL(65,2) USING ROUND("exchangeRateEur", 2);

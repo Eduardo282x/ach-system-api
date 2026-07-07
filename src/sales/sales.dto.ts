@@ -29,13 +29,13 @@ export class CreatePaymentDetailDto {
 	paymentTypeId!: number;
 
 	@Type(() => Number)
-	@IsNumber()
+	@IsNumber({ maxDecimalPlaces: 2 })
 	@Min(0)
 	amountReceived!: number;
 
 	@IsOptional()
 	@Type(() => Number)
-	@IsNumber()
+	@IsNumber({ maxDecimalPlaces: 2 })
 	@Min(0)
 	amountChange?: number;
 
@@ -71,11 +71,11 @@ export class CreateInvoiceDto {
 	@Type(() => Number)
 	@IsInt()
 	@Min(1)
-	exchangeRateUsdId?: number;
+	exchangeRateUsdId!: number;
 
 	@IsOptional()
 	@Type(() => Number)
 	@IsInt()
 	@Min(1)
-	exchangeRateEurId?: number;
+	exchangeRateEurId!: number;
 }

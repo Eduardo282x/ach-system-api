@@ -38,13 +38,16 @@ export class SalesService {
 			},
 		});
 
-		const latestByCurrency = new Map<ExchangeRateType, number>();
+		const latestByCurrency = new Map<ExchangeRateType, { id: number; rate: number }>();
 
 		for (const rate of rates) {
 			const currency = rate.currency as ExchangeRateType;
 
 			if ((currency === 'USD' || currency === 'EUR') && !latestByCurrency.has(currency)) {
-				latestByCurrency.set(currency, Number(rate.rate));
+				latestByCurrency.set(currency, {
+					id: rate.id,
+					rate: Number(rate.rate),
+				});
 			}
 
 			if (latestByCurrency.has('USD') && latestByCurrency.has('EUR')) {
@@ -243,8 +246,16 @@ export class SalesService {
 						amountChange: true,
 						invoice: {
 							select: {
-								exchangeRateUsd: true,
-								exchangeRateEur: true,
+								exchangeRateUsd: {
+									select: {
+										rate: true,
+									},
+								},
+								exchangeRateEur: {
+									select: {
+										rate: true,
+									},
+								},
 							},
 						},
 						paymentType: {
@@ -293,8 +304,8 @@ export class SalesService {
 				const paymentCurrency = paymentDetail.currency as ExchangeRateType;
 				const amount = Number(paymentDetail.amountReceived);
 				const changeAmount = Number(paymentDetail.amountChange);
-				const usdRate = Number(paymentDetail.invoice.exchangeRateUsd);
-				const eurRate = Number(paymentDetail.invoice.exchangeRateEur);
+				const usdRate = Number(paymentDetail.invoice.exchangeRateUsd.rate ?? 0);
+				const eurRate = Number(paymentDetail.invoice.exchangeRateEur.rate ?? 0);
 
 				const current = grouped.get(paymentTypeId) ?? {
 					payment: paymentDetail.paymentType.name,
@@ -390,6 +401,35 @@ export class SalesService {
 		return `${prefix}${text}${suffix}`;
 	}
 
+	private convertAmountByCurrency(
+		amount: number,
+		currency: ExchangeRateType,
+		ratesToBs: Record<ExchangeRateType, number>,
+	) {
+		const usdRate = ratesToBs.USD;
+		const eurRate = ratesToBs.EUR;
+
+		if (currency === 'BS') {
+			return {
+				amountBs: amount,
+				amountUsd: usdRate > 0 ? amount / usdRate : 0,
+			};
+		}
+
+		if (currency === 'USD') {
+			return {
+				amountBs: amount * usdRate,
+				amountUsd: amount,
+			};
+		}
+
+		const amountBs = amount * eurRate;
+		return {
+			amountBs,
+			amountUsd: usdRate > 0 ? amountBs / usdRate : 0,
+		};
+	}
+
 	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
 		try {
 			const resumenData = await this.getResumenSales(filter);
@@ -465,7 +505,9 @@ export class SalesService {
 				'Total (Bs)',
 				'Total (USD)',
 				'Recibido (Bs)',
+				'Recibido (USD)',
 				'Vuelto (Bs)',
+				'Vuelto (USD)',
 				'Pagos',
 				'Productos',
 			]);
@@ -490,7 +532,9 @@ export class SalesService {
 					Number(invoice.totalAmountBs),
 					Number(invoice.totalAmountUsd),
 					Number(invoice.totalReceivedBs),
+					Number(invoice.totalReceivedUsd),
 					Number(invoice.totalChangeBs),
+					Number(invoice.totalChangeUsd),
 					payments,
 					products,
 				]);
@@ -504,6 +548,8 @@ export class SalesService {
 				{ width: 18 },
 				{ width: 20 },
 				{ width: 10 },
+				{ width: 14 },
+				{ width: 14 },
 				{ width: 14 },
 				{ width: 14 },
 				{ width: 14 },
@@ -536,7 +582,7 @@ export class SalesService {
 		try {
 			const paymentTypes = await this.prismaService.typePayment.findMany({
 				orderBy: {
-					createdAt: 'desc',
+					createdAt: 'asc',
 				},
 			});
 
@@ -631,12 +677,67 @@ export class SalesService {
 				paymentTypes.map((paymentType) => [paymentType.id, paymentType]),
 			);
 
-			const latestRatesByCurrency = await this.getLatestExchangeRatesByCurrency();
+			let usdRate: { id: number; rate: number } | undefined;
+			let eurRate: { id: number; rate: number } | undefined;
+
+			const hasManualRateIds =
+				createInvoiceDto.exchangeRateUsdId !== undefined ||
+				createInvoiceDto.exchangeRateEurId !== undefined;
+
+			if (hasManualRateIds) {
+				if (!createInvoiceDto.exchangeRateUsdId || !createInvoiceDto.exchangeRateEurId) {
+					throw new BadRequestException(
+						'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
+					);
+				}
+
+				const selectedRates = await this.prismaService.exchangeRate.findMany({
+					where: {
+						id: {
+							in: [createInvoiceDto.exchangeRateUsdId, createInvoiceDto.exchangeRateEurId],
+						},
+					},
+				});
+
+				if (selectedRates.length !== 2) {
+					throw new BadRequestException('Una o ambas tasas enviadas no existen');
+				}
+
+				const usdRateRecord = selectedRates.find(
+					(rate) => rate.id === createInvoiceDto.exchangeRateUsdId,
+				);
+				const eurRateRecord = selectedRates.find(
+					(rate) => rate.id === createInvoiceDto.exchangeRateEurId,
+				);
+
+				if (!usdRateRecord || usdRateRecord.currency !== 'USD') {
+					throw new BadRequestException('exchangeRateUsdId no corresponde a una tasa USD');
+				}
+
+				if (!eurRateRecord || eurRateRecord.currency !== 'EUR') {
+					throw new BadRequestException('exchangeRateEurId no corresponde a una tasa EUR');
+				}
+
+				usdRate = { id: usdRateRecord.id, rate: Number(usdRateRecord.rate) };
+				eurRate = { id: eurRateRecord.id, rate: Number(eurRateRecord.rate) };
+			} else {
+				const latestRatesByCurrency = await this.getLatestExchangeRatesByCurrency();
+				usdRate = latestRatesByCurrency.get('USD');
+				eurRate = latestRatesByCurrency.get('EUR');
+			}
+
+			if (!usdRate || usdRate.rate <= 0) {
+				throw new BadRequestException('No existe una tasa USD válida');
+			}
+
+			if (!eurRate || eurRate.rate <= 0) {
+				throw new BadRequestException('No existe una tasa EUR válida');
+			}
 
 			const ratesToBs: Record<ExchangeRateType, number> = {
 				BS: 1,
-				USD: latestRatesByCurrency.get('USD') ?? 0,
-				EUR: latestRatesByCurrency.get('EUR') ?? 0,
+				USD: usdRate.rate,
+				EUR: eurRate.rate,
 			};
 
 			const getFactorByCurrency = (currency: ExchangeRateType) => {
@@ -683,12 +784,6 @@ export class SalesService {
 			const totalAmountUsd =
 				ratesToBs.USD > 0 ? this.toTwoDecimals(totalAmountBs / ratesToBs.USD) : 0;
 
-			const paymentTotalsByCurrency: Record<ExchangeRateType, number> = {
-				BS: 0,
-				USD: 0,
-				EUR: 0,
-			};
-
 			const paymentsData = createInvoiceDto.payments.map((payment) => {
 				const received = Number(payment.amountReceived);
 				const change = Number(payment.amountChange ?? 0);
@@ -701,14 +796,26 @@ export class SalesService {
 					);
 				}
 
-				if (net < 0) {
+				if (received < 0 || change < 0) {
+					throw new BadRequestException(
+						'Los montos recibidos y de vuelto no pueden ser negativos',
+					);
+				}
+
+				if (received != 0 && net < 0) {
 					throw new BadRequestException(
 						'El monto neto de un pago no puede ser negativo',
 					);
 				}
 
 				const paymentCurrency = paymentType.currency as ExchangeRateType;
-				paymentTotalsByCurrency[paymentCurrency] += net;
+
+				if (paymentCurrency === 'EUR') {
+					throw new BadRequestException(
+						'Los pagos en EUR no están soportados para registrar montos físicos en factura',
+					);
+				}
+
 				const factor = getFactorByCurrency(paymentCurrency);
 				const netBs = net * factor;
 
@@ -723,17 +830,41 @@ export class SalesService {
 				};
 			});
 
-			const totalNetBsRaw =
-				paymentTotalsByCurrency.BS +
-				paymentTotalsByCurrency.USD * getFactorByCurrency('USD') +
-				paymentTotalsByCurrency.EUR * getFactorByCurrency('EUR');
+			if (!paymentsData.some((payment) => payment.amountReceived > 0)) {
+				throw new BadRequestException(
+					'Debe existir al menos un método de pago con monto recibido mayor a 0',
+				);
+			}
+
+			const totalNetBsRaw = paymentsData.reduce(
+				(sum, payment) => sum + payment.amountNetBs,
+				0,
+			);
 
 			const totalNetBs = this.toTwoDecimals(totalNetBsRaw);
 			const totalReceivedBs = this.toTwoDecimals(
-				paymentsData.reduce((sum, payment) => sum + payment.amountReceived * getFactorByCurrency(payment.currency as ExchangeRateType), 0),
+				paymentsData.reduce(
+					(sum, payment) => sum + (payment.currency === 'BS' ? payment.amountReceived : 0),
+					0,
+				),
+			);
+			const totalReceivedUsd = this.toTwoDecimals(
+				paymentsData.reduce(
+					(sum, payment) => sum + (payment.currency === 'USD' ? payment.amountReceived : 0),
+					0,
+				),
 			);
 			const totalChangeBs = this.toTwoDecimals(
-				paymentsData.reduce((sum, payment) => sum + payment.amountChange * getFactorByCurrency(payment.currency as ExchangeRateType), 0),
+				paymentsData.reduce(
+					(sum, payment) => sum + (payment.currency === 'BS' ? payment.amountChange : 0),
+					0,
+				),
+			);
+			const totalChangeUsd = this.toTwoDecimals(
+				paymentsData.reduce(
+					(sum, payment) => sum + (payment.currency === 'USD' ? payment.amountChange : 0),
+					0,
+				),
 			);
 
 			const tolerance = 0.01;
@@ -750,11 +881,13 @@ export class SalesService {
 					data: {
 						invoiceNumber,
 						totalAmountBs: new Prisma.Decimal(totalAmountBs),
-						exchangeRateUsd: new Prisma.Decimal(ratesToBs.USD),
-						exchangeRateEur: new Prisma.Decimal(ratesToBs.EUR),
+						exchangeRateUsdId: usdRate.id,
+						exchangeRateEurId: eurRate.id,
 						totalAmountUsd: new Prisma.Decimal(totalAmountUsd),
 						totalReceivedBs: new Prisma.Decimal(totalReceivedBs),
+						totalReceivedUsd: new Prisma.Decimal(totalReceivedUsd),
 						totalChangeBs: new Prisma.Decimal(totalChangeBs),
+						totalChangeUsd: new Prisma.Decimal(totalChangeUsd),
 						userId,
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,

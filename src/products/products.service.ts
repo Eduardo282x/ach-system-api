@@ -193,21 +193,35 @@ export class ProductsService {
         try {
             const rates = await this.prismaService.exchangeRate.findMany({
                 orderBy: {
-                    createdAt: 'desc',
+                    createdAt: 'asc',
                 },
             });
 
-            const latestByNameAndCurrency = new Map<string, (typeof rates)[number]>();
+            const closestByNameAndCurrency = new Map<string, (typeof rates)[number]>();
+            const now = Date.now();
 
             for (const rate of rates) {
                 const key = `${rate.name.toLowerCase()}::${rate.currency}`;
+                const currentDiff = Math.abs(new Date(rate.createdAt).getTime() - now);
+                const existing = closestByNameAndCurrency.get(key);
 
-                if (!latestByNameAndCurrency.has(key)) {
-                    latestByNameAndCurrency.set(key, rate);
+                if (!existing) {
+                    closestByNameAndCurrency.set(key, rate);
+                    continue;
+                }
+
+                const existingDiff = Math.abs(new Date(existing.createdAt).getTime() - now);
+
+                // Si hay empate en distancia, conservamos el mas reciente.
+                if (
+                    currentDiff < existingDiff ||
+                    (currentDiff === existingDiff && new Date(rate.createdAt) > new Date(existing.createdAt))
+                ) {
+                    closestByNameAndCurrency.set(key, rate);
                 }
             }
 
-            const exchangeRate = Array.from(latestByNameAndCurrency.values()).map((rate) => ({
+            const exchangeRate = Array.from(closestByNameAndCurrency.values()).map((rate) => ({
                 ...rate,
                 rate: Math.round(Number(rate.rate) * 100) / 100, // Redondeamos a dos decimales
             }));
@@ -263,15 +277,15 @@ export class ProductsService {
                     name: responseDolar.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseDolar.fuente.toUpperCase(),
                     rate: Math.round(responseDolar.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'USD',
+                    date: new Date(responseDolar.fechaActualizacion),
                     isDefault: responseDolar.fuente.toLocaleLowerCase() == 'oficial',
-                    createdAt: new Date(responseDolar.fechaActualizacion),
                 },
                 {
                     name: responseEuro.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseEuro.fuente.toUpperCase(),
                     rate: Math.round(responseEuro.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'EUR',
+                    date: new Date(responseEuro.fechaActualizacion),
                     isDefault: false,
-                    createdAt: new Date(responseEuro.fechaActualizacion),
                 }
             ];
 
@@ -281,14 +295,11 @@ export class ProductsService {
                     rate: rate.rate,
                     currency: rate.currency as ExchangeRateType,
                     isDefault: rate.isDefault,
-                    createdAt: rate.createdAt,
+                    date: rate.date,
                 }))
             });
 
-            return {
-                message: 'Tasas de cambio guardadas correctamente',
-                data: rates,
-            }
+            return await this.getExchangeRateToday();
         } catch (error) {
             throw error;
         }

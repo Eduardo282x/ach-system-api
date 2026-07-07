@@ -204,15 +204,13 @@ export class DashboardService {
 			(acc, invoice) => {
 				const amountBs = Number(invoice.totalReceivedBs);
 				const changeBs = Number(invoice.totalChangeBs);
-				const usdRate = Number(invoice.exchangeRateUsd);
+				const amountUsd = Number(invoice.totalReceivedUsd);
+				const changeUsd = Number(invoice.totalChangeUsd);
 
 				acc.amountBs += amountBs;
 				acc.changeAmountBs += changeBs;
-
-				if (usdRate > 0) {
-					acc.amountUsd += amountBs / usdRate;
-					acc.changeAmountUsd += changeBs / usdRate;
-				}
+				acc.amountUsd += amountUsd;
+				acc.changeAmountUsd += changeUsd;
 
 				return acc;
 			},

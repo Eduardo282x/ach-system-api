@@ -38,9 +38,12 @@ model ExchangeRate {
   id        Int              @id @default(autoincrement())
   name      String
   currency  ExchangeRateType
-  rate      Decimal
+  rate      Decimal          @db.Decimal(10, 2)
   isDefault Boolean          @default(false)
+  date      DateTime         @default(now())
   createdAt DateTime         @default(now())
+  usdRate   Invoice[]        @relation("UsdRate")
+  eurRate   Invoice[]        @relation("EurRate")
 }
 
 model TypePayment {
@@ -57,7 +60,7 @@ model Product {
   name             String
   presentation     String
   barcode          String              @unique
-  price            Decimal
+  price            Decimal             @db.Decimal(10, 2)
   currency         ExchangeRateType    @default(USD)
   stock            Int                 @default(0)
   isDetail         Boolean             @default(false)
@@ -87,24 +90,30 @@ model InventoryMovement {
 }
 
 model Invoice {
-  id              Int               @id @default(autoincrement())
-  invoiceNumber   String            @unique
-  totalAmountBs   Decimal
-  exchangeRateUsd Decimal
-  exchangeRateEur Decimal
-  totalAmountUsd  Decimal
-  totalReceivedBs Decimal
-  totalChangeBs   Decimal
-  status          InvoiceStatus     @default(PAID)
-  userId          Int
-  customerId      Int
-  sessionId       Int
-  createdAt       DateTime          @default(now())
-  customer        Clients           @relation(fields: [customerId], references: [id])
-  session         CashDrawerSession @relation(fields: [sessionId], references: [id])
-  user            Users             @relation(fields: [userId], references: [id])
-  items           InvoiceItem[]
-  paymentDetails  PaymentDetail[]
+  id               Int     @id @default(autoincrement())
+  invoiceNumber    String  @unique
+  totalAmountBs    Decimal @db.Decimal(65, 2)
+  totalAmountUsd   Decimal @db.Decimal(65, 2)
+  totalReceivedBs  Decimal @db.Decimal(65, 2)
+  totalReceivedUsd Decimal @db.Decimal(65, 2)
+  totalChangeBs    Decimal @db.Decimal(65, 2)
+  totalChangeUsd   Decimal @db.Decimal(65, 2)
+
+  exchangeRateUsdId Int
+  exchangeRateEurId Int
+  exchangeRateUsd   ExchangeRate @relation("UsdRate", fields: [exchangeRateUsdId], references: [id])
+  exchangeRateEur   ExchangeRate @relation("EurRate", fields: [exchangeRateEurId], references: [id])
+
+  status         InvoiceStatus     @default(PAID)
+  userId         Int
+  customerId     Int
+  sessionId      Int
+  createdAt      DateTime          @default(now())
+  customer       Clients           @relation(fields: [customerId], references: [id])
+  session        CashDrawerSession @relation(fields: [sessionId], references: [id])
+  user           Users             @relation(fields: [userId], references: [id])
+  items          InvoiceItem[]
+  paymentDetails PaymentDetail[]
 }
 
 model InvoiceItem {
@@ -123,10 +132,10 @@ model PaymentDetail {
   id             Int              @id @default(autoincrement())
   invoiceId      Int
   paymentTypeId  Int
-  amountReceived Decimal          @default(0)
-  amountChange   Decimal          @default(0)
-  amountNet      Decimal          @default(0)
-  amountNetBs    Decimal
+  amountReceived Decimal          @db.Decimal(10, 2) @default(0)
+  amountChange   Decimal          @db.Decimal(10, 2) @default(0)
+  amountNet      Decimal          @db.Decimal(10, 2) @default(0)
+  amountNetBs    Decimal          @db.Decimal(10, 2)
   currency       ExchangeRateType
   denominations  Json?
   invoice        Invoice          @relation(fields: [invoiceId], references: [id])
@@ -136,7 +145,7 @@ model PaymentDetail {
 model CurrencyDenomination {
   id       Int              @id @default(autoincrement())
   currency ExchangeRateType
-  value    Decimal
+  value    Decimal          @db.Decimal(10, 2)
   active   Boolean          @default(true)
 }
 
@@ -146,11 +155,11 @@ model CashDrawerSession {
   cashDrawerId   Int
   openedAt       DateTime      @default(now())
   closedAt       DateTime?
-  openingBalance Decimal
-  closingBalance Decimal?
-  totalSales     Decimal       @default(0)
-  totalInUsd     Decimal       @default(0)
-  totalInBs      Decimal       @default(0)
+  openingBalance Decimal       @db.Decimal(65, 2)
+  closingBalance Decimal?      @db.Decimal(65, 2)
+  totalSales     Decimal       @db.Decimal(65, 2) @default(0)
+  totalInUsd     Decimal       @db.Decimal(65, 2) @default(0)
+  totalInBs      Decimal       @db.Decimal(65, 2) @default(0)
   status         SessionStatus @default(OPEN)
   user           Users         @relation(fields: [userId], references: [id])
   cashDrawer     CashDrawer    @relation(fields: [cashDrawerId], references: [id])

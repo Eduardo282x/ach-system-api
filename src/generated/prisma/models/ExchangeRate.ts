@@ -42,6 +42,7 @@ export type ExchangeRateMinAggregateOutputType = {
   currency: $Enums.ExchangeRateType | null
   rate: runtime.Decimal | null
   isDefault: boolean | null
+  date: Date | null
   createdAt: Date | null
 }
 
@@ -51,6 +52,7 @@ export type ExchangeRateMaxAggregateOutputType = {
   currency: $Enums.ExchangeRateType | null
   rate: runtime.Decimal | null
   isDefault: boolean | null
+  date: Date | null
   createdAt: Date | null
 }
 
@@ -60,6 +62,7 @@ export type ExchangeRateCountAggregateOutputType = {
   currency: number
   rate: number
   isDefault: number
+  date: number
   createdAt: number
   _all: number
 }
@@ -81,6 +84,7 @@ export type ExchangeRateMinAggregateInputType = {
   currency?: true
   rate?: true
   isDefault?: true
+  date?: true
   createdAt?: true
 }
 
@@ -90,6 +94,7 @@ export type ExchangeRateMaxAggregateInputType = {
   currency?: true
   rate?: true
   isDefault?: true
+  date?: true
   createdAt?: true
 }
 
@@ -99,6 +104,7 @@ export type ExchangeRateCountAggregateInputType = {
   currency?: true
   rate?: true
   isDefault?: true
+  date?: true
   createdAt?: true
   _all?: true
 }
@@ -195,6 +201,7 @@ export type ExchangeRateGroupByOutputType = {
   currency: $Enums.ExchangeRateType
   rate: runtime.Decimal
   isDefault: boolean
+  date: Date
   createdAt: Date
   _count: ExchangeRateCountAggregateOutputType | null
   _avg: ExchangeRateAvgAggregateOutputType | null
@@ -227,7 +234,10 @@ export type ExchangeRateWhereInput = {
   currency?: Prisma.EnumExchangeRateTypeFilter<"ExchangeRate"> | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFilter<"ExchangeRate"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFilter<"ExchangeRate"> | boolean
+  date?: Prisma.DateTimeFilter<"ExchangeRate"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ExchangeRate"> | Date | string
+  usdRate?: Prisma.InvoiceListRelationFilter
+  eurRate?: Prisma.InvoiceListRelationFilter
 }
 
 export type ExchangeRateOrderByWithRelationInput = {
@@ -236,7 +246,10 @@ export type ExchangeRateOrderByWithRelationInput = {
   currency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  usdRate?: Prisma.InvoiceOrderByRelationAggregateInput
+  eurRate?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
 export type ExchangeRateWhereUniqueInput = Prisma.AtLeast<{
@@ -248,7 +261,10 @@ export type ExchangeRateWhereUniqueInput = Prisma.AtLeast<{
   currency?: Prisma.EnumExchangeRateTypeFilter<"ExchangeRate"> | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFilter<"ExchangeRate"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFilter<"ExchangeRate"> | boolean
+  date?: Prisma.DateTimeFilter<"ExchangeRate"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ExchangeRate"> | Date | string
+  usdRate?: Prisma.InvoiceListRelationFilter
+  eurRate?: Prisma.InvoiceListRelationFilter
 }, "id">
 
 export type ExchangeRateOrderByWithAggregationInput = {
@@ -257,6 +273,7 @@ export type ExchangeRateOrderByWithAggregationInput = {
   currency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ExchangeRateCountOrderByAggregateInput
   _avg?: Prisma.ExchangeRateAvgOrderByAggregateInput
@@ -274,6 +291,7 @@ export type ExchangeRateScalarWhereWithAggregatesInput = {
   currency?: Prisma.EnumExchangeRateTypeWithAggregatesFilter<"ExchangeRate"> | $Enums.ExchangeRateType
   rate?: Prisma.DecimalWithAggregatesFilter<"ExchangeRate"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolWithAggregatesFilter<"ExchangeRate"> | boolean
+  date?: Prisma.DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
 }
 
@@ -282,7 +300,10 @@ export type ExchangeRateCreateInput = {
   currency: $Enums.ExchangeRateType
   rate: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
+  date?: Date | string
   createdAt?: Date | string
+  usdRate?: Prisma.InvoiceCreateNestedManyWithoutExchangeRateUsdInput
+  eurRate?: Prisma.InvoiceCreateNestedManyWithoutExchangeRateEurInput
 }
 
 export type ExchangeRateUncheckedCreateInput = {
@@ -291,7 +312,10 @@ export type ExchangeRateUncheckedCreateInput = {
   currency: $Enums.ExchangeRateType
   rate: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
+  date?: Date | string
   createdAt?: Date | string
+  usdRate?: Prisma.InvoiceUncheckedCreateNestedManyWithoutExchangeRateUsdInput
+  eurRate?: Prisma.InvoiceUncheckedCreateNestedManyWithoutExchangeRateEurInput
 }
 
 export type ExchangeRateUpdateInput = {
@@ -299,7 +323,10 @@ export type ExchangeRateUpdateInput = {
   currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usdRate?: Prisma.InvoiceUpdateManyWithoutExchangeRateUsdNestedInput
+  eurRate?: Prisma.InvoiceUpdateManyWithoutExchangeRateEurNestedInput
 }
 
 export type ExchangeRateUncheckedUpdateInput = {
@@ -308,7 +335,10 @@ export type ExchangeRateUncheckedUpdateInput = {
   currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usdRate?: Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateUsdNestedInput
+  eurRate?: Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateEurNestedInput
 }
 
 export type ExchangeRateCreateManyInput = {
@@ -317,6 +347,7 @@ export type ExchangeRateCreateManyInput = {
   currency: $Enums.ExchangeRateType
   rate: runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: boolean
+  date?: Date | string
   createdAt?: Date | string
 }
 
@@ -325,6 +356,7 @@ export type ExchangeRateUpdateManyMutationInput = {
   currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -334,6 +366,7 @@ export type ExchangeRateUncheckedUpdateManyInput = {
   currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
   rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -343,6 +376,7 @@ export type ExchangeRateCountOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -357,6 +391,7 @@ export type ExchangeRateMaxOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -366,12 +401,18 @@ export type ExchangeRateMinOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   isDefault?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ExchangeRateSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   rate?: Prisma.SortOrder
+}
+
+export type ExchangeRateScalarRelationFilter = {
+  is?: Prisma.ExchangeRateWhereInput
+  isNot?: Prisma.ExchangeRateWhereInput
 }
 
 export type EnumExchangeRateTypeFieldUpdateOperationsInput = {
@@ -386,6 +427,188 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type ExchangeRateCreateNestedOneWithoutUsdRateInput = {
+  create?: Prisma.XOR<Prisma.ExchangeRateCreateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedCreateWithoutUsdRateInput>
+  connectOrCreate?: Prisma.ExchangeRateCreateOrConnectWithoutUsdRateInput
+  connect?: Prisma.ExchangeRateWhereUniqueInput
+}
+
+export type ExchangeRateCreateNestedOneWithoutEurRateInput = {
+  create?: Prisma.XOR<Prisma.ExchangeRateCreateWithoutEurRateInput, Prisma.ExchangeRateUncheckedCreateWithoutEurRateInput>
+  connectOrCreate?: Prisma.ExchangeRateCreateOrConnectWithoutEurRateInput
+  connect?: Prisma.ExchangeRateWhereUniqueInput
+}
+
+export type ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput = {
+  create?: Prisma.XOR<Prisma.ExchangeRateCreateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedCreateWithoutUsdRateInput>
+  connectOrCreate?: Prisma.ExchangeRateCreateOrConnectWithoutUsdRateInput
+  upsert?: Prisma.ExchangeRateUpsertWithoutUsdRateInput
+  connect?: Prisma.ExchangeRateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ExchangeRateUpdateToOneWithWhereWithoutUsdRateInput, Prisma.ExchangeRateUpdateWithoutUsdRateInput>, Prisma.ExchangeRateUncheckedUpdateWithoutUsdRateInput>
+}
+
+export type ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput = {
+  create?: Prisma.XOR<Prisma.ExchangeRateCreateWithoutEurRateInput, Prisma.ExchangeRateUncheckedCreateWithoutEurRateInput>
+  connectOrCreate?: Prisma.ExchangeRateCreateOrConnectWithoutEurRateInput
+  upsert?: Prisma.ExchangeRateUpsertWithoutEurRateInput
+  connect?: Prisma.ExchangeRateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ExchangeRateUpdateToOneWithWhereWithoutEurRateInput, Prisma.ExchangeRateUpdateWithoutEurRateInput>, Prisma.ExchangeRateUncheckedUpdateWithoutEurRateInput>
+}
+
+export type ExchangeRateCreateWithoutUsdRateInput = {
+  name: string
+  currency: $Enums.ExchangeRateType
+  rate: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: boolean
+  date?: Date | string
+  createdAt?: Date | string
+  eurRate?: Prisma.InvoiceCreateNestedManyWithoutExchangeRateEurInput
+}
+
+export type ExchangeRateUncheckedCreateWithoutUsdRateInput = {
+  id?: number
+  name: string
+  currency: $Enums.ExchangeRateType
+  rate: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: boolean
+  date?: Date | string
+  createdAt?: Date | string
+  eurRate?: Prisma.InvoiceUncheckedCreateNestedManyWithoutExchangeRateEurInput
+}
+
+export type ExchangeRateCreateOrConnectWithoutUsdRateInput = {
+  where: Prisma.ExchangeRateWhereUniqueInput
+  create: Prisma.XOR<Prisma.ExchangeRateCreateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedCreateWithoutUsdRateInput>
+}
+
+export type ExchangeRateCreateWithoutEurRateInput = {
+  name: string
+  currency: $Enums.ExchangeRateType
+  rate: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: boolean
+  date?: Date | string
+  createdAt?: Date | string
+  usdRate?: Prisma.InvoiceCreateNestedManyWithoutExchangeRateUsdInput
+}
+
+export type ExchangeRateUncheckedCreateWithoutEurRateInput = {
+  id?: number
+  name: string
+  currency: $Enums.ExchangeRateType
+  rate: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: boolean
+  date?: Date | string
+  createdAt?: Date | string
+  usdRate?: Prisma.InvoiceUncheckedCreateNestedManyWithoutExchangeRateUsdInput
+}
+
+export type ExchangeRateCreateOrConnectWithoutEurRateInput = {
+  where: Prisma.ExchangeRateWhereUniqueInput
+  create: Prisma.XOR<Prisma.ExchangeRateCreateWithoutEurRateInput, Prisma.ExchangeRateUncheckedCreateWithoutEurRateInput>
+}
+
+export type ExchangeRateUpsertWithoutUsdRateInput = {
+  update: Prisma.XOR<Prisma.ExchangeRateUpdateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedUpdateWithoutUsdRateInput>
+  create: Prisma.XOR<Prisma.ExchangeRateCreateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedCreateWithoutUsdRateInput>
+  where?: Prisma.ExchangeRateWhereInput
+}
+
+export type ExchangeRateUpdateToOneWithWhereWithoutUsdRateInput = {
+  where?: Prisma.ExchangeRateWhereInput
+  data: Prisma.XOR<Prisma.ExchangeRateUpdateWithoutUsdRateInput, Prisma.ExchangeRateUncheckedUpdateWithoutUsdRateInput>
+}
+
+export type ExchangeRateUpdateWithoutUsdRateInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eurRate?: Prisma.InvoiceUpdateManyWithoutExchangeRateEurNestedInput
+}
+
+export type ExchangeRateUncheckedUpdateWithoutUsdRateInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eurRate?: Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateEurNestedInput
+}
+
+export type ExchangeRateUpsertWithoutEurRateInput = {
+  update: Prisma.XOR<Prisma.ExchangeRateUpdateWithoutEurRateInput, Prisma.ExchangeRateUncheckedUpdateWithoutEurRateInput>
+  create: Prisma.XOR<Prisma.ExchangeRateCreateWithoutEurRateInput, Prisma.ExchangeRateUncheckedCreateWithoutEurRateInput>
+  where?: Prisma.ExchangeRateWhereInput
+}
+
+export type ExchangeRateUpdateToOneWithWhereWithoutEurRateInput = {
+  where?: Prisma.ExchangeRateWhereInput
+  data: Prisma.XOR<Prisma.ExchangeRateUpdateWithoutEurRateInput, Prisma.ExchangeRateUncheckedUpdateWithoutEurRateInput>
+}
+
+export type ExchangeRateUpdateWithoutEurRateInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usdRate?: Prisma.InvoiceUpdateManyWithoutExchangeRateUsdNestedInput
+}
+
+export type ExchangeRateUncheckedUpdateWithoutEurRateInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.EnumExchangeRateTypeFieldUpdateOperationsInput | $Enums.ExchangeRateType
+  rate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usdRate?: Prisma.InvoiceUncheckedUpdateManyWithoutExchangeRateUsdNestedInput
+}
+
+
+/**
+ * Count Type ExchangeRateCountOutputType
+ */
+
+export type ExchangeRateCountOutputType = {
+  usdRate: number
+  eurRate: number
+}
+
+export type ExchangeRateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  usdRate?: boolean | ExchangeRateCountOutputTypeCountUsdRateArgs
+  eurRate?: boolean | ExchangeRateCountOutputTypeCountEurRateArgs
+}
+
+/**
+ * ExchangeRateCountOutputType without action
+ */
+export type ExchangeRateCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExchangeRateCountOutputType
+   */
+  select?: Prisma.ExchangeRateCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ExchangeRateCountOutputType without action
+ */
+export type ExchangeRateCountOutputTypeCountUsdRateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
+
+/**
+ * ExchangeRateCountOutputType without action
+ */
+export type ExchangeRateCountOutputTypeCountEurRateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
 
 
 export type ExchangeRateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -394,7 +617,11 @@ export type ExchangeRateSelect<ExtArgs extends runtime.Types.Extensions.Internal
   currency?: boolean
   rate?: boolean
   isDefault?: boolean
+  date?: boolean
   createdAt?: boolean
+  usdRate?: boolean | Prisma.ExchangeRate$usdRateArgs<ExtArgs>
+  eurRate?: boolean | Prisma.ExchangeRate$eurRateArgs<ExtArgs>
+  _count?: boolean | Prisma.ExchangeRateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["exchangeRate"]>
 
 export type ExchangeRateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -403,6 +630,7 @@ export type ExchangeRateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   currency?: boolean
   rate?: boolean
   isDefault?: boolean
+  date?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["exchangeRate"]>
 
@@ -412,6 +640,7 @@ export type ExchangeRateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   currency?: boolean
   rate?: boolean
   isDefault?: boolean
+  date?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["exchangeRate"]>
 
@@ -421,20 +650,32 @@ export type ExchangeRateSelectScalar = {
   currency?: boolean
   rate?: boolean
   isDefault?: boolean
+  date?: boolean
   createdAt?: boolean
 }
 
-export type ExchangeRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "currency" | "rate" | "isDefault" | "createdAt", ExtArgs["result"]["exchangeRate"]>
+export type ExchangeRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "currency" | "rate" | "isDefault" | "date" | "createdAt", ExtArgs["result"]["exchangeRate"]>
+export type ExchangeRateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  usdRate?: boolean | Prisma.ExchangeRate$usdRateArgs<ExtArgs>
+  eurRate?: boolean | Prisma.ExchangeRate$eurRateArgs<ExtArgs>
+  _count?: boolean | Prisma.ExchangeRateCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ExchangeRateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ExchangeRateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $ExchangeRatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ExchangeRate"
-  objects: {}
+  objects: {
+    usdRate: Prisma.$InvoicePayload<ExtArgs>[]
+    eurRate: Prisma.$InvoicePayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     name: string
     currency: $Enums.ExchangeRateType
     rate: runtime.Decimal
     isDefault: boolean
+    date: Date
     createdAt: Date
   }, ExtArgs["result"]["exchangeRate"]>
   composites: {}
@@ -830,6 +1071,8 @@ readonly fields: ExchangeRateFieldRefs;
  */
 export interface Prisma__ExchangeRateClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  usdRate<T extends Prisma.ExchangeRate$usdRateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExchangeRate$usdRateArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  eurRate<T extends Prisma.ExchangeRate$eurRateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExchangeRate$eurRateArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -864,6 +1107,7 @@ export interface ExchangeRateFieldRefs {
   readonly currency: Prisma.FieldRef<"ExchangeRate", 'ExchangeRateType'>
   readonly rate: Prisma.FieldRef<"ExchangeRate", 'Decimal'>
   readonly isDefault: Prisma.FieldRef<"ExchangeRate", 'Boolean'>
+  readonly date: Prisma.FieldRef<"ExchangeRate", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ExchangeRate", 'DateTime'>
 }
     
@@ -881,6 +1125,10 @@ export type ExchangeRateFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the ExchangeRate
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
   /**
    * Filter, which ExchangeRate to fetch.
    */
@@ -900,6 +1148,10 @@ export type ExchangeRateFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
+  /**
    * Filter, which ExchangeRate to fetch.
    */
   where: Prisma.ExchangeRateWhereUniqueInput
@@ -917,6 +1169,10 @@ export type ExchangeRateFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the ExchangeRate
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
   /**
    * Filter, which ExchangeRate to fetch.
    */
@@ -966,6 +1222,10 @@ export type ExchangeRateFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
+  /**
    * Filter, which ExchangeRate to fetch.
    */
   where?: Prisma.ExchangeRateWhereInput
@@ -1014,6 +1274,10 @@ export type ExchangeRateFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
+  /**
    * Filter, which ExchangeRates to fetch.
    */
   where?: Prisma.ExchangeRateWhereInput
@@ -1056,6 +1320,10 @@ export type ExchangeRateCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the ExchangeRate
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
   /**
    * The data needed to create a ExchangeRate.
    */
@@ -1104,6 +1372,10 @@ export type ExchangeRateUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the ExchangeRate
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
   /**
    * The data needed to update a ExchangeRate.
    */
@@ -1171,6 +1443,10 @@ export type ExchangeRateUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
+  /**
    * The filter to search for the ExchangeRate to update in case it exists.
    */
   where: Prisma.ExchangeRateWhereUniqueInput
@@ -1197,6 +1473,10 @@ export type ExchangeRateDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
+  /**
    * Filter which ExchangeRate to delete.
    */
   where: Prisma.ExchangeRateWhereUniqueInput
@@ -1217,6 +1497,54 @@ export type ExchangeRateDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * ExchangeRate.usdRate
+ */
+export type ExchangeRate$usdRateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
+}
+
+/**
+ * ExchangeRate.eurRate
+ */
+export type ExchangeRate$eurRateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
+}
+
+/**
  * ExchangeRate without action
  */
 export type ExchangeRateDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1228,4 +1556,8 @@ export type ExchangeRateDefaultArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the ExchangeRate
    */
   omit?: Prisma.ExchangeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExchangeRateInclude<ExtArgs> | null
 }

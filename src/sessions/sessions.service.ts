@@ -46,9 +46,10 @@ export class SessionsService {
 				invoice: {
 					sessionId,
 				},
+				currency: 'BS',
 			},
 			_sum: {
-				amountNetBs: true,
+				amountNet: true,
 			},
 		});
 
@@ -65,7 +66,7 @@ export class SessionsService {
 		});
 
 		const totalSales = this.toNumber(invoicesTotals._sum.totalAmountBs);
-		const totalInBs = this.toNumber(paymentsTotalsBs._sum.amountNetBs);
+		const totalInBs = this.toNumber(paymentsTotalsBs._sum.amountNet);
 		const totalInUsd = this.toNumber(paymentsTotalsUsd._sum.amountNet);
 
 		return this.prismaService.cashDrawerSession.update({
