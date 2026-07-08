@@ -6,9 +6,48 @@ import {
 	IsNumber,
 	IsObject,
 	IsOptional,
+	IsString,
 	Min,
 	ValidateNested,
 } from 'class-validator';
+
+export class GetInvoicesFilterDto {
+	@IsOptional()
+	@IsString()
+	search?: string;
+
+	@IsOptional()
+	@IsString()
+	startDate?: string;
+
+	@IsOptional()
+	@IsString()
+	endDate?: string;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	sessionId?: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	userId?: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	page?: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	size?: number;
+}
 
 export class CreateInvoiceItemDto {
 	@Type(() => Number)

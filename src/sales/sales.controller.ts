@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res } from '@nestjs/common';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { CreateInvoiceDto } from './sales.dto';
+import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import { SalesService } from './sales.service';
 import { Response } from 'express';
 
@@ -10,9 +10,9 @@ export class SalesController {
 
     @Get('/invoices')
     async getInvoices(
-        @Query('search') search: string,
+        @Query() filter: GetInvoicesFilterDto,
     ) {
-        return await this.salesService.getInvoices(search);
+        return await this.salesService.getInvoices(filter);
     }
 
     @Get('/resumen')

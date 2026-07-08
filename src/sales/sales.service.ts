@@ -3,7 +3,7 @@ import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { CreateInvoiceDto } from './sales.dto';
+import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
 
@@ -102,101 +102,116 @@ export class SalesService {
 		throw new BadRequestException('No se pudo generar un número de factura único');
 	}
 
-	async getInvoices(search?: string, date?: string, sessionId?: string) {
+	async getInvoices(filter: GetInvoicesFilterDto) {
 		const where: any = {};
+
+		const { search, startDate, endDate, sessionId, userId, page = 1, size = 20 } = filter;
 
 		if (search) {
 			where.OR = [
 				{ invoiceNumber: { contains: search, mode: 'insensitive' } },
-			]
+				{ customer: { fullName: { contains: search, mode: 'insensitive' } } },
+				{ customer: { identify: { contains: search, mode: 'insensitive' } } },
+			];
 		}
 
-		if (date) {
-			const startDate = this.getStartOfDayUtc(date);
-			const endDate = this.getEndOfDayUtc(date);
+		if (startDate && endDate) {
+			const start = this.getStartOfDayUtc(startDate);
+			const end = this.getEndOfDayUtc(endDate);
 
 			where.createdAt = {
-				gte: startDate,
-				lte: endDate,
+				gte: start,
+				lte: end,
 			};
 		}
 
-		if (sessionId !== undefined && sessionId !== '') {
-			const parsedSessionId = Number(sessionId);
+		if (sessionId !== undefined && sessionId !== null) {
+			where.sessionId = sessionId;
+		}
 
-			if (!Number.isInteger(parsedSessionId) || parsedSessionId <= 0) {
-				throw new BadRequestException('sessionId inválido');
-			}
-
-			where.sessionId = parsedSessionId;
+		if (userId !== undefined && userId !== null) {
+			where.userId = userId;
 		}
 
 		try {
-			const invoices = await this.prismaService.invoice.findMany({
-				where,
-				orderBy: {
-					createdAt: 'desc',
-				},
-				include: {
-					customer: {
-						select: {
-							id: true,
-							fullName: true,
-							identify: true
-						}
+			const skip = (page - 1) * size;
+
+			const [invoices, total] = await Promise.all([
+				this.prismaService.invoice.findMany({
+					where,
+					orderBy: {
+						createdAt: 'desc',
 					},
-					user: {
-						select: {
-							id: true,
-							name: true,
-							role: true
-						}
-					},
-					session: {
-						select: {
-							id: true,
-							cashDrawerId: true,
-							cashDrawer: {
-								select: {
-									id: true,
-									name: true,
+					skip,
+					take: size,
+					include: {
+						customer: {
+							select: {
+								id: true,
+								fullName: true,
+								identify: true
+							}
+						},
+						user: {
+							select: {
+								id: true,
+								name: true,
+								role: true
+							}
+						},
+						session: {
+							select: {
+								id: true,
+								cashDrawerId: true,
+								cashDrawer: {
+									select: {
+										id: true,
+										name: true,
+									}
 								}
 							}
-						}
-					},
-					items: {
-						select: {
-							id: true,
-							quantity: true,
-							unitPrice: true,
-							subtotal: true,
-							product: {
-								select: {
-									id: true,
-									name: true,
-									barcode: true,
-									stock: true,
-									currency: true
-								}
+						},
+						items: {
+							select: {
+								id: true,
+								quantity: true,
+								unitPrice: true,
+								subtotal: true,
+								product: {
+									select: {
+										id: true,
+										name: true,
+										barcode: true,
+										stock: true,
+										currency: true
+									}
+								},
+							},
+						},
+						paymentDetails: {
+							include: {
+								paymentType: {
+									select: {
+										id: true,
+										name: true,
+										currency: true
+									}
+								},
 							},
 						},
 					},
-					paymentDetails: {
-						include: {
-							paymentType: {
-								select: {
-									id: true,
-									name: true,
-									currency: true
-								}
-							},
-						},
-					},
-				},
-			});
+				}),
+				this.prismaService.invoice.count({ where }),
+			]);
 
 			return {
 				invoices,
+				pagination: {
+					page,
+					size,
+					total,
+					totalPages: Math.ceil(total / size),
+				},
 			};
 		} catch (error) {
 			throw error;
@@ -433,7 +448,7 @@ export class SalesService {
 	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
 		try {
 			const resumenData = await this.getResumenSales(filter);
-			const invoices = await this.getInvoices('', filter.date, filter.sessionId);
+			const invoices = await this.getInvoices({ startDate: filter.date, endDate: filter.date, sessionId: filter.sessionId ? Number(filter.sessionId) : undefined });
 
 			const workbook = new ExcelJS.Workbook();
 			const resumenSheet = workbook.addWorksheet('Resumen de Pagos');
