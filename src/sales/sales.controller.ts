@@ -19,8 +19,9 @@ export class SalesController {
     async getResumenSales(
         @Query('date') date: string,
         @Query('sessionId') sessionId?: string,
+        @Query('shiftId') shiftId?: string,
     ) {
-        return await this.salesService.getResumenSales({date, sessionId});
+        return await this.salesService.getResumenSales({date, sessionId, shiftId});
     }
 
     @Get('/resumen-excel')
@@ -28,8 +29,9 @@ export class SalesController {
         @Res() res: Response,
         @Query('date') date: string,
         @Query('sessionId') sessionId?: string,
+        @Query('shiftId') shiftId?: string,
     ) {
-        return await this.salesService.getResumenSalesExcel({date, sessionId}, res);
+        return await this.salesService.getResumenSalesExcel({date, sessionId, shiftId}, res);
     }
 
     @Get('/types-payment')

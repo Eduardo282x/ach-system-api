@@ -10,6 +10,7 @@ import { Response } from 'express';
 interface ResumenFilter {
 	date: string;
 	sessionId?: string;
+	shiftId?: string;
 }
 
 @Injectable()
@@ -105,7 +106,7 @@ export class SalesService {
 	async getInvoices(filter: GetInvoicesFilterDto) {
 		const where: any = {};
 
-		const { search, startDate, endDate, sessionId, userId, page = 1, size = 20 } = filter;
+		const { search, startDate, endDate, sessionId, userId, shiftId, page = 1, size = 20 } = filter;
 
 		if (search) {
 			where.OR = [
@@ -131,6 +132,10 @@ export class SalesService {
 
 		if (userId !== undefined && userId !== null) {
 			where.userId = userId;
+		}
+
+		if (shiftId !== undefined && shiftId !== null) {
+			where.shiftId = shiftId;
 		}
 
 		try {
@@ -169,6 +174,14 @@ export class SalesService {
 										name: true,
 									}
 								}
+							}
+						},
+						shift: {
+							select: {
+								id: true,
+								name: true,
+								startTime: true,
+								endTime: true,
 							}
 						},
 						items: {
@@ -220,7 +233,7 @@ export class SalesService {
 
 	async getResumenSales(filter: ResumenFilter) {
 		try {
-			const { date, sessionId } = filter;
+			const { date, sessionId, shiftId } = filter;
 			if (!date) {
 				throw new BadRequestException('La fecha es requerida');
 			}
@@ -241,12 +254,22 @@ export class SalesService {
 				}
 			}
 
+			let parsedShiftId: number | undefined;
+			if (shiftId !== undefined && shiftId !== '') {
+				parsedShiftId = Number(shiftId);
+
+				if (!Number.isInteger(parsedShiftId) || parsedShiftId <= 0) {
+					throw new BadRequestException('shiftId inválido');
+				}
+			}
+
 			const invoiceWhere: any = {
 				createdAt: {
 					gte: startDate,
 					lte: endDate,
 				},
 				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
+				...(parsedShiftId ? { shiftId: parsedShiftId } : {}),
 			};
 
 			const [invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
@@ -376,6 +399,7 @@ export class SalesService {
 			return {
 				date,
 				sessionId: parsedSessionId ?? null,
+				shiftId: parsedShiftId ?? null,
 				totalInvoice: invoiceCount,
 				total: {
 					amount: this.toTwoDecimals(totalAmountBs),
@@ -448,7 +472,12 @@ export class SalesService {
 	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
 		try {
 			const resumenData = await this.getResumenSales(filter);
-			const invoices = await this.getInvoices({ startDate: filter.date, endDate: filter.date, sessionId: filter.sessionId ? Number(filter.sessionId) : undefined });
+			const invoices = await this.getInvoices({
+				startDate: filter.date,
+				endDate: filter.date,
+				sessionId: filter.sessionId ? Number(filter.sessionId) : undefined,
+				shiftId: filter.shiftId ? Number(filter.shiftId) : undefined,
+			});
 
 			const workbook = new ExcelJS.Workbook();
 			const resumenSheet = workbook.addWorksheet('Resumen de Pagos');
@@ -456,6 +485,7 @@ export class SalesService {
 
 			resumenSheet.addRow(['Fecha', this.formatDateWithTime(resumenData.date)]);
 			resumenSheet.addRow(['Sesión', resumenData.sessionId ?? 'TODAS']);
+			resumenSheet.addRow(['Turno', resumenData.shiftId ?? 'TODOS']);
 			resumenSheet.addRow(['Cantidad de facturas', resumenData.totalInvoice]);
 			resumenSheet.addRow([]);
 
@@ -517,6 +547,7 @@ export class SalesService {
 				'Cajero',
 				'Caja',
 				'Sesión',
+				'Turno',
 				'Total (Bs)',
 				'Total (USD)',
 				'Recibido (Bs)',
@@ -544,6 +575,7 @@ export class SalesService {
 					invoice.user.name,
 					invoice.session.cashDrawer.name,
 					invoice.session.id,
+					invoice.shift?.name ?? 'Sin turno',
 					Number(invoice.totalAmountBs),
 					Number(invoice.totalAmountUsd),
 					Number(invoice.totalReceivedBs),
@@ -564,6 +596,7 @@ export class SalesService {
 				{ width: 20 },
 				{ width: 10 },
 				{ width: 14 },
+				{ width: 18 },
 				{ width: 14 },
 				{ width: 14 },
 				{ width: 14 },
@@ -635,6 +668,24 @@ export class SalesService {
 				throw new BadRequestException(
 					`La sesión de caja con id ${createInvoiceDto.sessionId} ya está cerrada`,
 				);
+			}
+
+			if (createInvoiceDto.shiftId) {
+				const shift = await this.prismaService.shift.findUnique({
+					where: { id: createInvoiceDto.shiftId },
+				});
+
+				if (!shift) {
+					throw new NotFoundException(
+						`Turno con id ${createInvoiceDto.shiftId} no encontrado`,
+					);
+				}
+
+				if (!shift.active) {
+					throw new BadRequestException(
+						`El turno "${shift.name}" está desactivado`,
+					);
+				}
 			}
 
 			const paymentTypeIds = [
@@ -906,6 +957,7 @@ export class SalesService {
 						userId,
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
+						...(createInvoiceDto.shiftId && { shiftId: createInvoiceDto.shiftId }),
 					},
 				});
 
@@ -978,6 +1030,14 @@ export class SalesService {
 							select: {
 								id: true,
 								cashDrawerId: true
+							}
+						},
+						shift: {
+							select: {
+								id: true,
+								name: true,
+								startTime: true,
+								endTime: true,
 							}
 						},
 						items: {

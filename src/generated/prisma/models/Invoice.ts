@@ -39,6 +39,7 @@ export type InvoiceAvgAggregateOutputType = {
   userId: number | null
   customerId: number | null
   sessionId: number | null
+  shiftId: number | null
 }
 
 export type InvoiceSumAggregateOutputType = {
@@ -54,6 +55,7 @@ export type InvoiceSumAggregateOutputType = {
   userId: number | null
   customerId: number | null
   sessionId: number | null
+  shiftId: number | null
 }
 
 export type InvoiceMinAggregateOutputType = {
@@ -71,6 +73,7 @@ export type InvoiceMinAggregateOutputType = {
   userId: number | null
   customerId: number | null
   sessionId: number | null
+  shiftId: number | null
   createdAt: Date | null
 }
 
@@ -89,6 +92,7 @@ export type InvoiceMaxAggregateOutputType = {
   userId: number | null
   customerId: number | null
   sessionId: number | null
+  shiftId: number | null
   createdAt: Date | null
 }
 
@@ -107,6 +111,7 @@ export type InvoiceCountAggregateOutputType = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId: number
   createdAt: number
   _all: number
 }
@@ -125,6 +130,7 @@ export type InvoiceAvgAggregateInputType = {
   userId?: true
   customerId?: true
   sessionId?: true
+  shiftId?: true
 }
 
 export type InvoiceSumAggregateInputType = {
@@ -140,6 +146,7 @@ export type InvoiceSumAggregateInputType = {
   userId?: true
   customerId?: true
   sessionId?: true
+  shiftId?: true
 }
 
 export type InvoiceMinAggregateInputType = {
@@ -157,6 +164,7 @@ export type InvoiceMinAggregateInputType = {
   userId?: true
   customerId?: true
   sessionId?: true
+  shiftId?: true
   createdAt?: true
 }
 
@@ -175,6 +183,7 @@ export type InvoiceMaxAggregateInputType = {
   userId?: true
   customerId?: true
   sessionId?: true
+  shiftId?: true
   createdAt?: true
 }
 
@@ -193,6 +202,7 @@ export type InvoiceCountAggregateInputType = {
   userId?: true
   customerId?: true
   sessionId?: true
+  shiftId?: true
   createdAt?: true
   _all?: true
 }
@@ -298,6 +308,7 @@ export type InvoiceGroupByOutputType = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId: number | null
   createdAt: Date
   _count: InvoiceCountAggregateOutputType | null
   _avg: InvoiceAvgAggregateOutputType | null
@@ -339,11 +350,13 @@ export type InvoiceWhereInput = {
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
   sessionId?: Prisma.IntFilter<"Invoice"> | number
+  shiftId?: Prisma.IntNullableFilter<"Invoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   exchangeRateUsd?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   exchangeRateEur?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   customer?: Prisma.XOR<Prisma.ClientsScalarRelationFilter, Prisma.ClientsWhereInput>
   session?: Prisma.XOR<Prisma.CashDrawerSessionScalarRelationFilter, Prisma.CashDrawerSessionWhereInput>
+  shift?: Prisma.XOR<Prisma.ShiftNullableScalarRelationFilter, Prisma.ShiftWhereInput> | null
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   items?: Prisma.InvoiceItemListRelationFilter
   paymentDetails?: Prisma.PaymentDetailListRelationFilter
@@ -364,11 +377,13 @@ export type InvoiceOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   exchangeRateUsd?: Prisma.ExchangeRateOrderByWithRelationInput
   exchangeRateEur?: Prisma.ExchangeRateOrderByWithRelationInput
   customer?: Prisma.ClientsOrderByWithRelationInput
   session?: Prisma.CashDrawerSessionOrderByWithRelationInput
+  shift?: Prisma.ShiftOrderByWithRelationInput
   user?: Prisma.UsersOrderByWithRelationInput
   items?: Prisma.InvoiceItemOrderByRelationAggregateInput
   paymentDetails?: Prisma.PaymentDetailOrderByRelationAggregateInput
@@ -392,11 +407,13 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
   sessionId?: Prisma.IntFilter<"Invoice"> | number
+  shiftId?: Prisma.IntNullableFilter<"Invoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   exchangeRateUsd?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   exchangeRateEur?: Prisma.XOR<Prisma.ExchangeRateScalarRelationFilter, Prisma.ExchangeRateWhereInput>
   customer?: Prisma.XOR<Prisma.ClientsScalarRelationFilter, Prisma.ClientsWhereInput>
   session?: Prisma.XOR<Prisma.CashDrawerSessionScalarRelationFilter, Prisma.CashDrawerSessionWhereInput>
+  shift?: Prisma.XOR<Prisma.ShiftNullableScalarRelationFilter, Prisma.ShiftWhereInput> | null
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   items?: Prisma.InvoiceItemListRelationFilter
   paymentDetails?: Prisma.PaymentDetailListRelationFilter
@@ -417,6 +434,7 @@ export type InvoiceOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.InvoiceCountOrderByAggregateInput
   _avg?: Prisma.InvoiceAvgOrderByAggregateInput
@@ -443,6 +461,7 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   userId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
   customerId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
   sessionId?: Prisma.IntWithAggregatesFilter<"Invoice"> | number
+  shiftId?: Prisma.IntNullableWithAggregatesFilter<"Invoice"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
 }
 
@@ -460,6 +479,7 @@ export type InvoiceCreateInput = {
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
@@ -480,6 +500,7 @@ export type InvoiceUncheckedCreateInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -499,6 +520,7 @@ export type InvoiceUpdateInput = {
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
@@ -519,6 +541,7 @@ export type InvoiceUncheckedUpdateInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -539,6 +562,7 @@ export type InvoiceCreateManyInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -569,6 +593,7 @@ export type InvoiceUncheckedUpdateManyInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -597,6 +622,7 @@ export type InvoiceCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -613,6 +639,7 @@ export type InvoiceAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrder
 }
 
 export type InvoiceMaxOrderByAggregateInput = {
@@ -630,6 +657,7 @@ export type InvoiceMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -648,6 +676,7 @@ export type InvoiceMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -664,6 +693,7 @@ export type InvoiceSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
+  shiftId?: Prisma.SortOrder
 }
 
 export type InvoiceScalarRelationFilter = {
@@ -913,6 +943,48 @@ export type InvoiceUncheckedUpdateManyWithoutSessionNestedInput = {
   deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
 }
 
+export type InvoiceCreateNestedManyWithoutShiftInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput> | Prisma.InvoiceCreateWithoutShiftInput[] | Prisma.InvoiceUncheckedCreateWithoutShiftInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutShiftInput | Prisma.InvoiceCreateOrConnectWithoutShiftInput[]
+  createMany?: Prisma.InvoiceCreateManyShiftInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUncheckedCreateNestedManyWithoutShiftInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput> | Prisma.InvoiceCreateWithoutShiftInput[] | Prisma.InvoiceUncheckedCreateWithoutShiftInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutShiftInput | Prisma.InvoiceCreateOrConnectWithoutShiftInput[]
+  createMany?: Prisma.InvoiceCreateManyShiftInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUpdateManyWithoutShiftNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput> | Prisma.InvoiceCreateWithoutShiftInput[] | Prisma.InvoiceUncheckedCreateWithoutShiftInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutShiftInput | Prisma.InvoiceCreateOrConnectWithoutShiftInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutShiftInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutShiftInput[]
+  createMany?: Prisma.InvoiceCreateManyShiftInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutShiftInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutShiftInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutShiftInput | Prisma.InvoiceUpdateManyWithWhereWithoutShiftInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
+export type InvoiceUncheckedUpdateManyWithoutShiftNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput> | Prisma.InvoiceCreateWithoutShiftInput[] | Prisma.InvoiceUncheckedCreateWithoutShiftInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutShiftInput | Prisma.InvoiceCreateOrConnectWithoutShiftInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutShiftInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutShiftInput[]
+  createMany?: Prisma.InvoiceCreateManyShiftInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutShiftInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutShiftInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutShiftInput | Prisma.InvoiceUpdateManyWithWhereWithoutShiftInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
 export type InvoiceCreateWithoutUserInput = {
   invoiceNumber: string
   totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -927,6 +999,7 @@ export type InvoiceCreateWithoutUserInput = {
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
 }
@@ -945,6 +1018,7 @@ export type InvoiceUncheckedCreateWithoutUserInput = {
   status?: $Enums.InvoiceStatus
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -994,6 +1068,7 @@ export type InvoiceScalarWhereInput = {
   userId?: Prisma.IntFilter<"Invoice"> | number
   customerId?: Prisma.IntFilter<"Invoice"> | number
   sessionId?: Prisma.IntFilter<"Invoice"> | number
+  shiftId?: Prisma.IntNullableFilter<"Invoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
 }
 
@@ -1010,6 +1085,7 @@ export type InvoiceCreateWithoutCustomerInput = {
   exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
@@ -1029,6 +1105,7 @@ export type InvoiceUncheckedCreateWithoutCustomerInput = {
   status?: $Enums.InvoiceStatus
   userId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -1073,6 +1150,7 @@ export type InvoiceCreateWithoutExchangeRateUsdInput = {
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
@@ -1092,6 +1170,7 @@ export type InvoiceUncheckedCreateWithoutExchangeRateUsdInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -1120,6 +1199,7 @@ export type InvoiceCreateWithoutExchangeRateEurInput = {
   exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
@@ -1139,6 +1219,7 @@ export type InvoiceUncheckedCreateWithoutExchangeRateEurInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -1200,6 +1281,7 @@ export type InvoiceCreateWithoutItemsInput = {
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
 }
@@ -1219,6 +1301,7 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
 }
@@ -1253,6 +1336,7 @@ export type InvoiceUpdateWithoutItemsInput = {
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
 }
@@ -1272,6 +1356,7 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
 }
@@ -1290,6 +1375,7 @@ export type InvoiceCreateWithoutPaymentDetailsInput = {
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
   session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
 }
@@ -1309,6 +1395,7 @@ export type InvoiceUncheckedCreateWithoutPaymentDetailsInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
 }
@@ -1343,6 +1430,7 @@ export type InvoiceUpdateWithoutPaymentDetailsInput = {
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
 }
@@ -1362,6 +1450,7 @@ export type InvoiceUncheckedUpdateWithoutPaymentDetailsInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
 }
@@ -1379,6 +1468,7 @@ export type InvoiceCreateWithoutSessionInput = {
   exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
   exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
   customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
+  shift?: Prisma.ShiftCreateNestedOneWithoutInvoicesInput
   user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
@@ -1398,6 +1488,7 @@ export type InvoiceUncheckedCreateWithoutSessionInput = {
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
+  shiftId?: number | null
   createdAt?: Date | string
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
@@ -1429,6 +1520,71 @@ export type InvoiceUpdateManyWithWhereWithoutSessionInput = {
   data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutSessionInput>
 }
 
+export type InvoiceCreateWithoutShiftInput = {
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.InvoiceStatus
+  createdAt?: Date | string
+  exchangeRateUsd: Prisma.ExchangeRateCreateNestedOneWithoutUsdRateInput
+  exchangeRateEur: Prisma.ExchangeRateCreateNestedOneWithoutEurRateInput
+  customer: Prisma.ClientsCreateNestedOneWithoutInvoicesInput
+  session: Prisma.CashDrawerSessionCreateNestedOneWithoutInvoicesInput
+  user: Prisma.UsersCreateNestedOneWithoutInvoicesInput
+  items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceUncheckedCreateWithoutShiftInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+  items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type InvoiceCreateOrConnectWithoutShiftInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput>
+}
+
+export type InvoiceCreateManyShiftInputEnvelope = {
+  data: Prisma.InvoiceCreateManyShiftInput | Prisma.InvoiceCreateManyShiftInput[]
+  skipDuplicates?: boolean
+}
+
+export type InvoiceUpsertWithWhereUniqueWithoutShiftInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.InvoiceUpdateWithoutShiftInput, Prisma.InvoiceUncheckedUpdateWithoutShiftInput>
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutShiftInput, Prisma.InvoiceUncheckedCreateWithoutShiftInput>
+}
+
+export type InvoiceUpdateWithWhereUniqueWithoutShiftInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateWithoutShiftInput, Prisma.InvoiceUncheckedUpdateWithoutShiftInput>
+}
+
+export type InvoiceUpdateManyWithWhereWithoutShiftInput = {
+  where: Prisma.InvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutShiftInput>
+}
+
 export type InvoiceCreateManyUserInput = {
   id?: number
   invoiceNumber: string
@@ -1443,6 +1599,7 @@ export type InvoiceCreateManyUserInput = {
   status?: $Enums.InvoiceStatus
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -1460,6 +1617,7 @@ export type InvoiceUpdateWithoutUserInput = {
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
 }
@@ -1478,6 +1636,7 @@ export type InvoiceUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -1497,6 +1656,7 @@ export type InvoiceUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1514,6 +1674,7 @@ export type InvoiceCreateManyCustomerInput = {
   status?: $Enums.InvoiceStatus
   userId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -1530,6 +1691,7 @@ export type InvoiceUpdateWithoutCustomerInput = {
   exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
@@ -1549,6 +1711,7 @@ export type InvoiceUncheckedUpdateWithoutCustomerInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -1568,6 +1731,7 @@ export type InvoiceUncheckedUpdateManyWithoutCustomerInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1585,6 +1749,7 @@ export type InvoiceCreateManyExchangeRateUsdInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -1602,6 +1767,7 @@ export type InvoiceCreateManyExchangeRateEurInput = {
   userId: number
   customerId: number
   sessionId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -1618,6 +1784,7 @@ export type InvoiceUpdateWithoutExchangeRateUsdInput = {
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
@@ -1637,6 +1804,7 @@ export type InvoiceUncheckedUpdateWithoutExchangeRateUsdInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -1656,6 +1824,7 @@ export type InvoiceUncheckedUpdateManyWithoutExchangeRateUsdInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1672,6 +1841,7 @@ export type InvoiceUpdateWithoutExchangeRateEurInput = {
   exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
   session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
@@ -1691,6 +1861,7 @@ export type InvoiceUncheckedUpdateWithoutExchangeRateEurInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -1710,6 +1881,7 @@ export type InvoiceUncheckedUpdateManyWithoutExchangeRateEurInput = {
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
   sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1727,6 +1899,7 @@ export type InvoiceCreateManySessionInput = {
   status?: $Enums.InvoiceStatus
   userId: number
   customerId: number
+  shiftId?: number | null
   createdAt?: Date | string
 }
 
@@ -1743,6 +1916,7 @@ export type InvoiceUpdateWithoutSessionInput = {
   exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
   exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
   customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
+  shift?: Prisma.ShiftUpdateOneWithoutInvoicesNestedInput
   user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
@@ -1762,6 +1936,7 @@ export type InvoiceUncheckedUpdateWithoutSessionInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
@@ -1781,6 +1956,82 @@ export type InvoiceUncheckedUpdateManyWithoutSessionInput = {
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  shiftId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceCreateManyShiftInput = {
+  id?: number
+  invoiceNumber: string
+  totalAmountBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd: runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId: number
+  exchangeRateEurId: number
+  status?: $Enums.InvoiceStatus
+  userId: number
+  customerId: number
+  sessionId: number
+  createdAt?: Date | string
+}
+
+export type InvoiceUpdateWithoutShiftInput = {
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exchangeRateUsd?: Prisma.ExchangeRateUpdateOneRequiredWithoutUsdRateNestedInput
+  exchangeRateEur?: Prisma.ExchangeRateUpdateOneRequiredWithoutEurRateNestedInput
+  customer?: Prisma.ClientsUpdateOneRequiredWithoutInvoicesNestedInput
+  session?: Prisma.CashDrawerSessionUpdateOneRequiredWithoutInvoicesNestedInput
+  user?: Prisma.UsersUpdateOneRequiredWithoutInvoicesNestedInput
+  items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateWithoutShiftInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  paymentDetails?: Prisma.PaymentDetailUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateManyWithoutShiftInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAmountBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalAmountUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalReceivedUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalChangeUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  exchangeRateUsdId?: Prisma.IntFieldUpdateOperationsInput | number
+  exchangeRateEurId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  customerId?: Prisma.IntFieldUpdateOperationsInput | number
+  sessionId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1839,11 +2090,13 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
+  shiftId?: boolean
   createdAt?: boolean
   exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Invoice$itemsArgs<ExtArgs>
   paymentDetails?: boolean | Prisma.Invoice$paymentDetailsArgs<ExtArgs>
@@ -1865,11 +2118,13 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
+  shiftId?: boolean
   createdAt?: boolean
   exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["invoice"]>
 
@@ -1888,11 +2143,13 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
+  shiftId?: boolean
   createdAt?: boolean
   exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["invoice"]>
 
@@ -1911,15 +2168,17 @@ export type InvoiceSelectScalar = {
   userId?: boolean
   customerId?: boolean
   sessionId?: boolean
+  shiftId?: boolean
   createdAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "totalAmountBs" | "totalAmountUsd" | "totalReceivedBs" | "totalReceivedUsd" | "totalChangeBs" | "totalChangeUsd" | "exchangeRateUsdId" | "exchangeRateEurId" | "status" | "userId" | "customerId" | "sessionId" | "createdAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "totalAmountBs" | "totalAmountUsd" | "totalReceivedBs" | "totalReceivedUsd" | "totalChangeBs" | "totalChangeUsd" | "exchangeRateUsdId" | "exchangeRateEurId" | "status" | "userId" | "customerId" | "sessionId" | "shiftId" | "createdAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   exchangeRateUsd?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Invoice$itemsArgs<ExtArgs>
   paymentDetails?: boolean | Prisma.Invoice$paymentDetailsArgs<ExtArgs>
@@ -1930,6 +2189,7 @@ export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type InvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1937,6 +2197,7 @@ export type InvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   exchangeRateEur?: boolean | Prisma.ExchangeRateDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.ClientsDefaultArgs<ExtArgs>
   session?: boolean | Prisma.CashDrawerSessionDefaultArgs<ExtArgs>
+  shift?: boolean | Prisma.Invoice$shiftArgs<ExtArgs>
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 
@@ -1947,6 +2208,7 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     exchangeRateEur: Prisma.$ExchangeRatePayload<ExtArgs>
     customer: Prisma.$ClientsPayload<ExtArgs>
     session: Prisma.$CashDrawerSessionPayload<ExtArgs>
+    shift: Prisma.$ShiftPayload<ExtArgs> | null
     user: Prisma.$UsersPayload<ExtArgs>
     items: Prisma.$InvoiceItemPayload<ExtArgs>[]
     paymentDetails: Prisma.$PaymentDetailPayload<ExtArgs>[]
@@ -1966,6 +2228,7 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     userId: number
     customerId: number
     sessionId: number
+    shiftId: number | null
     createdAt: Date
   }, ExtArgs["result"]["invoice"]>
   composites: {}
@@ -2365,6 +2628,7 @@ export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends runtime.
   exchangeRateEur<T extends Prisma.ExchangeRateDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExchangeRateDefaultArgs<ExtArgs>>): Prisma.Prisma__ExchangeRateClient<runtime.Types.Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.ClientsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientsDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientsClient<runtime.Types.Result.GetResult<Prisma.$ClientsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   session<T extends Prisma.CashDrawerSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CashDrawerSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__CashDrawerSessionClient<runtime.Types.Result.GetResult<Prisma.$CashDrawerSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  shift<T extends Prisma.Invoice$shiftArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$shiftArgs<ExtArgs>>): Prisma.Prisma__ShiftClient<runtime.Types.Result.GetResult<Prisma.$ShiftPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Invoice$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   paymentDetails<T extends Prisma.Invoice$paymentDetailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$paymentDetailsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentDetailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2411,6 +2675,7 @@ export interface InvoiceFieldRefs {
   readonly userId: Prisma.FieldRef<"Invoice", 'Int'>
   readonly customerId: Prisma.FieldRef<"Invoice", 'Int'>
   readonly sessionId: Prisma.FieldRef<"Invoice", 'Int'>
+  readonly shiftId: Prisma.FieldRef<"Invoice", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Invoice", 'DateTime'>
 }
     
@@ -2805,6 +3070,25 @@ export type InvoiceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Invoices to delete.
    */
   limit?: number
+}
+
+/**
+ * Invoice.shift
+ */
+export type Invoice$shiftArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Shift
+   */
+  select?: Prisma.ShiftSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Shift
+   */
+  omit?: Prisma.ShiftOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShiftInclude<ExtArgs> | null
+  where?: Prisma.ShiftWhereInput
 }
 
 /**

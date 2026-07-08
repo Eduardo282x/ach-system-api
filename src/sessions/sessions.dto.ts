@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, Min } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
 export class OpenSessionDto {
 	@Type(() => Number)
@@ -9,6 +9,12 @@ export class OpenSessionDto {
 
 	@IsNumber()
 	cashDrawerId!: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	@Min(1)
+	shiftId?: number;
 }
 
 export class UpdateOpeningSessionDto {

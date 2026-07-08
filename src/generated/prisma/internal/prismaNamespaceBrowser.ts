@@ -62,7 +62,8 @@ export const ModelName = {
   PaymentDetail: 'PaymentDetail',
   CurrencyDenomination: 'CurrencyDenomination',
   CashDrawerSession: 'CashDrawerSession',
-  CashDrawer: 'CashDrawer'
+  CashDrawer: 'CashDrawer',
+  Shift: 'Shift'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -180,6 +181,7 @@ export const InvoiceScalarFieldEnum = {
   userId: 'userId',
   customerId: 'customerId',
   sessionId: 'sessionId',
+  shiftId: 'shiftId',
   createdAt: 'createdAt'
 } as const
 
@@ -228,6 +230,7 @@ export const CashDrawerSessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   cashDrawerId: 'cashDrawerId',
+  shiftId: 'shiftId',
   openedAt: 'openedAt',
   closedAt: 'closedAt',
   openingBalance: 'openingBalance',
@@ -247,6 +250,19 @@ export const CashDrawerScalarFieldEnum = {
 } as const
 
 export type CashDrawerScalarFieldEnum = (typeof CashDrawerScalarFieldEnum)[keyof typeof CashDrawerScalarFieldEnum]
+
+
+export const ShiftScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShiftScalarFieldEnum = (typeof ShiftScalarFieldEnum)[keyof typeof ShiftScalarFieldEnum]
 
 
 export const SortOrder = {

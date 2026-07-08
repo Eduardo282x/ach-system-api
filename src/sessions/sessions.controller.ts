@@ -13,9 +13,11 @@ export class SessionsController {
         @Query('status', new ParseEnumPipe(SessionStatus, { optional: true })) status?: SessionStatus,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
+        @Query('shiftId') shiftId?: string,
         // @Query('cashDrawerId', ParseIntPipe) cashDrawerId?: number,
     ) {
-        return await this.sessionsService.getSessions({status, startDate, endDate});
+        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
+        return await this.sessionsService.getSessions({status, startDate, endDate, shiftId: parsedShiftId});
     }
 
     @Get('/cash-drawer')

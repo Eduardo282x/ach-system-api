@@ -395,7 +395,8 @@ export const ModelName = {
   PaymentDetail: 'PaymentDetail',
   CurrencyDenomination: 'CurrencyDenomination',
   CashDrawerSession: 'CashDrawerSession',
-  CashDrawer: 'CashDrawer'
+  CashDrawer: 'CashDrawer',
+  Shift: 'Shift'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "users" | "clients" | "exchangeRate" | "typePayment" | "product" | "inventoryMovement" | "invoice" | "invoiceItem" | "paymentDetail" | "currencyDenomination" | "cashDrawerSession" | "cashDrawer"
+    modelProps: "users" | "clients" | "exchangeRate" | "typePayment" | "product" | "inventoryMovement" | "invoice" | "invoiceItem" | "paymentDetail" | "currencyDenomination" | "cashDrawerSession" | "cashDrawer" | "shift"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1303,6 +1304,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Shift: {
+      payload: Prisma.$ShiftPayload<ExtArgs>
+      fields: Prisma.ShiftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShiftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShiftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        findFirst: {
+          args: Prisma.ShiftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShiftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        findMany: {
+          args: Prisma.ShiftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+        }
+        create: {
+          args: Prisma.ShiftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        createMany: {
+          args: Prisma.ShiftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShiftCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+        }
+        delete: {
+          args: Prisma.ShiftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        update: {
+          args: Prisma.ShiftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShiftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShiftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShiftUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShiftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShiftPayload>
+        }
+        aggregate: {
+          args: Prisma.ShiftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShift>
+        }
+        groupBy: {
+          args: Prisma.ShiftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShiftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShiftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShiftCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1441,6 +1516,7 @@ export const InvoiceScalarFieldEnum = {
   userId: 'userId',
   customerId: 'customerId',
   sessionId: 'sessionId',
+  shiftId: 'shiftId',
   createdAt: 'createdAt'
 } as const
 
@@ -1489,6 +1565,7 @@ export const CashDrawerSessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   cashDrawerId: 'cashDrawerId',
+  shiftId: 'shiftId',
   openedAt: 'openedAt',
   closedAt: 'closedAt',
   openingBalance: 'openingBalance',
@@ -1508,6 +1585,19 @@ export const CashDrawerScalarFieldEnum = {
 } as const
 
 export type CashDrawerScalarFieldEnum = (typeof CashDrawerScalarFieldEnum)[keyof typeof CashDrawerScalarFieldEnum]
+
+
+export const ShiftScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShiftScalarFieldEnum = (typeof ShiftScalarFieldEnum)[keyof typeof ShiftScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1824,6 +1914,7 @@ export type GlobalOmitConfig = {
   currencyDenomination?: Prisma.CurrencyDenominationOmit
   cashDrawerSession?: Prisma.CashDrawerSessionOmit
   cashDrawer?: Prisma.CashDrawerOmit
+  shift?: Prisma.ShiftOmit
 }
 
 /* Types for Logging */

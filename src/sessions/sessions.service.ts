@@ -13,6 +13,7 @@ interface SessionFilter {
 	startDate?: string;
 	endDate?: string;
 	cashDrawerId?: number;
+	shiftId?: number;
 }
 
 @Injectable()
@@ -166,7 +167,7 @@ export class SessionsService {
 	}
 
 	async getSessions(filter?: SessionFilter) {
-		const { status, startDate, endDate, cashDrawerId } = filter || {};
+		const { status, startDate, endDate, cashDrawerId, shiftId } = filter || {};
 
 		const where: any = {};
 
@@ -194,6 +195,10 @@ export class SessionsService {
 			where.cashDrawerId = cashDrawerId;
 		}
 
+		if (shiftId) {
+			where.shiftId = shiftId;
+		}
+
 		if (status) {
 			where.status = status;
 		}
@@ -217,6 +222,14 @@ export class SessionsService {
 							name: true,
 						},
 					},
+					shift: {
+						select: {
+							id: true,
+							name: true,
+							startTime: true,
+							endTime: true,
+						},
+					},
 				},
 			});
 
@@ -234,6 +247,7 @@ export class SessionsService {
 					totalInUsd: session.totalInUsd,
 					cashDrawer: session.cashDrawer,
 					user: session.user,
+					shift: session.shift,
 				};
 
 				if (!session.closedAt) {
@@ -253,6 +267,7 @@ export class SessionsService {
 					totalInUsd: session.totalInUsd,
 					cashDrawer: session.cashDrawer,
 					user: session.user,
+					shift: session.shift,
 				};
 
 				return [closeEvent, openEvent];
@@ -316,11 +331,30 @@ export class SessionsService {
 				);
 			}
 
+			if (openSessionDto.shiftId) {
+				const shift = await this.prismaService.shift.findUnique({
+					where: { id: openSessionDto.shiftId },
+				});
+
+				if (!shift) {
+					throw new NotFoundException(
+						`Turno con id ${openSessionDto.shiftId} no encontrado`,
+					);
+				}
+
+				if (!shift.active) {
+					throw new BadRequestException(
+						`El turno "${shift.name}" está desactivado`,
+					);
+				}
+			}
+
 			const session = await this.prismaService.cashDrawerSession.create({
 				data: {
 					userId,
 					cashDrawerId: openSessionDto.cashDrawerId,
 					openingBalance: new Prisma.Decimal(openSessionDto.openingBalance),
+					...(openSessionDto.shiftId && { shiftId: openSessionDto.shiftId }),
 				},
 				include: {
 					cashDrawer: {
@@ -334,6 +368,14 @@ export class SessionsService {
 							id: true,
 							name: true,
 						}
+					},
+					shift: {
+						select: {
+							id: true,
+							name: true,
+							startTime: true,
+							endTime: true,
+						},
 					},
 				},
 			});
@@ -351,6 +393,7 @@ export class SessionsService {
 				totalInUsd: session.totalInUsd,
 				cashDrawer: session.cashDrawer,
 				user: session.user,
+				shift: session.shift,
 			};
 
 			return {
@@ -457,6 +500,14 @@ export class SessionsService {
 							name: true,
 						},
 					},
+					shift: {
+						select: {
+							id: true,
+							name: true,
+							startTime: true,
+							endTime: true,
+						},
+					},
 				},
 			});
 
@@ -473,6 +524,7 @@ export class SessionsService {
 				totalInUsd: updatedSession.totalInUsd,
 				cashDrawer: updatedSession.cashDrawer,
 				user: updatedSession.user,
+				shift: updatedSession.shift,
 			};
 
 			return {

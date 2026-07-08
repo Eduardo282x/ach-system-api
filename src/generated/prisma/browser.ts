@@ -77,3 +77,8 @@ export type CashDrawerSession = Prisma.CashDrawerSessionModel
  * 
  */
 export type CashDrawer = Prisma.CashDrawerModel
+/**
+ * Model Shift
+ * 
+ */
+export type Shift = Prisma.ShiftModel
