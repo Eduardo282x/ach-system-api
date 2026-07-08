@@ -10,8 +10,10 @@ export class ProductsController {
     @Get()
     async getProducts(
         @Query('search') search: string,
+        @Query('page', ParseIntPipe) page: number,
+        @Query('size', ParseIntPipe) size: number,
     ) {
-        return await this.productsService.getProducts(search);
+        return await this.productsService.getProducts({search, page, size});
     }
 
     @Get('/inventory/history')

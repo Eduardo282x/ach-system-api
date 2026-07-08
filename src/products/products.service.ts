@@ -31,7 +31,10 @@ export interface InventoryHistoryQuery {
 export class ProductsService {
     constructor(private readonly prismaService: PrismaService) { }
 
-    async getProducts(search?: string) {
+    async getProducts(query: { search?: string, page: number, size: number }) {
+        const { search, page, size } = query;
+        const skip = (page - 1) * size;
+        const take = size;
         try {
             const where: any = {
                 deleted: false,
@@ -46,11 +49,15 @@ export class ProductsService {
 
             const exchangeRateToday = await this.getExchangeRateToday();
 
+            const totalElements = await this.prismaService.product.count({ where });
+
             const products = await this.prismaService.product.findMany({
                 where,
                 orderBy: {
                     createdAt: 'desc',
                 },
+                skip,
+                take,
             }).then(async (products) => {
                 const rates = exchangeRateToday.exchangeRate || [];
                 return products.map(pro => {
@@ -69,11 +76,21 @@ export class ProductsService {
                 return {
                     message: 'No se encontraron productos',
                     products: [],
+                    pagination: {
+                        total: totalElements,
+                        page,
+                        size,
+                    }
                 };
             }
 
             return {
                 products,
+                pagination: {
+                    total: totalElements,
+                    page,
+                    size,
+                },
             };
         } catch (error) {
             throw error;
