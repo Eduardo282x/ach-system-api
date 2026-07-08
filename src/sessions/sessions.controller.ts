@@ -14,10 +14,11 @@ export class SessionsController {
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
         @Query('shiftId') shiftId?: string,
-        // @Query('cashDrawerId', ParseIntPipe) cashDrawerId?: number,
+        @Query('userId') userId?: string,
     ) {
         const parsedShiftId = shiftId ? Number(shiftId) : undefined;
-        return await this.sessionsService.getSessions({status, startDate, endDate, shiftId: parsedShiftId});
+        const parsedUserId = userId ? Number(userId) : undefined;
+        return await this.sessionsService.getSessions({status, startDate, endDate, shiftId: parsedShiftId, userId: parsedUserId});
     }
 
     @Get('/cash-drawer')

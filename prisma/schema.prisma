@@ -152,22 +152,24 @@ model CurrencyDenomination {
 }
 
 model CashDrawerSession {
-  id             Int           @id @default(autoincrement())
-  userId         Int
-  cashDrawerId   Int
-  shiftId        Int?
-  openedAt       DateTime      @default(now())
-  closedAt       DateTime?
-  openingBalance Decimal       @db.Decimal(65, 2)
-  closingBalance Decimal?      @db.Decimal(65, 2)
-  totalSales     Decimal       @db.Decimal(65, 2) @default(0)
-  totalInUsd     Decimal       @db.Decimal(65, 2) @default(0)
-  totalInBs      Decimal       @db.Decimal(65, 2) @default(0)
-  status         SessionStatus @default(OPEN)
-  user           Users         @relation(fields: [userId], references: [id])
-  cashDrawer     CashDrawer    @relation(fields: [cashDrawerId], references: [id])
-  shift          Shift?        @relation(fields: [shiftId], references: [id])
-  invoices       Invoice[]
+  id                Int           @id @default(autoincrement())
+  userId            Int
+  cashDrawerId      Int
+  shiftId           Int?
+  openedAt          DateTime      @default(now())
+  closedAt          DateTime?
+  openingBalance    Decimal       @db.Decimal(65, 2)
+  openingBalanceUsd Decimal       @db.Decimal(65, 2) @default(0)
+  closingBalance    Decimal?      @db.Decimal(65, 2)
+  closingBalanceUsd Decimal?      @db.Decimal(65, 2)
+  totalSales        Decimal       @db.Decimal(65, 2) @default(0)
+  totalInUsd        Decimal       @db.Decimal(65, 2) @default(0)
+  totalInBs         Decimal       @db.Decimal(65, 2) @default(0)
+  status            SessionStatus @default(OPEN)
+  user              Users         @relation(fields: [userId], references: [id])
+  cashDrawer        CashDrawer    @relation(fields: [cashDrawerId], references: [id])
+  shift             Shift?        @relation(fields: [shiftId], references: [id])
+  invoices          Invoice[]
 }
 
 model CashDrawer {

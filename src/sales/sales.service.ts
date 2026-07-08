@@ -32,6 +32,45 @@ export class SalesService {
 		return new Date(`${date}T23:59:59.999Z`);
 	}
 
+	private async getShiftDateRange(date: string, shiftId?: number): Promise<{ start: Date; end: Date }> {
+		if (!shiftId) {
+			return {
+				start: this.getStartOfDayUtc(date),
+				end: this.getEndOfDayUtc(date),
+			};
+		}
+
+		const shift = await this.prismaService.shift.findUnique({
+			where: { id: shiftId },
+		});
+
+		if (!shift) {
+			return {
+				start: this.getStartOfDayUtc(date),
+				end: this.getEndOfDayUtc(date),
+			};
+		}
+
+		const [startHour, startMin] = shift.startTime.split(':').map(Number);
+		const [endHour, endMin] = shift.endTime.split(':').map(Number);
+
+		if (endHour < startHour) {
+			const startDate = new Date(date);
+			startDate.setUTCHours(startHour, startMin, 0, 0);
+			startDate.setUTCDate(startDate.getUTCDate() - 1);
+
+			const endDate = new Date(date);
+			endDate.setUTCHours(endHour, endMin, 0, 0);
+
+			return { start: startDate, end: endDate };
+		}
+
+		return {
+			start: this.getStartOfDayUtc(date),
+			end: this.getEndOfDayUtc(date),
+		};
+	}
+
 	private async getLatestExchangeRatesByCurrency() {
 		const rates = await this.prismaService.exchangeRate.findMany({
 			orderBy: {
@@ -238,13 +277,6 @@ export class SalesService {
 				throw new BadRequestException('La fecha es requerida');
 			}
 
-			const startDate = this.getStartOfDayUtc(date);
-			const endDate = this.getEndOfDayUtc(date);
-
-			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
-			}
-
 			let parsedSessionId: number | undefined;
 			if (sessionId !== undefined && sessionId !== '') {
 				parsedSessionId = Number(sessionId);
@@ -261,6 +293,12 @@ export class SalesService {
 				if (!Number.isInteger(parsedShiftId) || parsedShiftId <= 0) {
 					throw new BadRequestException('shiftId inválido');
 				}
+			}
+
+			const { start: startDate, end: endDate } = await this.getShiftDateRange(date, parsedShiftId);
+
+			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
 			}
 
 			const invoiceWhere: any = {
@@ -1079,6 +1117,7 @@ export class SalesService {
 				invoice,
 			};
 		} catch (error) {
+			console.log('error creating invoice:', error);
 			throw error;
 		}
 	}

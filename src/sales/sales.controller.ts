@@ -44,6 +44,11 @@ export class SalesController {
         @Body() createInvoiceDto: CreateInvoiceDto,
         @CurrentUser() user,
     ) {
-        return await this.salesService.createInvoice(createInvoiceDto, user.id);
+        try {
+            return await this.salesService.createInvoice(createInvoiceDto, user.id);
+        } catch (error) {
+            console.log('Error in createInvoice:', error);
+            throw error;
+        }
     }
 }

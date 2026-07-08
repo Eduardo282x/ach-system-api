@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { SessionsService } from 'src/sessions/sessions.service';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly jwtService: JwtService,
+        private readonly sessionsService: SessionsService,
     ) {
     }
 
@@ -49,6 +51,15 @@ export class AuthService {
                 user: userWithoutPassword,
                 token
             };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async logout(userId: number) {
+        try {
+            await this.sessionsService.closeSessionByUserId(userId);
+            return { message: 'Sesión cerrada correctamente' };
         } catch (error) {
             throw error;
         }

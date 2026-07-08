@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, Min } from 'class-validator';
+import { IsNumber, Min } from 'class-validator';
 
 export class OpenSessionDto {
 	@Type(() => Number)
@@ -7,14 +7,13 @@ export class OpenSessionDto {
 	@Min(0)
 	openingBalance!: number;
 
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0)
+	openingBalanceUsd!: number;
+
 	@IsNumber()
 	cashDrawerId!: number;
-
-	@IsOptional()
-	@Type(() => Number)
-	@IsNumber()
-	@Min(1)
-	shiftId?: number;
 }
 
 export class UpdateOpeningSessionDto {
@@ -22,6 +21,11 @@ export class UpdateOpeningSessionDto {
 	@IsNumber({ maxDecimalPlaces: 2 })
 	@Min(0)
 	openingBalance!: number;
+
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0)
+	openingBalanceUsd!: number;
 }
 
 export class CloseSessionDto {
@@ -29,4 +33,9 @@ export class CloseSessionDto {
 	@IsNumber({ maxDecimalPlaces: 2 })
 	@Min(0)
 	closingBalance!: number;
+
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0)
+	closingBalanceUsd!: number;
 }

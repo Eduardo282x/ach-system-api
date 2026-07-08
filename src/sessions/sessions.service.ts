@@ -14,6 +14,7 @@ interface SessionFilter {
 	endDate?: string;
 	cashDrawerId?: number;
 	shiftId?: number;
+	userId?: number;
 }
 
 @Injectable()
@@ -30,6 +31,34 @@ export class SessionsService {
 
 	private toNumber(value: Prisma.Decimal | null | undefined) {
 		return Number(value ?? 0);
+	}
+
+	private async findCurrentShift(): Promise<number | undefined> {
+		const now = new Date();
+		const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+		const shifts = await this.prismaService.shift.findMany({
+			where: { active: true },
+		});
+
+		for (const shift of shifts) {
+			const [startH, startM] = shift.startTime.split(':').map(Number);
+			const [endH, endM] = shift.endTime.split(':').map(Number);
+			const startMinutes = startH * 60 + startM;
+			const endMinutes = endH * 60 + endM;
+
+			if (startMinutes <= endMinutes) {
+				if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+					return shift.id;
+				}
+			} else {
+				if (currentMinutes >= startMinutes || currentMinutes < endMinutes) {
+					return shift.id;
+				}
+			}
+		}
+
+		return undefined;
 	}
 
 	async refreshSessionTotals(sessionId: number) {
@@ -167,7 +196,7 @@ export class SessionsService {
 	}
 
 	async getSessions(filter?: SessionFilter) {
-		const { status, startDate, endDate, cashDrawerId, shiftId } = filter || {};
+		const { status, startDate, endDate, cashDrawerId, shiftId, userId } = filter || {};
 
 		const where: any = {};
 
@@ -197,6 +226,10 @@ export class SessionsService {
 
 		if (shiftId) {
 			where.shiftId = shiftId;
+		}
+
+		if (userId) {
+			where.userId = userId;
 		}
 
 		if (status) {
@@ -331,30 +364,29 @@ export class SessionsService {
 				);
 			}
 
-			if (openSessionDto.shiftId) {
-				const shift = await this.prismaService.shift.findUnique({
-					where: { id: openSessionDto.shiftId },
-				});
+			const existingCashDrawerSession = await this.prismaService.cashDrawerSession.findFirst({
+				where: {
+					cashDrawerId: openSessionDto.cashDrawerId,
+					status: 'OPEN',
+					userId: { not: userId },
+				},
+			});
 
-				if (!shift) {
-					throw new NotFoundException(
-						`Turno con id ${openSessionDto.shiftId} no encontrado`,
-					);
-				}
-
-				if (!shift.active) {
-					throw new BadRequestException(
-						`El turno "${shift.name}" está desactivado`,
-					);
-				}
+			if (existingCashDrawerSession) {
+				throw new BadRequestException(
+					`La caja con id ${openSessionDto.cashDrawerId} ya está abierta por otro usuario`,
+				);
 			}
+
+			const shiftId = await this.findCurrentShift();
 
 			const session = await this.prismaService.cashDrawerSession.create({
 				data: {
 					userId,
 					cashDrawerId: openSessionDto.cashDrawerId,
 					openingBalance: new Prisma.Decimal(openSessionDto.openingBalance),
-					...(openSessionDto.shiftId && { shiftId: openSessionDto.shiftId }),
+					openingBalanceUsd: new Prisma.Decimal(openSessionDto.openingBalanceUsd),
+					...(shiftId && { shiftId }),
 				},
 				include: {
 					cashDrawer: {
@@ -477,16 +509,17 @@ export class SessionsService {
 				},
 			});
 
-			const updatedSession = await this.prismaService.cashDrawerSession.update({
-				where: { id },
-				data: {
-					closedAt: new Date(),
-					closingBalance: new Prisma.Decimal(closeSessionDto.closingBalance),
-					totalSales: new Prisma.Decimal(this.toNumber(refreshedSession?.totalSales)),
-					totalInBs: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInBs)),
-					totalInUsd: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInUsd)),
-					status: 'CLOSED',
-				},
+		const updatedSession = await this.prismaService.cashDrawerSession.update({
+			where: { id },
+			data: {
+				closedAt: new Date(),
+				closingBalance: new Prisma.Decimal(closeSessionDto.closingBalance),
+				closingBalanceUsd: new Prisma.Decimal(closeSessionDto.closingBalanceUsd),
+				totalSales: new Prisma.Decimal(this.toNumber(refreshedSession?.totalSales)),
+				totalInBs: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInBs)),
+				totalInUsd: new Prisma.Decimal(this.toNumber(refreshedSession?.totalInUsd)),
+				status: 'CLOSED',
+			},
 				include: {
 					cashDrawer: {
 						select: {
@@ -534,5 +567,26 @@ export class SessionsService {
 		} catch (error) {
 			throw error;
 		}
+	}
+
+	async closeSessionByUserId(userId: number): Promise<void> {
+		const openSession = await this.prismaService.cashDrawerSession.findFirst({
+			where: {
+				userId,
+				status: 'OPEN',
+			},
+		});
+
+		if (!openSession) return;
+
+		await this.refreshSessionTotals(openSession.id);
+
+		await this.prismaService.cashDrawerSession.update({
+			where: { id: openSession.id },
+			data: {
+				closedAt: new Date(),
+				status: 'CLOSED',
+			},
+		});
 	}
 }

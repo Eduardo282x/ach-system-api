@@ -32,7 +32,9 @@ export type CashDrawerSessionAvgAggregateOutputType = {
   cashDrawerId: number | null
   shiftId: number | null
   openingBalance: runtime.Decimal | null
+  openingBalanceUsd: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
+  closingBalanceUsd: runtime.Decimal | null
   totalSales: runtime.Decimal | null
   totalInUsd: runtime.Decimal | null
   totalInBs: runtime.Decimal | null
@@ -44,7 +46,9 @@ export type CashDrawerSessionSumAggregateOutputType = {
   cashDrawerId: number | null
   shiftId: number | null
   openingBalance: runtime.Decimal | null
+  openingBalanceUsd: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
+  closingBalanceUsd: runtime.Decimal | null
   totalSales: runtime.Decimal | null
   totalInUsd: runtime.Decimal | null
   totalInBs: runtime.Decimal | null
@@ -58,7 +62,9 @@ export type CashDrawerSessionMinAggregateOutputType = {
   openedAt: Date | null
   closedAt: Date | null
   openingBalance: runtime.Decimal | null
+  openingBalanceUsd: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
+  closingBalanceUsd: runtime.Decimal | null
   totalSales: runtime.Decimal | null
   totalInUsd: runtime.Decimal | null
   totalInBs: runtime.Decimal | null
@@ -73,7 +79,9 @@ export type CashDrawerSessionMaxAggregateOutputType = {
   openedAt: Date | null
   closedAt: Date | null
   openingBalance: runtime.Decimal | null
+  openingBalanceUsd: runtime.Decimal | null
   closingBalance: runtime.Decimal | null
+  closingBalanceUsd: runtime.Decimal | null
   totalSales: runtime.Decimal | null
   totalInUsd: runtime.Decimal | null
   totalInBs: runtime.Decimal | null
@@ -88,7 +96,9 @@ export type CashDrawerSessionCountAggregateOutputType = {
   openedAt: number
   closedAt: number
   openingBalance: number
+  openingBalanceUsd: number
   closingBalance: number
+  closingBalanceUsd: number
   totalSales: number
   totalInUsd: number
   totalInBs: number
@@ -103,7 +113,9 @@ export type CashDrawerSessionAvgAggregateInputType = {
   cashDrawerId?: true
   shiftId?: true
   openingBalance?: true
+  openingBalanceUsd?: true
   closingBalance?: true
+  closingBalanceUsd?: true
   totalSales?: true
   totalInUsd?: true
   totalInBs?: true
@@ -115,7 +127,9 @@ export type CashDrawerSessionSumAggregateInputType = {
   cashDrawerId?: true
   shiftId?: true
   openingBalance?: true
+  openingBalanceUsd?: true
   closingBalance?: true
+  closingBalanceUsd?: true
   totalSales?: true
   totalInUsd?: true
   totalInBs?: true
@@ -129,7 +143,9 @@ export type CashDrawerSessionMinAggregateInputType = {
   openedAt?: true
   closedAt?: true
   openingBalance?: true
+  openingBalanceUsd?: true
   closingBalance?: true
+  closingBalanceUsd?: true
   totalSales?: true
   totalInUsd?: true
   totalInBs?: true
@@ -144,7 +160,9 @@ export type CashDrawerSessionMaxAggregateInputType = {
   openedAt?: true
   closedAt?: true
   openingBalance?: true
+  openingBalanceUsd?: true
   closingBalance?: true
+  closingBalanceUsd?: true
   totalSales?: true
   totalInUsd?: true
   totalInBs?: true
@@ -159,7 +177,9 @@ export type CashDrawerSessionCountAggregateInputType = {
   openedAt?: true
   closedAt?: true
   openingBalance?: true
+  openingBalanceUsd?: true
   closingBalance?: true
+  closingBalanceUsd?: true
   totalSales?: true
   totalInUsd?: true
   totalInBs?: true
@@ -261,7 +281,9 @@ export type CashDrawerSessionGroupByOutputType = {
   openedAt: Date
   closedAt: Date | null
   openingBalance: runtime.Decimal
+  openingBalanceUsd: runtime.Decimal
   closingBalance: runtime.Decimal | null
+  closingBalanceUsd: runtime.Decimal | null
   totalSales: runtime.Decimal
   totalInUsd: runtime.Decimal
   totalInBs: runtime.Decimal
@@ -299,7 +321,9 @@ export type CashDrawerSessionWhereInput = {
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -318,7 +342,9 @@ export type CashDrawerSessionOrderByWithRelationInput = {
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -340,7 +366,9 @@ export type CashDrawerSessionWhereUniqueInput = Prisma.AtLeast<{
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -359,7 +387,9 @@ export type CashDrawerSessionOrderByWithAggregationInput = {
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrderInput | Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -382,7 +412,9 @@ export type CashDrawerSessionScalarWhereWithAggregatesInput = {
   openedAt?: Prisma.DateTimeWithAggregatesFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.DecimalNullableWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.DecimalNullableWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalWithAggregatesFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -393,7 +425,9 @@ export type CashDrawerSessionCreateInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -412,7 +446,9 @@ export type CashDrawerSessionUncheckedCreateInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -424,7 +460,9 @@ export type CashDrawerSessionUpdateInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -443,7 +481,9 @@ export type CashDrawerSessionUncheckedUpdateInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -459,7 +499,9 @@ export type CashDrawerSessionCreateManyInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -470,7 +512,9 @@ export type CashDrawerSessionUpdateManyMutationInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -485,7 +529,9 @@ export type CashDrawerSessionUncheckedUpdateManyInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -515,7 +561,9 @@ export type CashDrawerSessionCountOrderByAggregateInput = {
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -528,7 +576,9 @@ export type CashDrawerSessionAvgOrderByAggregateInput = {
   cashDrawerId?: Prisma.SortOrder
   shiftId?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -542,7 +592,9 @@ export type CashDrawerSessionMaxOrderByAggregateInput = {
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -557,7 +609,9 @@ export type CashDrawerSessionMinOrderByAggregateInput = {
   openedAt?: Prisma.SortOrder
   closedAt?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -570,7 +624,9 @@ export type CashDrawerSessionSumOrderByAggregateInput = {
   cashDrawerId?: Prisma.SortOrder
   shiftId?: Prisma.SortOrder
   openingBalance?: Prisma.SortOrder
+  openingBalanceUsd?: Prisma.SortOrder
   closingBalance?: Prisma.SortOrder
+  closingBalanceUsd?: Prisma.SortOrder
   totalSales?: Prisma.SortOrder
   totalInUsd?: Prisma.SortOrder
   totalInBs?: Prisma.SortOrder
@@ -736,7 +792,9 @@ export type CashDrawerSessionCreateWithoutUserInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -753,7 +811,9 @@ export type CashDrawerSessionUncheckedCreateWithoutUserInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -798,7 +858,9 @@ export type CashDrawerSessionScalarWhereInput = {
   openedAt?: Prisma.DateTimeFilter<"CashDrawerSession"> | Date | string
   closedAt?: Prisma.DateTimeNullableFilter<"CashDrawerSession"> | Date | string | null
   openingBalance?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.DecimalNullableFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFilter<"CashDrawerSession"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -809,7 +871,9 @@ export type CashDrawerSessionCreateWithoutInvoicesInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -827,7 +891,9 @@ export type CashDrawerSessionUncheckedCreateWithoutInvoicesInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -854,7 +920,9 @@ export type CashDrawerSessionUpdateWithoutInvoicesInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -872,7 +940,9 @@ export type CashDrawerSessionUncheckedUpdateWithoutInvoicesInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -883,7 +953,9 @@ export type CashDrawerSessionCreateWithoutCashDrawerInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -900,7 +972,9 @@ export type CashDrawerSessionUncheckedCreateWithoutCashDrawerInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -938,7 +1012,9 @@ export type CashDrawerSessionCreateWithoutShiftInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -955,7 +1031,9 @@ export type CashDrawerSessionUncheckedCreateWithoutShiftInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -996,7 +1074,9 @@ export type CashDrawerSessionCreateManyUserInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1007,7 +1087,9 @@ export type CashDrawerSessionUpdateWithoutUserInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1024,7 +1106,9 @@ export type CashDrawerSessionUncheckedUpdateWithoutUserInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1039,7 +1123,9 @@ export type CashDrawerSessionUncheckedUpdateManyWithoutUserInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1053,7 +1139,9 @@ export type CashDrawerSessionCreateManyCashDrawerInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1064,7 +1152,9 @@ export type CashDrawerSessionUpdateWithoutCashDrawerInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1081,7 +1171,9 @@ export type CashDrawerSessionUncheckedUpdateWithoutCashDrawerInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1096,7 +1188,9 @@ export type CashDrawerSessionUncheckedUpdateManyWithoutCashDrawerInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1110,7 +1204,9 @@ export type CashDrawerSessionCreateManyShiftInput = {
   openedAt?: Date | string
   closedAt?: Date | string | null
   openingBalance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1121,7 +1217,9 @@ export type CashDrawerSessionUpdateWithoutShiftInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1138,7 +1236,9 @@ export type CashDrawerSessionUncheckedUpdateWithoutShiftInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1153,7 +1253,9 @@ export type CashDrawerSessionUncheckedUpdateManyWithoutShiftInput = {
   openedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   openingBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  openingBalanceUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   closingBalance?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  closingBalanceUsd?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInUsd?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalInBs?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1199,7 +1301,9 @@ export type CashDrawerSessionSelect<ExtArgs extends runtime.Types.Extensions.Int
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
+  openingBalanceUsd?: boolean
   closingBalance?: boolean
+  closingBalanceUsd?: boolean
   totalSales?: boolean
   totalInUsd?: boolean
   totalInBs?: boolean
@@ -1219,7 +1323,9 @@ export type CashDrawerSessionSelectCreateManyAndReturn<ExtArgs extends runtime.T
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
+  openingBalanceUsd?: boolean
   closingBalance?: boolean
+  closingBalanceUsd?: boolean
   totalSales?: boolean
   totalInUsd?: boolean
   totalInBs?: boolean
@@ -1237,7 +1343,9 @@ export type CashDrawerSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
+  openingBalanceUsd?: boolean
   closingBalance?: boolean
+  closingBalanceUsd?: boolean
   totalSales?: boolean
   totalInUsd?: boolean
   totalInBs?: boolean
@@ -1255,14 +1363,16 @@ export type CashDrawerSessionSelectScalar = {
   openedAt?: boolean
   closedAt?: boolean
   openingBalance?: boolean
+  openingBalanceUsd?: boolean
   closingBalance?: boolean
+  closingBalanceUsd?: boolean
   totalSales?: boolean
   totalInUsd?: boolean
   totalInBs?: boolean
   status?: boolean
 }
 
-export type CashDrawerSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cashDrawerId" | "shiftId" | "openedAt" | "closedAt" | "openingBalance" | "closingBalance" | "totalSales" | "totalInUsd" | "totalInBs" | "status", ExtArgs["result"]["cashDrawerSession"]>
+export type CashDrawerSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cashDrawerId" | "shiftId" | "openedAt" | "closedAt" | "openingBalance" | "openingBalanceUsd" | "closingBalance" | "closingBalanceUsd" | "totalSales" | "totalInUsd" | "totalInBs" | "status", ExtArgs["result"]["cashDrawerSession"]>
 export type CashDrawerSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
   cashDrawer?: boolean | Prisma.CashDrawerDefaultArgs<ExtArgs>
@@ -1297,7 +1407,9 @@ export type $CashDrawerSessionPayload<ExtArgs extends runtime.Types.Extensions.I
     openedAt: Date
     closedAt: Date | null
     openingBalance: runtime.Decimal
+    openingBalanceUsd: runtime.Decimal
     closingBalance: runtime.Decimal | null
+    closingBalanceUsd: runtime.Decimal | null
     totalSales: runtime.Decimal
     totalInUsd: runtime.Decimal
     totalInBs: runtime.Decimal
@@ -1736,7 +1848,9 @@ export interface CashDrawerSessionFieldRefs {
   readonly openedAt: Prisma.FieldRef<"CashDrawerSession", 'DateTime'>
   readonly closedAt: Prisma.FieldRef<"CashDrawerSession", 'DateTime'>
   readonly openingBalance: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
+  readonly openingBalanceUsd: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
   readonly closingBalance: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
+  readonly closingBalanceUsd: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
   readonly totalSales: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
   readonly totalInUsd: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
   readonly totalInBs: Prisma.FieldRef<"CashDrawerSession", 'Decimal'>
