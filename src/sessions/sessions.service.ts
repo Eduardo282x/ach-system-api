@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Prisma } from 'src/generated/prisma/client';
 import { SessionStatus } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ShiftsService } from 'src/shifts/shifts.service';
 import {
 	CloseSessionDto,
 	OpenSessionDto,
@@ -19,7 +20,10 @@ interface SessionFilter {
 
 @Injectable()
 export class SessionsService {
-	constructor(private readonly prismaService: PrismaService) { }
+	constructor(
+		private readonly prismaService: PrismaService,
+		private readonly shiftsService: ShiftsService,
+	) { }
 
 	private getStartOfDayUtc(date: string) {
 		return new Date(`${date}T00:00:00.000Z`);
@@ -31,34 +35,6 @@ export class SessionsService {
 
 	private toNumber(value: Prisma.Decimal | null | undefined) {
 		return Number(value ?? 0);
-	}
-
-	private async findCurrentShift(): Promise<number | undefined> {
-		const now = new Date();
-		const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-		const shifts = await this.prismaService.shift.findMany({
-			where: { active: true },
-		});
-
-		for (const shift of shifts) {
-			const [startH, startM] = shift.startTime.split(':').map(Number);
-			const [endH, endM] = shift.endTime.split(':').map(Number);
-			const startMinutes = startH * 60 + startM;
-			const endMinutes = endH * 60 + endM;
-
-			if (startMinutes <= endMinutes) {
-				if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-					return shift.id;
-				}
-			} else {
-				if (currentMinutes >= startMinutes || currentMinutes < endMinutes) {
-					return shift.id;
-				}
-			}
-		}
-
-		return undefined;
 	}
 
 	async refreshSessionTotals(sessionId: number) {
@@ -378,7 +354,7 @@ export class SessionsService {
 				);
 			}
 
-			const shiftId = await this.findCurrentShift();
+			const shiftId = await this.shiftsService.findCurrentShift();
 
 			const session = await this.prismaService.cashDrawerSession.create({
 				data: {

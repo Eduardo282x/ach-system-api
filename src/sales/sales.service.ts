@@ -3,6 +3,7 @@ import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
+import { ShiftsService } from 'src/shifts/shifts.service';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
@@ -18,6 +19,7 @@ export class SalesService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly sessionsService: SessionsService,
+		private readonly shiftsService: ShiftsService,
 	) { }
 
 	private toTwoDecimals(value: number) {
@@ -708,14 +710,20 @@ export class SalesService {
 				);
 			}
 
-			if (createInvoiceDto.shiftId) {
+			let resolvedShiftId = createInvoiceDto.shiftId;
+
+			if (!resolvedShiftId) {
+				resolvedShiftId = await this.shiftsService.findCurrentShift();
+			}
+
+			if (resolvedShiftId) {
 				const shift = await this.prismaService.shift.findUnique({
-					where: { id: createInvoiceDto.shiftId },
+					where: { id: resolvedShiftId },
 				});
 
 				if (!shift) {
 					throw new NotFoundException(
-						`Turno con id ${createInvoiceDto.shiftId} no encontrado`,
+						`Turno con id ${resolvedShiftId} no encontrado`,
 					);
 				}
 
@@ -995,7 +1003,7 @@ export class SalesService {
 						userId,
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
-						...(createInvoiceDto.shiftId && { shiftId: createInvoiceDto.shiftId }),
+						...(resolvedShiftId && { shiftId: resolvedShiftId }),
 					},
 				});
 

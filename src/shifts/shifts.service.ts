@@ -61,6 +61,32 @@ export class ShiftsService {
 		}
 	}
 
+	async findCurrentShift(): Promise<number | undefined> {
+		const now = new Date();
+		const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+		const shifts = await this.prismaService.shift.findMany({
+			where: { active: true },
+		});
+
+		for (const shift of shifts) {
+			const startMinutes = this.timeToMinutes(shift.startTime);
+			const endMinutes = this.timeToMinutes(shift.endTime);
+
+			if (startMinutes <= endMinutes) {
+				if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+					return shift.id;
+				}
+			} else {
+				if (currentMinutes >= startMinutes || currentMinutes < endMinutes) {
+					return shift.id;
+				}
+			}
+		}
+
+		return undefined;
+	}
+
 	async getShifts() {
 		try {
 			const shifts = await this.prismaService.shift.findMany({
