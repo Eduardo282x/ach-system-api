@@ -20,6 +20,15 @@ export class SessionsController {
         const parsedUserId = userId ? Number(userId) : undefined;
         return await this.sessionsService.getSessions({status, startDate, endDate, shiftId: parsedShiftId, userId: parsedUserId});
     }
+    
+    @Get('/group')
+    async getSessionsGroup(
+        @Query('date') date: string,
+        @Query('shiftId') shiftId?: string,
+    ) {
+        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
+        return await this.sessionsService.getSessionsGroup({date, shiftId: parsedShiftId});
+    }
 
     @Get('/cash-drawer')
     async getCashDrawer() {

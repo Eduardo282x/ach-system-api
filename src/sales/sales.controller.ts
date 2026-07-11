@@ -19,9 +19,10 @@ export class SalesController {
     async getResumenSales(
         @Query('date') date: string,
         @Query('sessionId') sessionId?: string,
+        @Query('cashDrawerId') cashDrawerId?: string,
         @Query('shiftId') shiftId?: string,
     ) {
-        return await this.salesService.getResumenSales({date, sessionId, shiftId});
+        return await this.salesService.getResumenSales({date, sessionId, cashDrawerId, shiftId});
     }
 
     @Get('/resumen-excel')

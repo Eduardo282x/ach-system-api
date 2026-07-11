@@ -18,6 +18,11 @@ interface SessionFilter {
 	userId?: number;
 }
 
+interface SessionGroupFilter {
+	date: string;
+	shiftId?: number;
+}
+
 @Injectable()
 export class SessionsService {
 	constructor(
@@ -284,6 +289,73 @@ export class SessionsService {
 
 			return {
 				sessions: sessionEvents,
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async getSessionsGroup(filter: SessionGroupFilter) {
+		const { date, shiftId } = filter || {};
+
+		const where: any = {};
+
+		if (date) {
+			const start = this.getStartOfDayUtc(date);
+			const end = this.getEndOfDayUtc(date);
+
+			where.OR = [
+				{
+					openedAt: {
+						gte: start,
+						lte: end,
+					}
+				},
+				{
+					closedAt: {
+						gte: start,
+						lte: end,
+					}
+				}
+			];
+		}
+
+		if (shiftId) {
+			where.shiftId = shiftId;
+		}
+
+		try {
+			const sessions = await this.prismaService.cashDrawerSession.findMany({
+				where,
+				orderBy: {
+					openedAt: 'desc',
+				},
+				include: {
+					cashDrawer: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					user: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					shift: {
+						select: {
+							id: true,
+							name: true,
+							startTime: true,
+							endTime: true,
+						},
+					},
+				},
+			});
+
+			return {
+				sessions: sessions,
 			};
 		} catch (error) {
 			throw error;

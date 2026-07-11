@@ -10,6 +10,7 @@ import { Response } from 'express';
 
 interface ResumenFilter {
 	date: string;
+	cashDrawerId?: string;
 	sessionId?: string;
 	shiftId?: string;
 }
@@ -274,7 +275,7 @@ export class SalesService {
 
 	async getResumenSales(filter: ResumenFilter) {
 		try {
-			const { date, sessionId, shiftId } = filter;
+			const { date, sessionId, cashDrawerId, shiftId } = filter;
 			if (!date) {
 				throw new BadRequestException('La fecha es requerida');
 			}
@@ -309,6 +310,7 @@ export class SalesService {
 					lte: endDate,
 				},
 				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
+				...(cashDrawerId ? { cashDrawerId: Number(cashDrawerId) } : {}),
 				...(parsedShiftId ? { shiftId: parsedShiftId } : {}),
 			};
 
