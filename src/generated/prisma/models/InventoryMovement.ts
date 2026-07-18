@@ -29,21 +29,21 @@ export type AggregateInventoryMovement = {
 export type InventoryMovementAvgAggregateOutputType = {
   id: number | null
   productId: number | null
-  quantity: number | null
+  quantity: runtime.Decimal | null
   userId: number | null
 }
 
 export type InventoryMovementSumAggregateOutputType = {
   id: number | null
   productId: number | null
-  quantity: number | null
+  quantity: runtime.Decimal | null
   userId: number | null
 }
 
 export type InventoryMovementMinAggregateOutputType = {
   id: number | null
   productId: number | null
-  quantity: number | null
+  quantity: runtime.Decimal | null
   type: $Enums.MovementType | null
   reason: string | null
   userId: number | null
@@ -53,7 +53,7 @@ export type InventoryMovementMinAggregateOutputType = {
 export type InventoryMovementMaxAggregateOutputType = {
   id: number | null
   productId: number | null
-  quantity: number | null
+  quantity: runtime.Decimal | null
   type: $Enums.MovementType | null
   reason: string | null
   userId: number | null
@@ -206,7 +206,7 @@ export type InventoryMovementGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type InventoryMovementGroupByOutputType = {
   id: number
   productId: number
-  quantity: number
+  quantity: runtime.Decimal
   type: $Enums.MovementType
   reason: string | null
   userId: number
@@ -239,7 +239,7 @@ export type InventoryMovementWhereInput = {
   NOT?: Prisma.InventoryMovementWhereInput | Prisma.InventoryMovementWhereInput[]
   id?: Prisma.IntFilter<"InventoryMovement"> | number
   productId?: Prisma.IntFilter<"InventoryMovement"> | number
-  quantity?: Prisma.IntFilter<"InventoryMovement"> | number
+  quantity?: Prisma.DecimalFilter<"InventoryMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFilter<"InventoryMovement"> | $Enums.MovementType
   reason?: Prisma.StringNullableFilter<"InventoryMovement"> | string | null
   userId?: Prisma.IntFilter<"InventoryMovement"> | number
@@ -266,7 +266,7 @@ export type InventoryMovementWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.InventoryMovementWhereInput[]
   NOT?: Prisma.InventoryMovementWhereInput | Prisma.InventoryMovementWhereInput[]
   productId?: Prisma.IntFilter<"InventoryMovement"> | number
-  quantity?: Prisma.IntFilter<"InventoryMovement"> | number
+  quantity?: Prisma.DecimalFilter<"InventoryMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFilter<"InventoryMovement"> | $Enums.MovementType
   reason?: Prisma.StringNullableFilter<"InventoryMovement"> | string | null
   userId?: Prisma.IntFilter<"InventoryMovement"> | number
@@ -296,7 +296,7 @@ export type InventoryMovementScalarWhereWithAggregatesInput = {
   NOT?: Prisma.InventoryMovementScalarWhereWithAggregatesInput | Prisma.InventoryMovementScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"InventoryMovement"> | number
   productId?: Prisma.IntWithAggregatesFilter<"InventoryMovement"> | number
-  quantity?: Prisma.IntWithAggregatesFilter<"InventoryMovement"> | number
+  quantity?: Prisma.DecimalWithAggregatesFilter<"InventoryMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeWithAggregatesFilter<"InventoryMovement"> | $Enums.MovementType
   reason?: Prisma.StringNullableWithAggregatesFilter<"InventoryMovement"> | string | null
   userId?: Prisma.IntWithAggregatesFilter<"InventoryMovement"> | number
@@ -304,7 +304,7 @@ export type InventoryMovementScalarWhereWithAggregatesInput = {
 }
 
 export type InventoryMovementCreateInput = {
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   createdAt?: Date | string
@@ -315,7 +315,7 @@ export type InventoryMovementCreateInput = {
 export type InventoryMovementUncheckedCreateInput = {
   id?: number
   productId: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   userId: number
@@ -323,7 +323,7 @@ export type InventoryMovementUncheckedCreateInput = {
 }
 
 export type InventoryMovementUpdateInput = {
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -334,7 +334,7 @@ export type InventoryMovementUpdateInput = {
 export type InventoryMovementUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -344,7 +344,7 @@ export type InventoryMovementUncheckedUpdateInput = {
 export type InventoryMovementCreateManyInput = {
   id?: number
   productId: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   userId: number
@@ -352,7 +352,7 @@ export type InventoryMovementCreateManyInput = {
 }
 
 export type InventoryMovementUpdateManyMutationInput = {
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,7 +361,7 @@ export type InventoryMovementUpdateManyMutationInput = {
 export type InventoryMovementUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -515,7 +515,7 @@ export type NullableStringFieldUpdateOperationsInput = {
 }
 
 export type InventoryMovementCreateWithoutUserInput = {
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   createdAt?: Date | string
@@ -525,7 +525,7 @@ export type InventoryMovementCreateWithoutUserInput = {
 export type InventoryMovementUncheckedCreateWithoutUserInput = {
   id?: number
   productId: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   createdAt?: Date | string
@@ -563,7 +563,7 @@ export type InventoryMovementScalarWhereInput = {
   NOT?: Prisma.InventoryMovementScalarWhereInput | Prisma.InventoryMovementScalarWhereInput[]
   id?: Prisma.IntFilter<"InventoryMovement"> | number
   productId?: Prisma.IntFilter<"InventoryMovement"> | number
-  quantity?: Prisma.IntFilter<"InventoryMovement"> | number
+  quantity?: Prisma.DecimalFilter<"InventoryMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFilter<"InventoryMovement"> | $Enums.MovementType
   reason?: Prisma.StringNullableFilter<"InventoryMovement"> | string | null
   userId?: Prisma.IntFilter<"InventoryMovement"> | number
@@ -571,7 +571,7 @@ export type InventoryMovementScalarWhereInput = {
 }
 
 export type InventoryMovementCreateWithoutProductInput = {
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   createdAt?: Date | string
@@ -580,7 +580,7 @@ export type InventoryMovementCreateWithoutProductInput = {
 
 export type InventoryMovementUncheckedCreateWithoutProductInput = {
   id?: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   userId: number
@@ -616,14 +616,14 @@ export type InventoryMovementUpdateManyWithWhereWithoutProductInput = {
 export type InventoryMovementCreateManyUserInput = {
   id?: number
   productId: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   createdAt?: Date | string
 }
 
 export type InventoryMovementUpdateWithoutUserInput = {
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -633,7 +633,7 @@ export type InventoryMovementUpdateWithoutUserInput = {
 export type InventoryMovementUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -642,7 +642,7 @@ export type InventoryMovementUncheckedUpdateWithoutUserInput = {
 export type InventoryMovementUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -650,7 +650,7 @@ export type InventoryMovementUncheckedUpdateManyWithoutUserInput = {
 
 export type InventoryMovementCreateManyProductInput = {
   id?: number
-  quantity: number
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
   type: $Enums.MovementType
   reason?: string | null
   userId: number
@@ -658,7 +658,7 @@ export type InventoryMovementCreateManyProductInput = {
 }
 
 export type InventoryMovementUpdateWithoutProductInput = {
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -667,7 +667,7 @@ export type InventoryMovementUpdateWithoutProductInput = {
 
 export type InventoryMovementUncheckedUpdateWithoutProductInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -676,7 +676,7 @@ export type InventoryMovementUncheckedUpdateWithoutProductInput = {
 
 export type InventoryMovementUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   type?: Prisma.EnumMovementTypeFieldUpdateOperationsInput | $Enums.MovementType
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -754,7 +754,7 @@ export type $InventoryMovementPayload<ExtArgs extends runtime.Types.Extensions.I
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     productId: number
-    quantity: number
+    quantity: runtime.Decimal
     type: $Enums.MovementType
     reason: string | null
     userId: number
@@ -1186,7 +1186,7 @@ export interface Prisma__InventoryMovementClient<T, Null = never, ExtArgs extend
 export interface InventoryMovementFieldRefs {
   readonly id: Prisma.FieldRef<"InventoryMovement", 'Int'>
   readonly productId: Prisma.FieldRef<"InventoryMovement", 'Int'>
-  readonly quantity: Prisma.FieldRef<"InventoryMovement", 'Int'>
+  readonly quantity: Prisma.FieldRef<"InventoryMovement", 'Decimal'>
   readonly type: Prisma.FieldRef<"InventoryMovement", 'MovementType'>
   readonly reason: Prisma.FieldRef<"InventoryMovement", 'String'>
   readonly userId: Prisma.FieldRef<"InventoryMovement", 'Int'>

@@ -62,7 +62,7 @@ model Product {
   barcode          String              @unique
   price            Decimal             @db.Decimal(10, 2)
   currency         ExchangeRateType    @default(USD)
-  stock            Int                 @default(0)
+  stock            Decimal             @db.Decimal(10, 2)
   isDetail         Boolean             @default(false)
   parentId         Int?
   unitsDetail      Int?
@@ -80,7 +80,7 @@ model Product {
 model InventoryMovement {
   id        Int          @id @default(autoincrement())
   productId Int
-  quantity  Int
+  quantity  Decimal      @db.Decimal(10, 2)
   type      MovementType
   reason    String?
   userId    Int
@@ -122,9 +122,9 @@ model InvoiceItem {
   id        Int      @id @default(autoincrement())
   invoiceId Int
   productId Int
-  unitPrice Decimal
-  quantity  Int
-  subtotal  Decimal
+  unitPrice Decimal  @db.Decimal(10, 2)
+  quantity  Decimal  @db.Decimal(10, 2)
+  subtotal  Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
   invoice   Invoice  @relation(fields: [invoiceId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
@@ -134,9 +134,9 @@ model PaymentDetail {
   id             Int              @id @default(autoincrement())
   invoiceId      Int
   paymentTypeId  Int
-  amountReceived Decimal          @db.Decimal(10, 2) @default(0)
-  amountChange   Decimal          @db.Decimal(10, 2) @default(0)
-  amountNet      Decimal          @db.Decimal(10, 2) @default(0)
+  amountReceived Decimal          @default(0) @db.Decimal(10, 2)
+  amountChange   Decimal          @default(0) @db.Decimal(10, 2)
+  amountNet      Decimal          @default(0) @db.Decimal(10, 2)
   amountNetBs    Decimal          @db.Decimal(10, 2)
   currency       ExchangeRateType
   denominations  Json?
@@ -159,12 +159,12 @@ model CashDrawerSession {
   openedAt          DateTime      @default(now())
   closedAt          DateTime?
   openingBalance    Decimal       @db.Decimal(65, 2)
-  openingBalanceUsd Decimal       @db.Decimal(65, 2) @default(0)
+  openingBalanceUsd Decimal       @default(0) @db.Decimal(65, 2)
   closingBalance    Decimal?      @db.Decimal(65, 2)
   closingBalanceUsd Decimal?      @db.Decimal(65, 2)
-  totalSales        Decimal       @db.Decimal(65, 2) @default(0)
-  totalInUsd        Decimal       @db.Decimal(65, 2) @default(0)
-  totalInBs         Decimal       @db.Decimal(65, 2) @default(0)
+  totalSales        Decimal       @default(0) @db.Decimal(65, 2)
+  totalInUsd        Decimal       @default(0) @db.Decimal(65, 2)
+  totalInBs         Decimal       @default(0) @db.Decimal(65, 2)
   status            SessionStatus @default(OPEN)
   user              Users         @relation(fields: [userId], references: [id])
   cashDrawer        CashDrawer    @relation(fields: [cashDrawerId], references: [id])
@@ -179,13 +179,13 @@ model CashDrawer {
 }
 
 model Shift {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  startTime String   // HH:mm formato 24h
-  endTime   String   // HH:mm formato 24h
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        Int                 @id @default(autoincrement())
+  name      String              @unique
+  startTime String // HH:mm formato 24h
+  endTime   String // HH:mm formato 24h
+  active    Boolean             @default(true)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @default(now()) @updatedAt
   sessions  CashDrawerSession[]
   invoices  Invoice[]
 }

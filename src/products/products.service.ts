@@ -484,7 +484,7 @@ export class ProductsService {
             const parent = childProduct.productParent;
 
             // 2. Verificar si hay stock en el padre para desglosar
-            if (parent.stock <= 0) {
+            if (Number(parent.stock) <= 0) {
                 throw new BadRequestException(`No hay stock disponible en ${parent.name} para desglosar.`);
             }
 

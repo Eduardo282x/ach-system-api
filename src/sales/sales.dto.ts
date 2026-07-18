@@ -62,8 +62,8 @@ export class CreateInvoiceItemDto {
 	productId!: number;
 
 	@Type(() => Number)
-	@IsInt()
-	@Min(1)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0.01)
 	quantity!: number;
 }
 

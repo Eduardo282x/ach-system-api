@@ -36,11 +36,10 @@ export class ProductDto {
     @IsEnum(ExchangeRateType)
     currency?: ExchangeRateType;
 
-    @IsOptional()
     @Type(() => Number)
-    @IsInt()
-    @Min(0, { message: 'El stock debe ser un número positivo' })
-    stock?: number;
+    @IsNumber({ maxDecimalPlaces: 2 })
+    @Min(0, { message: 'El precio debe ser un número positivo' })
+    stock!: number;
 
     @IsOptional()
     @Type(() => Boolean)

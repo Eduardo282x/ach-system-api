@@ -780,9 +780,9 @@ export class SalesService {
 					throw new BadRequestException(`Producto con id ${productId} no existe`);
 				}
 
-				if (product.stock < quantity) {
+				if (Number(product.stock) < quantity) {
 					throw new BadRequestException(
-						`Stock insuficiente para ${product.name}. Disponible: ${product.stock}`,
+						`Stock insuficiente para ${product.name}. Disponible: ${Number(product.stock)}`,
 					);
 				}
 			}
