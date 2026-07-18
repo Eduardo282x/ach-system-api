@@ -116,6 +116,9 @@ model Invoice {
   user           Users             @relation(fields: [userId], references: [id])
   items          InvoiceItem[]
   paymentDetails PaymentDetail[]
+
+  @@index([sessionId])
+  @@index([createdAt])
 }
 
 model InvoiceItem {
@@ -142,6 +145,8 @@ model PaymentDetail {
   denominations  Json?
   invoice        Invoice          @relation(fields: [invoiceId], references: [id])
   paymentType    TypePayment      @relation(fields: [paymentTypeId], references: [id])
+
+  @@index([invoiceId])
 }
 
 model CurrencyDenomination {

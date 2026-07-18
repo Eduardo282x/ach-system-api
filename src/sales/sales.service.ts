@@ -75,28 +75,22 @@ export class SalesService {
 	}
 
 	private async getLatestExchangeRatesByCurrency() {
-		const rates = await this.prismaService.exchangeRate.findMany({
-			orderBy: {
-				createdAt: 'desc',
-			},
-		});
+		const [usdRecord, eurRecord] = await Promise.all([
+			this.prismaService.exchangeRate.findFirst({
+				where: { currency: 'USD' },
+				orderBy: { createdAt: 'desc' },
+				select: { id: true, rate: true },
+			}),
+			this.prismaService.exchangeRate.findFirst({
+				where: { currency: 'EUR' },
+				orderBy: { createdAt: 'desc' },
+				select: { id: true, rate: true },
+			}),
+		]);
 
 		const latestByCurrency = new Map<ExchangeRateType, { id: number; rate: number }>();
-
-		for (const rate of rates) {
-			const currency = rate.currency as ExchangeRateType;
-
-			if ((currency === 'USD' || currency === 'EUR') && !latestByCurrency.has(currency)) {
-				latestByCurrency.set(currency, {
-					id: rate.id,
-					rate: Number(rate.rate),
-				});
-			}
-
-			if (latestByCurrency.has('USD') && latestByCurrency.has('EUR')) {
-				break;
-			}
-		}
+		if (usdRecord) latestByCurrency.set('USD', { id: usdRecord.id, rate: Number(usdRecord.rate) });
+		if (eurRecord) latestByCurrency.set('EUR', { id: eurRecord.id, rate: Number(eurRecord.rate) });
 
 		return latestByCurrency;
 	}
@@ -121,28 +115,29 @@ export class SalesService {
 
 		let nextNumber = Math.max(lastId, lastNumericInvoice) + 1;
 
-		for (let attempt = 0; attempt < maxAttempts; attempt++) {
-			if (nextNumber > maxInvoiceNumber) {
-				throw new BadRequestException(
-					'Se alcanzó el límite máximo de facturas (8 dígitos)',
-				);
-			}
-
-			const generated = nextNumber.toString().padStart(8, '0');
-
-			const exists = await this.prismaService.invoice.findUnique({
-				where: { invoiceNumber: generated },
-				select: { id: true },
-			});
-
-			if (!exists) {
-				return generated;
-			}
-
-			nextNumber += 1;
+		if (nextNumber + maxAttempts - 1 > maxInvoiceNumber) {
+			throw new BadRequestException(
+				'Se alcanzó el límite máximo de facturas (8 dígitos)',
+			);
 		}
 
-		throw new BadRequestException('No se pudo generar un número de factura único');
+		const candidates = Array.from({ length: maxAttempts }, (_, i) =>
+			(nextNumber + i).toString().padStart(8, '0'),
+		);
+
+		const existing = await this.prismaService.invoice.findMany({
+			where: { invoiceNumber: { in: candidates } },
+			select: { invoiceNumber: true },
+		});
+
+		const existingSet = new Set(existing.map((e) => e.invoiceNumber));
+		const available = candidates.find((c) => !existingSet.has(c));
+
+		if (!available) {
+			throw new BadRequestException('No se pudo generar un número de factura único');
+		}
+
+		return available;
 	}
 
 	async getInvoices(filter: GetInvoicesFilterDto) {
@@ -686,19 +681,20 @@ export class SalesService {
 
 	async createInvoice(createInvoiceDto: CreateInvoiceDto, userId: number) {
 		try {
-			const customer = await this.prismaService.clients.findUnique({
-				where: { id: createInvoiceDto.customerId },
-			});
+			const [customer, session] = await Promise.all([
+				this.prismaService.clients.findUnique({
+					where: { id: createInvoiceDto.customerId },
+				}),
+				this.prismaService.cashDrawerSession.findUnique({
+					where: { id: createInvoiceDto.sessionId },
+				}),
+			]);
 
 			if (!customer) {
 				throw new NotFoundException(
 					`Cliente con id ${createInvoiceDto.customerId} no encontrado`,
 				);
 			}
-
-			const session = await this.prismaService.cashDrawerSession.findUnique({
-				where: { id: createInvoiceDto.sessionId },
-			});
 
 			if (!session) {
 				throw new NotFoundException(
@@ -739,17 +735,6 @@ export class SalesService {
 			const paymentTypeIds = [
 				...new Set(createInvoiceDto.payments.map((payment) => payment.paymentTypeId)),
 			];
-			const paymentTypes = await this.prismaService.typePayment.findMany({
-				where: {
-					id: {
-						in: paymentTypeIds,
-					},
-				},
-			});
-
-			if (paymentTypes.length !== paymentTypeIds.length) {
-				throw new BadRequestException('Uno o más tipos de pago no existen');
-			}
 
 			const requiredByProduct = new Map<number, number>();
 			for (const item of createInvoiceDto.items) {
@@ -758,15 +743,40 @@ export class SalesService {
 					(requiredByProduct.get(item.productId) ?? 0) + item.quantity,
 				);
 			}
-
 			const productIds = Array.from(requiredByProduct.keys());
-			const products = await this.prismaService.product.findMany({
-				where: {
-					id: {
-						in: productIds,
-					},
-				},
-			});
+
+			const hasManualRateIds =
+				createInvoiceDto.exchangeRateUsdId !== undefined ||
+				createInvoiceDto.exchangeRateEurId !== undefined;
+
+			const [paymentTypes, products, ratesResult] = await Promise.all([
+				this.prismaService.typePayment.findMany({
+					where: { id: { in: paymentTypeIds } },
+				}),
+				this.prismaService.product.findMany({
+					where: { id: { in: productIds } },
+				}),
+				hasManualRateIds
+					? (async () => {
+							if (!createInvoiceDto.exchangeRateUsdId || !createInvoiceDto.exchangeRateEurId) {
+								throw new BadRequestException(
+									'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
+								);
+							}
+							return this.prismaService.exchangeRate.findMany({
+								where: {
+									id: {
+										in: [createInvoiceDto.exchangeRateUsdId, createInvoiceDto.exchangeRateEurId],
+									},
+								},
+							});
+						})()
+					: this.getLatestExchangeRatesByCurrency(),
+			]);
+
+			if (paymentTypes.length !== paymentTypeIds.length) {
+				throw new BadRequestException('Uno o más tipos de pago no existen');
+			}
 
 			if (products.length !== productIds.length) {
 				throw new BadRequestException('Uno o más productos no existen');
@@ -794,24 +804,8 @@ export class SalesService {
 			let usdRate: { id: number; rate: number } | undefined;
 			let eurRate: { id: number; rate: number } | undefined;
 
-			const hasManualRateIds =
-				createInvoiceDto.exchangeRateUsdId !== undefined ||
-				createInvoiceDto.exchangeRateEurId !== undefined;
-
 			if (hasManualRateIds) {
-				if (!createInvoiceDto.exchangeRateUsdId || !createInvoiceDto.exchangeRateEurId) {
-					throw new BadRequestException(
-						'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
-					);
-				}
-
-				const selectedRates = await this.prismaService.exchangeRate.findMany({
-					where: {
-						id: {
-							in: [createInvoiceDto.exchangeRateUsdId, createInvoiceDto.exchangeRateEurId],
-						},
-					},
-				});
+				const selectedRates = ratesResult as { id: number; currency: string; rate: Prisma.Decimal }[];
 
 				if (selectedRates.length !== 2) {
 					throw new BadRequestException('Una o ambas tasas enviadas no existen');
@@ -835,7 +829,7 @@ export class SalesService {
 				usdRate = { id: usdRateRecord.id, rate: Number(usdRateRecord.rate) };
 				eurRate = { id: eurRateRecord.id, rate: Number(eurRateRecord.rate) };
 			} else {
-				const latestRatesByCurrency = await this.getLatestExchangeRatesByCurrency();
+				const latestRatesByCurrency = ratesResult as Map<ExchangeRateType, { id: number; rate: number }>;
 				usdRate = latestRatesByCurrency.get('USD');
 				eurRate = latestRatesByCurrency.get('EUR');
 			}
@@ -1009,53 +1003,51 @@ export class SalesService {
 					},
 				});
 
-				for (const item of invoiceItemsData) {
-					await tx.invoiceItem.create({
-						data: {
-							invoiceId: createdInvoice.id,
-							productId: item.productId,
-							unitPrice: new Prisma.Decimal(item.unitPrice),
-							quantity: item.quantity,
-							subtotal: new Prisma.Decimal(item.subtotal),
-						},
-					});
+				await tx.invoiceItem.createMany({
+					data: invoiceItemsData.map((item) => ({
+						invoiceId: createdInvoice.id,
+						productId: item.productId,
+						unitPrice: new Prisma.Decimal(item.unitPrice),
+						quantity: item.quantity,
+						subtotal: new Prisma.Decimal(item.subtotal),
+					})),
+				});
 
-					await tx.product.update({
-						where: { id: item.productId },
-						data: {
-							stock: {
-								decrement: item.quantity,
+				await Promise.all(
+					invoiceItemsData.map((item) =>
+						tx.product.update({
+							where: { id: item.productId },
+							data: {
+								stock: {
+									decrement: item.quantity,
+								},
 							},
-						},
-					});
+						}),
+					),
+				);
 
-					await tx.inventoryMovement.create({
-						data: {
-							productId: item.productId,
-							quantity: -item.quantity,
-							type: 'SALE',
-							userId,
-							reason: `Venta en factura ${invoiceNumber} - ${item.productName}`,
-						},
-					});
-				}
+				await tx.inventoryMovement.createMany({
+					data: invoiceItemsData.map((item) => ({
+						productId: item.productId,
+						quantity: -item.quantity,
+						type: 'SALE' as const,
+						userId,
+						reason: `Venta en factura ${invoiceNumber} - ${item.productName}`,
+					})),
+				});
 
-				for (const payment of paymentsData) {
-					await tx.paymentDetail.create({
-						data: {
-							invoiceId: createdInvoice.id,
-							paymentTypeId: payment.paymentTypeId,
-							amountReceived: new Prisma.Decimal(payment.amountReceived),
-							amountChange: new Prisma.Decimal(payment.amountChange),
-							amountNet: new Prisma.Decimal(payment.amountNet),
-							amountNetBs: new Prisma.Decimal(payment.amountNetBs),
-							currency: payment.currency as ExchangeRateType,
-							...(payment.denominations !== undefined && {
-								denominations: payment.denominations,
-							}),
-						},
-					});
-				}
+				await tx.paymentDetail.createMany({
+					data: paymentsData.map((payment) => ({
+						invoiceId: createdInvoice.id,
+						paymentTypeId: payment.paymentTypeId,
+						amountReceived: new Prisma.Decimal(payment.amountReceived),
+						amountChange: new Prisma.Decimal(payment.amountChange),
+						amountNet: new Prisma.Decimal(payment.amountNet),
+						amountNetBs: new Prisma.Decimal(payment.amountNetBs),
+						currency: payment.currency as ExchangeRateType,
+						denominations: payment.denominations ?? undefined,
+					})),
+				});
 
 				return tx.invoice.findUnique({
 					where: { id: createdInvoice.id },

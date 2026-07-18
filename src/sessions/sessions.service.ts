@@ -43,38 +43,26 @@ export class SessionsService {
 	}
 
 	async refreshSessionTotals(sessionId: number) {
-		const invoicesTotals = await this.prismaService.invoice.aggregate({
-			where: {
-				sessionId,
-			},
-			_sum: {
-				totalAmountBs: true,
-			},
-		});
-
-		const paymentsTotalsBs = await this.prismaService.paymentDetail.aggregate({
-			where: {
-				invoice: {
-					sessionId,
+		const [invoicesTotals, paymentsTotalsBs, paymentsTotalsUsd] = await Promise.all([
+			this.prismaService.invoice.aggregate({
+				where: { sessionId },
+				_sum: { totalAmountBs: true },
+			}),
+			this.prismaService.paymentDetail.aggregate({
+				where: {
+					invoice: { sessionId },
+					currency: 'BS',
 				},
-				currency: 'BS',
-			},
-			_sum: {
-				amountNet: true,
-			},
-		});
-
-		const paymentsTotalsUsd = await this.prismaService.paymentDetail.aggregate({
-			where: {
-				invoice: {
-					sessionId,
+				_sum: { amountNet: true },
+			}),
+			this.prismaService.paymentDetail.aggregate({
+				where: {
+					invoice: { sessionId },
+					currency: 'USD',
 				},
-				currency: 'USD',
-			},
-			_sum: {
-				amountNet: true,
-			},
-		});
+				_sum: { amountNet: true },
+			}),
+		]);
 
 		const totalSales = this.toNumber(invoicesTotals._sum.totalAmountBs);
 		const totalInBs = this.toNumber(paymentsTotalsBs._sum.amountNet);
