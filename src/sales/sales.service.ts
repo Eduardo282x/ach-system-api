@@ -263,8 +263,10 @@ export class SalesService {
 					totalPages: Math.ceil(total / size),
 				},
 			};
-		} catch (error) {
-			throw error;
+		} catch (error: Error | any) {
+			throw new BadRequestException(
+				`Error al obtener facturas: ${error.message || 'Error desconocido'}`,
+			);
 		}
 	}
 
@@ -656,10 +658,10 @@ export class SalesService {
 
 			await workbook.xlsx.write(res);
 			res.end();
-		} catch (error) {
-			{
-				throw error;
-			}
+		} catch (error: Error | any) {
+			throw new BadRequestException(
+				`Error al generar reporte: ${error.message || 'Error desconocido'}`,
+			);
 		}
 	}
 
@@ -1112,15 +1114,24 @@ export class SalesService {
 				});
 			});
 
+		try {
 			await this.sessionsService.refreshSessionTotals(createInvoiceDto.sessionId);
-
-			return {
-				message: 'Factura creada correctamente',
-				invoice,
-			};
-		} catch (error) {
-			console.log('error creating invoice:', error);
-			throw error;
+		} catch (error: Error | any) {
+			console.log('error refreshing session totals:', error);
+			throw new BadRequestException(
+				`Error al actualizar totales de sesión: ${error.message || 'Error desconocido'}`,
+			);
 		}
+
+		return {
+			message: 'Factura creada correctamente',
+			invoice,
+		};
+	} catch (error: Error | any) {
+		console.log('error creating invoice:', error);
+		throw new BadRequestException(
+			`Error al crear factura: ${error.message || 'Error desconocido'}`,
+		);
+	}
 	}
 }
