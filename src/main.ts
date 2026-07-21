@@ -5,20 +5,25 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { FileLoggerService } from './common/logger/file-logger.service';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+
+    const logger = app.get(FileLoggerService);
 
     app.setGlobalPrefix('/api');
     app.enableCors();
 
     app.useGlobalGuards(new AuthGuard(app.get(JwtService)))
 
-    // Aplicar el formato global de respuestas exitosas
-    app.useGlobalInterceptors(new ResponseInterceptor());
+    app.useGlobalInterceptors(
+        new LoggingInterceptor(logger),
+        new ResponseInterceptor(),
+    );
 
-    // Aplicar el formato global de errores
-    app.useGlobalFilters(new AllExceptionsFilter());
+    app.useGlobalFilters(new AllExceptionsFilter(logger));
 
     app.useGlobalPipes(new ValidationPipe({
         whitelist: true,

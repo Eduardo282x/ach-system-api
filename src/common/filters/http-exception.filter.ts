@@ -1,19 +1,59 @@
 // src/common/filters/http-exception.filter.ts
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Prisma } from 'src/generated/prisma/client';
+import { FileLoggerService } from '../logger/file-logger.service';
+import { Request } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+    constructor(
+        @Inject(FileLoggerService) private readonly logger: FileLoggerService,
+    ) {}
+
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
+        const request = ctx.getRequest<Request>();
+
+        const { method, url, ip, headers } = request;
+        const userAgent = headers['user-agent'] || '';
+
+        let statusCode: number;
+        let message: string;
 
         if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-            const { statusCode, message } = this.handlePrismaError(exception);
-            response.status(statusCode).json({
+            const prismaResult = this.handlePrismaError(exception);
+            statusCode = prismaResult.statusCode;
+            message = prismaResult.message;
+        } else if (exception instanceof HttpException) {
+            statusCode = exception.getStatus();
+            const httpResponse = exception.getResponse();
+            message = typeof httpResponse === 'string'
+                ? httpResponse
+                : (httpResponse as any)?.['message'] || exception.message;
+        } else {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            message = 'Error interno del servidor';
+        }
+
+        this.logger.error({
+            timestamp: new Date(),
+            level: 'ERROR',
+            method,
+            url,
+            statusCode,
+            ip: ip || request.socket?.remoteAddress || 'N/A',
+            userAgent,
+            message: Array.isArray(message) ? message[0] : message,
+            requestBody: undefined,
+        });
+
+        if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+            const { statusCode: prismaStatus, message: prismaMessage } = this.handlePrismaError(exception);
+            response.status(prismaStatus).json({
                 success: false,
-                statusCode,
-                message,
+                statusCode: prismaStatus,
+                message: prismaMessage,
                 data: {
                     code: exception.code,
                     exceptionMessage: exception.message,
@@ -22,15 +62,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
             return;
         }
 
-        const status = exception instanceof HttpException
-            ? exception.getStatus()
-            : HttpStatus.INTERNAL_SERVER_ERROR;
-
         const httpResponse = exception instanceof HttpException
             ? exception.getResponse()
             : null;
 
-        const message = exception instanceof HttpException
+        const errorMessage = exception instanceof HttpException
             ? (typeof httpResponse === 'string'
                 ? httpResponse
                 : httpResponse?.['message'] || exception.message)
@@ -48,10 +84,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
                 stack: exception?.stack,
             };
 
-        response.status(status).json({
+        response.status(statusCode).json({
             success: false,
-            statusCode: status,
-            message: Array.isArray(message) ? message[0] : message,
+            statusCode,
+            message: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
             data,
         });
     }

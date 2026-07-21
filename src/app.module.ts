@@ -14,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ExcelModule } from './excel/excel.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebSocketModule } from './web-socket/web-socket.module';
+import { FileLoggerService } from './common/logger/file-logger.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { WebSocketModule } from './web-socket/web-socket.module';
     WebSocketModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, FileLoggerService],
+  exports: [FileLoggerService],
 })
 export class AppModule { }

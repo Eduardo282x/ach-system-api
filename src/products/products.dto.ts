@@ -37,8 +37,8 @@ export class ProductDto {
     currency?: ExchangeRateType;
 
     @Type(() => Number)
-    @IsNumber({ maxDecimalPlaces: 2 })
-    @Min(0, { message: 'El precio debe ser un número positivo' })
+    @IsNumber({ maxDecimalPlaces: 3 })
+    @Min(0, { message: 'El stock debe ser un número positivo' })
     stock!: number;
 
     @IsOptional()

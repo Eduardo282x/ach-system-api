@@ -62,7 +62,7 @@ model Product {
   barcode          String              @unique
   price            Decimal             @db.Decimal(10, 2)
   currency         ExchangeRateType    @default(USD)
-  stock            Decimal             @db.Decimal(10, 2)
+  stock            Decimal             @db.Decimal(10, 3)
   isDetail         Boolean             @default(false)
   parentId         Int?
   unitsDetail      Int?
@@ -80,7 +80,7 @@ model Product {
 model InventoryMovement {
   id        Int          @id @default(autoincrement())
   productId Int
-  quantity  Decimal      @db.Decimal(10, 2)
+  quantity  Decimal      @db.Decimal(10, 3)
   type      MovementType
   reason    String?
   userId    Int
@@ -126,7 +126,7 @@ model InvoiceItem {
   invoiceId Int
   productId Int
   unitPrice Decimal  @db.Decimal(10, 2)
-  quantity  Decimal  @db.Decimal(10, 2)
+  quantity  Decimal  @db.Decimal(10, 3)
   subtotal  Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
   invoice   Invoice  @relation(fields: [invoiceId], references: [id])
