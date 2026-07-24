@@ -7,6 +7,12 @@ import { ShiftsService } from 'src/shifts/shifts.service';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ResumenFilter {
 	date: string;
@@ -295,7 +301,10 @@ export class SalesService {
 				}
 			}
 
+			console.log(parsedShiftId);
+			console.log({ date: date });
 			const { start: startDate, end: endDate } = await this.getShiftDateRange(date, parsedShiftId);
+			console.log({ start: startDate, end: endDate });
 
 			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
 				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
@@ -311,7 +320,8 @@ export class SalesService {
 				...(parsedShiftId ? { shiftId: parsedShiftId } : {}),
 			};
 
-			const [invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
+			const [invoices, invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
+				this.prismaService.invoice.findMany({ where: invoiceWhere }),
 				this.prismaService.invoice.count({ where: invoiceWhere }),
 				this.prismaService.paymentDetail.findMany({
 					where: {
@@ -452,6 +462,7 @@ export class SalesService {
 					totalAmountUsd: this.toTwoDecimals(totalAmountUsd - totalChangeAmountUsd),
 				},
 				resumen,
+				invoices: invoices
 			};
 		} catch (error) {
 			throw error;
@@ -681,6 +692,12 @@ export class SalesService {
 		}
 	}
 
+	private getVenezuelaNow(): Date {
+		const today = new Date();
+		const todayVenezuela = dayjs(today).add(-4, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+		return new Date(todayVenezuela);
+	}
+
 	async createInvoice(createInvoiceDto: CreateInvoiceDto, userId: number) {
 		try {
 			const [customer, session] = await Promise.all([
@@ -760,19 +777,19 @@ export class SalesService {
 				}),
 				hasManualRateIds
 					? (async () => {
-							if (!createInvoiceDto.exchangeRateUsdId || !createInvoiceDto.exchangeRateEurId) {
-								throw new BadRequestException(
-									'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
-								);
-							}
-							return this.prismaService.exchangeRate.findMany({
-								where: {
-									id: {
-										in: [createInvoiceDto.exchangeRateUsdId, createInvoiceDto.exchangeRateEurId],
-									},
+						if (!createInvoiceDto.exchangeRateUsdId || !createInvoiceDto.exchangeRateEurId) {
+							throw new BadRequestException(
+								'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
+							);
+						}
+						return this.prismaService.exchangeRate.findMany({
+							where: {
+								id: {
+									in: [createInvoiceDto.exchangeRateUsdId, createInvoiceDto.exchangeRateEurId],
 								},
-							});
-						})()
+							},
+						});
+					})()
 					: this.getLatestExchangeRatesByCurrency(),
 			]);
 
@@ -1001,6 +1018,7 @@ export class SalesService {
 						userId,
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
+						createdAt: this.getVenezuelaNow(),
 						...(resolvedShiftId && { shiftId: resolvedShiftId }),
 					},
 				});
@@ -1114,24 +1132,25 @@ export class SalesService {
 				});
 			});
 
-		try {
-			await this.sessionsService.refreshSessionTotals(createInvoiceDto.sessionId);
+
+			try {
+				await this.sessionsService.refreshSessionTotals(createInvoiceDto.sessionId);
+			} catch (error: Error | any) {
+				console.log('error refreshing session totals:', error);
+				throw new BadRequestException(
+					`Error al actualizar totales de sesión: ${error.message || 'Error desconocido'}`,
+				);
+			}
+
+			return {
+				message: 'Factura creada correctamente',
+				invoice,
+			};
 		} catch (error: Error | any) {
-			console.log('error refreshing session totals:', error);
+			console.log('error creating invoice:', error);
 			throw new BadRequestException(
-				`Error al actualizar totales de sesión: ${error.message || 'Error desconocido'}`,
+				`Error al crear factura: ${error.message || 'Error desconocido'}`,
 			);
 		}
-
-		return {
-			message: 'Factura creada correctamente',
-			invoice,
-		};
-	} catch (error: Error | any) {
-		console.log('error creating invoice:', error);
-		throw new BadRequestException(
-			`Error al crear factura: ${error.message || 'Error desconocido'}`,
-		);
-	}
 	}
 }
