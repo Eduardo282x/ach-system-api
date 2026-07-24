@@ -23,6 +23,12 @@ interface SessionGroupFilter {
 	shiftId?: number;
 }
 
+interface SessionGroupRangeFilter{
+	startDate: string;
+	endDate: string;
+	shiftId?: number;
+}
+
 @Injectable()
 export class SessionsService {
 	constructor(
@@ -291,6 +297,73 @@ export class SessionsService {
 		if (date) {
 			const start = this.getStartOfDayUtc(date);
 			const end = this.getEndOfDayUtc(date);
+
+			where.OR = [
+				{
+					openedAt: {
+						gte: start,
+						lte: end,
+					}
+				},
+				{
+					closedAt: {
+						gte: start,
+						lte: end,
+					}
+				}
+			];
+		}
+
+		if (shiftId) {
+			where.shiftId = shiftId;
+		}
+
+		try {
+			const sessions = await this.prismaService.cashDrawerSession.findMany({
+				where,
+				orderBy: {
+					openedAt: 'desc',
+				},
+				include: {
+					cashDrawer: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					user: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+					shift: {
+						select: {
+							id: true,
+							name: true,
+							startTime: true,
+							endTime: true,
+						},
+					},
+				},
+			});
+
+			return {
+				sessions: sessions,
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+	
+	async getSessionsGroupRange(filter: SessionGroupRangeFilter) {
+		const { startDate, endDate, shiftId } = filter || {};
+
+		const where: any = {};
+
+		if (startDate && endDate) {
+			const start = this.getStartOfDayUtc(startDate);
+			const end = this.getEndOfDayUtc(endDate);
 
 			where.OR = [
 				{

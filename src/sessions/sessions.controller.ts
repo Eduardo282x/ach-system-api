@@ -30,6 +30,16 @@ export class SessionsController {
         return await this.sessionsService.getSessionsGroup({date, shiftId: parsedShiftId});
     }
 
+    @Get('/group-range')
+    async getSessionsGroupRange(
+        @Query('startDate') startDate: string,
+        @Query('endDate') endDate: string,
+        @Query('shiftId') shiftId?: string,
+    ) {
+        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
+        return await this.sessionsService.getSessionsGroupRange({startDate, endDate, shiftId: parsedShiftId});
+    }
+
     @Get('/cash-drawer')
     async getCashDrawer() {
         return await this.sessionsService.getCashDrawer();

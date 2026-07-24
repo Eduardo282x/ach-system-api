@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Res } from '@nestjs/common';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import { SalesService } from './sales.service';
@@ -52,4 +52,13 @@ export class SalesController {
             throw error;
         }
     }
+
+    @Put('/pay-invoice-credit/:invoiceId') 
+    async payInvoiceCredit(
+        @Param('invoiceId', ParseIntPipe) invoiceId: number,
+        @CurrentUser() user,
+    ) {
+        return await this.salesService.payInvoiceCredit(invoiceId, user.id);
+    }
+    
 }

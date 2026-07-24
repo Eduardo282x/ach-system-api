@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
 	ArrayMinSize,
 	IsArray,
+	IsBoolean,
 	IsInt,
 	IsNumber,
 	IsObject,
@@ -12,6 +13,10 @@ import {
 } from 'class-validator';
 
 export class GetInvoicesFilterDto {
+	@IsOptional()
+	@IsString()
+	credit?: string;
+
 	@IsOptional()
 	@IsString()
 	search?: string;

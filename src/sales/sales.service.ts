@@ -149,7 +149,7 @@ export class SalesService {
 	async getInvoices(filter: GetInvoicesFilterDto) {
 		const where: any = {};
 
-		const { search, startDate, endDate, sessionId, userId, shiftId, page = 1, size = 20 } = filter;
+		const { search, startDate, endDate, sessionId, userId, shiftId, page = 1, size = 20, credit } = filter;
 
 		if (search) {
 			where.OR = [
@@ -157,6 +157,10 @@ export class SalesService {
 				{ customer: { fullName: { contains: search, mode: 'insensitive' } } },
 				{ customer: { identify: { contains: search, mode: 'insensitive' } } },
 			];
+		}
+
+		if (credit && credit.toLowerCase() === 'true') {
+			where.status = 'PENDING';
 		}
 
 		if (startDate && endDate) {
@@ -488,35 +492,6 @@ export class SalesService {
 			:
 			number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
 		return `${prefix}${text}${suffix}`;
-	}
-
-	private convertAmountByCurrency(
-		amount: number,
-		currency: ExchangeRateType,
-		ratesToBs: Record<ExchangeRateType, number>,
-	) {
-		const usdRate = ratesToBs.USD;
-		const eurRate = ratesToBs.EUR;
-
-		if (currency === 'BS') {
-			return {
-				amountBs: amount,
-				amountUsd: usdRate > 0 ? amount / usdRate : 0,
-			};
-		}
-
-		if (currency === 'USD') {
-			return {
-				amountBs: amount * usdRate,
-				amountUsd: amount,
-			};
-		}
-
-		const amountBs = amount * eurRate;
-		return {
-			amountBs,
-			amountUsd: usdRate > 0 ? amountBs / usdRate : 0,
-		};
 	}
 
 	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
@@ -1003,6 +978,11 @@ export class SalesService {
 
 			const invoiceNumber = await this.generateInvoiceNumber();
 
+			let isCreditPayment = false;
+			if (paymentTypeIds.length == 1) {
+				isCreditPayment = paymentTypes[0].name.includes('Credito');
+			}
+
 			const invoice = await this.prismaService.$transaction(async (tx) => {
 				const createdInvoice = await tx.invoice.create({
 					data: {
@@ -1016,6 +996,7 @@ export class SalesService {
 						totalChangeBs: new Prisma.Decimal(totalChangeBs),
 						totalChangeUsd: new Prisma.Decimal(totalChangeUsd),
 						userId,
+						status: isCreditPayment ? 'PENDING' : 'PAID',
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
 						createdAt: this.getVenezuelaNow(),
@@ -1150,6 +1131,34 @@ export class SalesService {
 			console.log('error creating invoice:', error);
 			throw new BadRequestException(
 				`Error al crear factura: ${error.message || 'Error desconocido'}`,
+			);
+		}
+	}
+
+	async payInvoiceCredit(invoiceId: number, userId: number) {
+		try {
+			const invoice = await this.prismaService.invoice.findUnique({
+				where: { id: invoiceId },
+			});
+
+			if (!invoice) {
+				throw new NotFoundException(`Factura con id ${invoiceId} no encontrada`);
+			}
+
+			await this.prismaService.invoice.update({
+				where: { id: invoiceId },
+				data: { status: 'PAID', userId },
+			});
+
+			return {
+				message: 'Crédito pagado correctamente.',
+				invoice
+			};
+
+		} catch (error: Error | any) {
+			console.log('error updating invoice:', error);
+			throw new BadRequestException(
+				`Error al actualizar factura: ${error.message || 'Error desconocido'}`,
 			);
 		}
 	}
