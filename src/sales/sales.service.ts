@@ -305,10 +305,7 @@ export class SalesService {
 				}
 			}
 
-			console.log(parsedShiftId);
-			console.log({ date: date });
 			const { start: startDate, end: endDate } = await this.getShiftDateRange(date, parsedShiftId);
-			console.log({ start: startDate, end: endDate });
 
 			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
 				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');

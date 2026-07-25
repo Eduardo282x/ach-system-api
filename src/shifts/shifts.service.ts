@@ -90,7 +90,7 @@ export class ShiftsService {
 	async getShifts() {
 		try {
 			const shifts = await this.prismaService.shift.findMany({
-				orderBy: { startTime: 'asc' },
+				orderBy: { id: 'asc' },
 			});
 
 			return { shifts };
