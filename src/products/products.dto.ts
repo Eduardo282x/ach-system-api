@@ -41,22 +41,17 @@ export class ProductDto {
     @Min(0, { message: 'El stock debe ser un número positivo' })
     stock!: number;
 
+    @IsString()
+    serialNumber!: string;
+    @IsString()
+    lote!: string;
+    @IsString()
+    brand!: string;
+    @IsString()
+    type!: string;
+    @IsString()
     @IsOptional()
-    @Type(() => Boolean)
-    @IsBoolean()
-    isDetail?: boolean;
-
-    @IsOptional()
-    @Type(() => Number)
-    @IsInt()
-    @Min(1)
-    parentId?: number;
-
-    @IsOptional()
-    @Type(() => Number)
-    @IsInt()
-    @Min(1)
-    unitsDetail?: number;
+    description!: string;
 }
 
 

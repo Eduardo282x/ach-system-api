@@ -20,9 +20,8 @@ export class SalesController {
         @Query('date') date: string,
         @Query('sessionId') sessionId?: string,
         @Query('cashDrawerId') cashDrawerId?: string,
-        @Query('shiftId') shiftId?: string,
     ) {
-        return await this.salesService.getResumenSales({date, sessionId, cashDrawerId, shiftId});
+        return await this.salesService.getResumenSales({date, sessionId, cashDrawerId});
     }
 
     @Get('/resumen-excel')
@@ -30,9 +29,8 @@ export class SalesController {
         @Res() res: Response,
         @Query('date') date: string,
         @Query('sessionId') sessionId?: string,
-        @Query('shiftId') shiftId?: string,
     ) {
-        return await this.salesService.getResumenSalesExcel({date, sessionId, shiftId}, res);
+        return await this.salesService.getResumenSalesExcel({date, sessionId}, res);
     }
 
     @Get('/types-payment')

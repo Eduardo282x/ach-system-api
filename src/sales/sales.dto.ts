@@ -45,12 +45,6 @@ export class GetInvoicesFilterDto {
 	@Type(() => Number)
 	@IsInt()
 	@Min(1)
-	shiftId?: number;
-
-	@IsOptional()
-	@Type(() => Number)
-	@IsInt()
-	@Min(1)
 	page?: number;
 
 	@IsOptional()
@@ -104,12 +98,6 @@ export class CreateInvoiceDto {
 	@IsInt()
 	@Min(1)
 	sessionId!: number;
-
-	@IsOptional()
-	@Type(() => Number)
-	@IsInt()
-	@Min(1)
-	shiftId?: number;
 
 	@IsArray()
 	@ArrayMinSize(1)

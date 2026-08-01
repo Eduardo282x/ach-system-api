@@ -351,19 +351,6 @@ export class ProductsService {
                 throw new BadRequestException('El código de barras ya está registrado para el producto: ' + exists.name);
             }
 
-            if (createProductDto.parentId) {
-                const parentId = await this.prismaService.product.findFirst({
-                    where: {
-                        parentId: createProductDto.parentId,
-                        deleted: false,
-                    },
-                });
-
-                if (parentId) {
-                    throw new BadRequestException('El producto padre ya tiene un producto detalle asociado. Solo se permite un producto detalle por producto padre.');
-                }
-            }
-
             // 2. Crear el producto
             const newProduct = await this.prismaService.product.create({
                 data: {
@@ -373,12 +360,11 @@ export class ProductsService {
                     price: createProductDto.price,
                     currency: createProductDto.currency,
                     stock: createProductDto.stock,
-                    isDetail: createProductDto.isDetail,
-                    parentId: createProductDto.parentId || null,
-                    unitsDetail: createProductDto.unitsDetail || null,
-                },
-                include: {
-                    productParent: true, // Incluimos info del padre si existe
+                    serialNumber: createProductDto.serialNumber,
+                    lote: createProductDto.lote,
+                    brand: createProductDto.brand,
+                    type: createProductDto.type,
+                    description: createProductDto.description,
                 },
             });
 
@@ -407,29 +393,21 @@ export class ProductsService {
                 throw new BadRequestException(`El código de barras ya está registrado para el producto: ${exists.name}`);
             }
 
-            if (updateProductDto.parentId) {
-                const parentId = await this.prismaService.product.findFirst({
-                    where: {
-                        parentId: updateProductDto.parentId,
-                        deleted: false,
-                        id: {
-                            not: id,
-                        },
-                    },
-                });
-
-                if (parentId) {
-                    throw new BadRequestException('El producto padre ya tiene un producto detalle asociado. Solo se permite un producto detalle por producto padre.');
-                }
-            }
-
             // 2. Actualizar
             const updatedProduct = await this.prismaService.product.update({
                 where: { id },
-                data: updateProductDto,
-                include: {
-                    productParent: true,
-                    productChild: true,
+                data: {
+                    name: updateProductDto.name,
+                    presentation: updateProductDto.presentation,
+                    barcode: updateProductDto.barcode,
+                    price: updateProductDto.price,
+                    currency: updateProductDto.currency,
+                    stock: updateProductDto.stock,
+                    serialNumber: updateProductDto.serialNumber,
+                    lote: updateProductDto.lote,
+                    brand: updateProductDto.brand,
+                    type: updateProductDto.type,
+                    description: updateProductDto.description,
                 },
             });
 
@@ -464,74 +442,6 @@ export class ProductsService {
         } catch (error) {
             console.log(error);
 
-            throw error;
-        }
-    }
-
-    //Metodo para pasar el producto a detalle, es decir, convertir un producto padre en un producto hijo
-    async breakDownParentToChild(childId: number, userId: number) {
-        try {
-            // 1. Buscar el producto hijo y verificar que tenga un padre asociado
-            const childProduct = await this.prismaService.product.findUnique({
-                where: { id: childId },
-                include: { productParent: true },
-            });
-
-            if (!childProduct || !childProduct.productParent) {
-                throw new BadRequestException('Este producto no tiene una unidad mayor (padre) asociada.');
-            }
-
-            const parent = childProduct.productParent;
-
-            // 2. Verificar si hay stock en el padre para desglosar
-            if (Number(parent.stock) <= 0) {
-                throw new BadRequestException(`No hay stock disponible en ${parent.name} para desglosar.`);
-            }
-
-            // 3. Ejecutar la transacción
-            const result = await this.prismaService.$transaction(async (tx) => {
-                // A. Restar 1 al Padre
-                await tx.product.update({
-                    where: { id: parent.id },
-                    data: { stock: { decrement: 1 } },
-                });
-
-                // B. Sumar unidades al Hijo
-                const updatedChild = await tx.product.update({
-                    where: { id: childId },
-                    data: { stock: { increment: childProduct?.productParent?.unitsDetail || 0 } },
-                });
-
-                // C. Registrar el movimiento de salida del Padre
-                await tx.inventoryMovement.create({
-                    data: {
-                        productId: parent.id,
-                        quantity: -1,
-                        type: 'CONVERSION',
-                        userId: userId,
-                        reason: `Desglose: 1 unidad enviada a ${childProduct.name}`,
-                    },
-                });
-
-                // D. Registrar el movimiento de entrada del Hijo
-                await tx.inventoryMovement.create({
-                    data: {
-                        productId: childId,
-                        quantity: childProduct.productParent?.unitsDetail || 0,
-                        type: 'CONVERSION',
-                        userId: userId,
-                        reason: `Desglose: Recibidas unidades desde ${parent.name}`,
-                    },
-                });
-
-                return updatedChild;
-            });
-
-            return {
-                message: `Se ha desglosado 1 ${parent.name}. Ahora tienes ${result.stock} unidades de ${result.name}.`,
-                data: result,
-            };
-        } catch (error) {
             throw error;
         }
     }
