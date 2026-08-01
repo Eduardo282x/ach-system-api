@@ -38,11 +38,6 @@ export class ProductsController {
         return await this.productsService.generateBarCode();
     }
 
-    @Post('/breakdown')
-    async breakDownParentToChild(@Body('childId') childId: number, @CurrentUser() user,) {
-        return await this.productsService.breakDownParentToChild(childId, user.id);
-    }
-
     @Post()
     async createProduct(@Body() createProductDto: ProductDto) {
         return await this.productsService.createProduct(createProductDto);

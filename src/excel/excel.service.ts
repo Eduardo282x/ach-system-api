@@ -31,20 +31,19 @@ export class ExcelService {
 
     async uploadProductsExcel(products: ProductExcel[]) {
         try {
-            const productsToCreate = products.filter(item => item.barcode !== null && item.barcode !== undefined && item.barcode !== '').map(product => ({
-                name: product.name,
-                presentation: product.presentation,
-                barcode: `${product.barcode}`,
-                price: Number(product.price) || 0,
-                stock: Number(product.stock) || 0,
-                isDetail: false,
-                parentId: null,
-                unitsDetail: null
-            }));
-            await this.prismaService.product.createMany({
-                data: productsToCreate,
-                skipDuplicates: true,
-            });
+            // const productsToCreate = products.filter(item => item.barcode !== null && item.barcode !== undefined && item.barcode !== '').map(product => ({
+            //     name: product.name,
+            //     presentation: product.presentation,
+            //     barcode: `${product.barcode}`,
+            //     price: Number(product.price) || 0,
+            //     stock: Number(product.stock) || 0,
+            //     isDetail: false,
+            //     unitsDetail: null
+            // }));
+            // await this.prismaService.product.createMany({
+            //     data: productsToCreate,
+            //     skipDuplicates: true,
+            // });
 
             return {
                 message: 'Productos subidos exitosamente',

@@ -88,7 +88,7 @@ export class SalesService {
 
 		if (nextNumber + maxAttempts - 1 > maxInvoiceNumber) {
 			throw new BadRequestException(
-				'Se alcanzó el límite máximo de facturas (8 dígitos)',
+				'Se alcanzó el límite máximo de recibos (8 dígitos)',
 			);
 		}
 
@@ -105,7 +105,7 @@ export class SalesService {
 		const available = candidates.find((c) => !existingSet.has(c));
 
 		if (!available) {
-			throw new BadRequestException('No se pudo generar un número de factura único');
+			throw new BadRequestException('No se pudo generar un número de recibo único');
 		}
 
 		return available;
@@ -228,7 +228,7 @@ export class SalesService {
 			};
 		} catch (error: Error | any) {
 			throw new BadRequestException(
-				`Error al obtener facturas: ${error.message || 'Error desconocido'}`,
+				`Error al obtener recibos: ${error.message || 'Error desconocido'}`,
 			);
 		}
 	}
@@ -444,11 +444,11 @@ export class SalesService {
 
 			const workbook = new ExcelJS.Workbook();
 			const resumenSheet = workbook.addWorksheet('Resumen de Pagos');
-			const detalleSheet = workbook.addWorksheet('Detalle de Facturas');
+			const detalleSheet = workbook.addWorksheet('Detalle de Recibos');
 
 			resumenSheet.addRow(['Fecha', this.formatDateWithTime(resumenData.date)]);
 			resumenSheet.addRow(['Sesión', resumenData.sessionId ?? 'TODAS']);
-			resumenSheet.addRow(['Cantidad de facturas', resumenData.totalInvoice]);
+			resumenSheet.addRow(['Cantidad de recibos', resumenData.totalInvoice]);
 			resumenSheet.addRow([]);
 
 			resumenSheet.addRow([
@@ -502,7 +502,7 @@ export class SalesService {
 			];
 
 			detalleSheet.addRow([
-				'Factura',
+				'Recibo',
 				'Fecha',
 				'Cliente',
 				'Cédula/RIF',
@@ -591,7 +591,7 @@ export class SalesService {
 		try {
 			const paymentTypes = await this.prismaService.typePayment.findMany({
 				orderBy: {
-					createdAt: 'asc',
+					id: 'asc',
 				},
 			});
 
@@ -826,7 +826,7 @@ export class SalesService {
 
 				if (paymentCurrency === 'EUR') {
 					throw new BadRequestException(
-						'Los pagos en EUR no están soportados para registrar montos físicos en factura',
+						'Los pagos en EUR no están soportados para registrar montos físicos en recibos',
 					);
 				}
 
@@ -884,7 +884,7 @@ export class SalesService {
 			const tolerance = 0.01;
 			if (totalNetBs + tolerance < totalAmountBs) {
 				throw new BadRequestException(
-					`Pago insuficiente. Total factura: ${totalAmountBs}, neto recibido: ${totalNetBs}`,
+					`Pago insuficiente. Total Recibo: ${totalAmountBs}, neto recibido: ${totalNetBs}`,
 				);
 			}
 
@@ -944,7 +944,7 @@ export class SalesService {
 						quantity: -item.quantity,
 						type: 'SALE' as const,
 						userId,
-						reason: `Venta en factura ${invoiceNumber} - ${item.productName}`,
+						reason: `Venta en recibo ${invoiceNumber} - ${item.productName}`,
 					})),
 				});
 
@@ -1027,13 +1027,13 @@ export class SalesService {
 			}
 
 			return {
-				message: 'Factura creada correctamente',
+				message: 'Recibo creado correctamente',
 				invoice,
 			};
 		} catch (error: Error | any) {
 			console.log('error creating invoice:', error);
 			throw new BadRequestException(
-				`Error al crear factura: ${error.message || 'Error desconocido'}`,
+				`Error al crear Recibo: ${error.message || 'Error desconocido'}`,
 			);
 		}
 	}
@@ -1045,7 +1045,7 @@ export class SalesService {
 			});
 
 			if (!invoice) {
-				throw new NotFoundException(`Factura con id ${invoiceId} no encontrada`);
+				throw new NotFoundException(`Recibo con id ${invoiceId} no encontrado`);
 			}
 
 			await this.prismaService.invoice.update({
@@ -1061,7 +1061,7 @@ export class SalesService {
 		} catch (error: Error | any) {
 			console.log('error updating invoice:', error);
 			throw new BadRequestException(
-				`Error al actualizar factura: ${error.message || 'Error desconocido'}`,
+				`Error al actualizar recibo: ${error.message || 'Error desconocido'}`,
 			);
 		}
 	}
