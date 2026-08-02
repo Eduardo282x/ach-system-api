@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     ConflictException,
     Injectable,
     NotFoundException,
@@ -15,7 +16,7 @@ export class UsersService {
         try {
             const users = await this.prismaService.users.findMany({
                 orderBy: {
-                    createdAt: 'asc',
+                    id: 'asc',
                 },
             });
 
@@ -137,6 +138,10 @@ export class UsersService {
 
             if (!user) {
                 throw new NotFoundException(`Usuario con id ${id} no encontrado`);
+            }
+            
+            if(user.role === 'ADMIN') {
+                throw new BadRequestException(`No se puede eliminar el usuario de Administrador`);
             }
 
             const deletedUser = await this.prismaService.users.delete({
