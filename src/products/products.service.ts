@@ -206,6 +206,32 @@ export class ProductsService {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    private normalizeString(value: string): string {
+        return value.trim().replace(/\s+/g, ' ');
+    }
+
+    private toTitleCase(value: string): string {
+        return value.replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    private async resolveBrand(value: string): Promise<string> {
+        const normalized = this.normalizeString(value);
+        const existing = await this.prismaService.product.findFirst({
+            where: { brand: { equals: normalized, mode: 'insensitive' }, deleted: false },
+            select: { brand: true },
+        });
+        return existing ? existing.brand : this.toTitleCase(normalized);
+    }
+
+    private async resolveType(value: string): Promise<string> {
+        const normalized = this.normalizeString(value);
+        const existing = await this.prismaService.product.findFirst({
+            where: { type: { equals: normalized, mode: 'insensitive' }, deleted: false },
+            select: { type: true },
+        });
+        return existing ? existing.type : this.toTitleCase(normalized);
+    }
+
     async getExchangeRateToday() {
         try {
             const rates = await this.prismaService.exchangeRate.findMany({
@@ -351,7 +377,13 @@ export class ProductsService {
                 throw new BadRequestException('El código de barras ya está registrado para el producto: ' + exists.name);
             }
 
-            // 2. Crear el producto
+            // 2. Normalizar brand y type
+            const [resolvedBrand, resolvedType] = await Promise.all([
+                this.resolveBrand(createProductDto.brand),
+                this.resolveType(createProductDto.type),
+            ]);
+
+            // 3. Crear el producto
             const newProduct = await this.prismaService.product.create({
                 data: {
                     name: createProductDto.name,
@@ -362,8 +394,8 @@ export class ProductsService {
                     stock: createProductDto.stock,
                     serialNumber: createProductDto.serialNumber,
                     lote: createProductDto.lote,
-                    brand: createProductDto.brand,
-                    type: createProductDto.type,
+                    brand: resolvedBrand,
+                    type: resolvedType,
                     description: createProductDto.description,
                 },
             });
@@ -393,7 +425,13 @@ export class ProductsService {
                 throw new BadRequestException(`El código de barras ya está registrado para el producto: ${exists.name}`);
             }
 
-            // 2. Actualizar
+            // 2. Normalizar brand y type
+            const [resolvedBrand, resolvedType] = await Promise.all([
+                this.resolveBrand(updateProductDto.brand),
+                this.resolveType(updateProductDto.type),
+            ]);
+
+            // 3. Actualizar
             const updatedProduct = await this.prismaService.product.update({
                 where: { id },
                 data: {
@@ -405,8 +443,8 @@ export class ProductsService {
                     stock: updateProductDto.stock,
                     serialNumber: updateProductDto.serialNumber,
                     lote: updateProductDto.lote,
-                    brand: updateProductDto.brand,
-                    type: updateProductDto.type,
+                    brand: resolvedBrand,
+                    type: resolvedType,
                     description: updateProductDto.description,
                 },
             });
@@ -444,5 +482,25 @@ export class ProductsService {
 
             throw error;
         }
+    }
+
+    async getProductAttributes() {
+        const [brands, types] = await Promise.all([
+            this.prismaService.product.findMany({
+                where: { deleted: false },
+                distinct: ['brand'],
+                select: { brand: true },
+            }),
+            this.prismaService.product.findMany({
+                where: { deleted: false },
+                distinct: ['type'],
+                select: { type: true },
+            }),
+        ]);
+
+        return {
+            brands: brands.map(b => b.brand).sort(),
+            types: types.map(t => t.type).sort(),
+        };
     }
 }

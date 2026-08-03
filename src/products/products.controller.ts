@@ -38,6 +38,11 @@ export class ProductsController {
         return await this.productsService.generateBarCode();
     }
 
+    @Get('/attributes')
+    async getProductAttributes() {
+        return await this.productsService.getProductAttributes();
+    }
+
     @Post()
     async createProduct(@Body() createProductDto: ProductDto) {
         return await this.productsService.createProduct(createProductDto);
