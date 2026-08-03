@@ -255,13 +255,14 @@ export class SalesService {
 				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
 			}
 
+
 			const invoiceWhere: any = {
 				createdAt: {
 					gte: startDate,
 					lte: endDate,
 				},
 				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
-				...(cashDrawerId ? { cashDrawerId: Number(cashDrawerId) } : {}),
+				...(cashDrawerId ? { session: { cashDrawerId: Number(cashDrawerId) } } : {}),
 			};
 
 			const [invoices, invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
