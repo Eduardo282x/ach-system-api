@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -24,6 +25,7 @@ export class SalesService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly sessionsService: SessionsService,
+		private readonly configService: ConfigService,
 	) { }
 
 	private toTwoDecimals(value: number) {
@@ -189,6 +191,7 @@ export class SalesService {
 								id: true,
 								quantity: true,
 								unitPrice: true,
+								hasDiscount: true,
 								subtotal: true,
 								product: {
 									select: {
@@ -517,6 +520,8 @@ export class SalesService {
 				'Recibido (USD)',
 				'Vuelto (Bs)',
 				'Vuelto (USD)',
+				'Descuento (Bs)',
+				'Descuento (USD)',
 				'Pagos',
 				'Productos',
 			]);
@@ -544,6 +549,8 @@ export class SalesService {
 					Number(invoice.totalReceivedUsd),
 					Number(invoice.totalChangeBs),
 					Number(invoice.totalChangeUsd),
+					Number(invoice.discountBs),
+					Number(invoice.discountUsd),
 					payments,
 					products,
 				]);
@@ -559,6 +566,7 @@ export class SalesService {
 				{ width: 10 },
 				{ width: 14 },
 				{ width: 18 },
+				{ width: 14 },
 				{ width: 14 },
 				{ width: 14 },
 				{ width: 14 },
@@ -708,6 +716,23 @@ export class SalesService {
 				paymentTypes.map((paymentType) => [paymentType.id, paymentType]),
 			);
 
+			if (createInvoiceDto.hasDiscount) {
+				if (createInvoiceDto.payments.length !== 1) {
+					throw new BadRequestException(
+						'El descuento solo se puede aplicar cuando la venta tiene un único método de pago',
+					);
+				}
+
+				const singlePayment = createInvoiceDto.payments[0];
+				const singlePaymentType = paymentTypeMap.get(singlePayment.paymentTypeId);
+
+				if (!singlePaymentType || singlePaymentType.currency !== 'USD') {
+					throw new BadRequestException(
+						'El descuento solo se puede aplicar cuando el pago se realiza en dólares (USD)',
+					);
+				}
+			}
+
 			let usdRate: { id: number; rate: number } | undefined;
 			let eurRate: { id: number; rate: number } | undefined;
 
@@ -771,6 +796,7 @@ export class SalesService {
 			};
 
 			let totalAmountBs = 0;
+			let listTotalBs = 0;
 			const invoiceItemsData = createInvoiceDto.items.map((item) => {
 				const product = productsMap.get(item.productId);
 
@@ -780,16 +806,39 @@ export class SalesService {
 					);
 				}
 
-				const unitPrice = Number(product.price);
+				const listPrice = Number(product.price);
+				let unitPrice = listPrice;
+				let hasDiscount = false;
+
+				if (item.unitPrice !== undefined) {
+					if (item.unitPrice > listPrice) {
+						throw new BadRequestException(
+							`El precio unitario no puede ser mayor al precio de lista para ${product.name}`,
+						);
+					}
+
+					if (item.unitPrice < listPrice && !createInvoiceDto.hasDiscount) {
+						throw new BadRequestException(
+							`No se puede aplicar descuento a ${product.name} sin indicar hasDiscount en la venta`,
+						);
+					}
+
+					unitPrice = item.unitPrice;
+					hasDiscount = unitPrice < listPrice;
+				}
+
 				const factor = getFactorByCurrency(product.currency as ExchangeRateType);
 				const subtotal = this.toTwoDecimals(unitPrice * item.quantity * factor);
+				const listSubtotal = this.toTwoDecimals(listPrice * item.quantity * factor);
 
 				totalAmountBs += subtotal;
+				listTotalBs += listSubtotal;
 
 				return {
 					productId: item.productId,
 					quantity: item.quantity,
 					unitPrice,
+					hasDiscount,
 					subtotal,
 					productName: product.name,
 				};
@@ -798,6 +847,28 @@ export class SalesService {
 			totalAmountBs = this.toTwoDecimals(totalAmountBs);
 			const totalAmountUsd =
 				ratesToBs.USD > 0 ? this.toTwoDecimals(totalAmountBs / ratesToBs.USD) : 0;
+
+			const discountBs = createInvoiceDto.hasDiscount
+				? this.toTwoDecimals(listTotalBs - totalAmountBs)
+				: 0;
+			const discountUsd =
+				createInvoiceDto.hasDiscount && ratesToBs.USD > 0
+					? this.toTwoDecimals(discountBs / ratesToBs.USD)
+					: 0;
+
+			if (createInvoiceDto.hasDiscount && listTotalBs > 0) {
+				const maxDiscountPercentage = Number(
+					this.configService.get<number>('MAX_DISCOUNT_PERCENTAGE') ?? 25,
+				);
+
+				const discountPercent = (discountBs / listTotalBs) * 100;
+
+				if (discountPercent > maxDiscountPercentage) {
+					throw new BadRequestException(
+						`El descuento aplicado (${this.toTwoDecimals(discountPercent)}%) supera el límite permitido (${maxDiscountPercentage}%)`,
+					);
+				}
+			}
 
 			const paymentsData = createInvoiceDto.payments.map((payment) => {
 				const received = Number(payment.amountReceived);
@@ -908,6 +979,9 @@ export class SalesService {
 						totalReceivedUsd: new Prisma.Decimal(totalReceivedUsd),
 						totalChangeBs: new Prisma.Decimal(totalChangeBs),
 						totalChangeUsd: new Prisma.Decimal(totalChangeUsd),
+						hasDiscount: createInvoiceDto.hasDiscount,
+						discountBs: new Prisma.Decimal(discountBs),
+						discountUsd: new Prisma.Decimal(discountUsd),
 						userId,
 						status: isCreditPayment ? 'PENDING' : 'PAID',
 						customerId: createInvoiceDto.customerId,
@@ -921,6 +995,7 @@ export class SalesService {
 						invoiceId: createdInvoice.id,
 						productId: item.productId,
 						unitPrice: new Prisma.Decimal(item.unitPrice),
+						hasDiscount: item.hasDiscount,
 						quantity: item.quantity,
 						subtotal: new Prisma.Decimal(item.subtotal),
 					})),
@@ -990,6 +1065,7 @@ export class SalesService {
 								id: true,
 								quantity: true,
 								unitPrice: true,
+								hasDiscount: true,
 								subtotal: true,
 								product: {
 									select: {

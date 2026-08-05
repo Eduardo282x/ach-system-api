@@ -33,6 +33,12 @@ export class ProductDto {
     price!: number;
 
     @IsOptional()
+    @Type(() => Number)
+    @IsNumber({ maxDecimalPlaces: 2 })
+    @Min(0, { message: 'El precio de descuento debe ser un número positivo' })
+    discountPrice?: number;
+
+    @IsOptional()
     @IsEnum(ExchangeRateType)
     currency?: ExchangeRateType;
 

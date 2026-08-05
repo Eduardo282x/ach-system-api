@@ -64,6 +64,12 @@ export class CreateInvoiceItemDto {
 	@IsNumber({ maxDecimalPlaces: 3 })
 	@Min(0.001)
 	quantity!: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0)
+	unitPrice?: number;
 }
 
 export class CreatePaymentDetailDto {
@@ -98,6 +104,9 @@ export class CreateInvoiceDto {
 	@IsInt()
 	@Min(1)
 	sessionId!: number;
+
+	@IsBoolean()
+	hasDiscount!: boolean;
 
 	@IsArray()
 	@ArrayMinSize(1)

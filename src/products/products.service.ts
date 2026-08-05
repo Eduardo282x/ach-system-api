@@ -383,6 +383,12 @@ export class ProductsService {
                 this.resolveType(createProductDto.type),
             ]);
 
+            if (createProductDto.discountPrice !== undefined && createProductDto.discountPrice > createProductDto.price) {
+                throw new BadRequestException(
+                    'El precio de descuento no puede ser mayor al precio del producto',
+                );
+            }
+
             // 3. Crear el producto
             const newProduct = await this.prismaService.product.create({
                 data: {
@@ -390,6 +396,7 @@ export class ProductsService {
                     presentation: createProductDto.presentation,
                     barcode: createProductDto.barcode,
                     price: createProductDto.price,
+                    discountPrice: createProductDto.discountPrice,
                     currency: createProductDto.currency,
                     stock: createProductDto.stock,
                     serialNumber: createProductDto.serialNumber,
@@ -431,6 +438,12 @@ export class ProductsService {
                 this.resolveType(updateProductDto.type),
             ]);
 
+            if (updateProductDto.discountPrice !== undefined && updateProductDto.discountPrice > updateProductDto.price) {
+                throw new BadRequestException(
+                    'El precio de descuento no puede ser mayor al precio del producto',
+                );
+            }
+
             // 3. Actualizar
             const updatedProduct = await this.prismaService.product.update({
                 where: { id },
@@ -439,6 +452,7 @@ export class ProductsService {
                     presentation: updateProductDto.presentation,
                     barcode: updateProductDto.barcode,
                     price: updateProductDto.price,
+                    discountPrice: updateProductDto.discountPrice,
                     currency: updateProductDto.currency,
                     stock: updateProductDto.stock,
                     serialNumber: updateProductDto.serialNumber,

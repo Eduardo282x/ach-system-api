@@ -61,6 +61,7 @@ model Product {
   presentation     String
   barcode          String              @unique
   price            Decimal             @db.Decimal(10, 2)
+  discountPrice    Decimal?            @db.Decimal(10, 2)
   currency         ExchangeRateType    @default(USD)
   stock            Decimal             @db.Decimal(10, 3)
   serialNumber     String
@@ -97,6 +98,10 @@ model Invoice {
   totalChangeBs    Decimal @db.Decimal(65, 2)
   totalChangeUsd   Decimal @db.Decimal(65, 2)
 
+  hasDiscount      Boolean @default(false)
+  discountUsd      Decimal @default(0) @db.Decimal(65, 2)
+  discountBs       Decimal @default(0) @db.Decimal(65, 2)
+
   exchangeRateUsdId Int
   exchangeRateEurId Int
   exchangeRateUsd   ExchangeRate @relation("UsdRate", fields: [exchangeRateUsdId], references: [id])
@@ -122,6 +127,7 @@ model InvoiceItem {
   invoiceId Int
   productId Int
   unitPrice Decimal  @db.Decimal(10, 2)
+  hasDiscount Boolean @default(false)
   quantity  Decimal  @db.Decimal(10, 3)
   subtotal  Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
