@@ -10,4 +10,10 @@ export interface ProductExcel {
     barcode: string;
     price: number;
     stock: number;
+    discountPrice: number;
+    serialNumber: string;
+    lote: string;
+    brand: string;
+    type: string;
+    description: string;
 }
