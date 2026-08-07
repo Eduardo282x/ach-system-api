@@ -73,7 +73,7 @@ export class ProductsController {
 
     @Post('/validate-password')
     async validatePassword(
-        @Body() password: string
+        @Body('password') password: string
     ) {
         return await this.productsService.validatePassword({ password });
     }

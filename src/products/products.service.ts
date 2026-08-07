@@ -475,7 +475,7 @@ export class ProductsService {
 
     async validatePassword({ password }: { password: string }): Promise<boolean> {
         if (password !== process.env.PASSWORD_ADMIN) {
-            throw new UnauthorizedException('Contraseña de administrador incorrecta');
+            throw new BadRequestException('Contraseña de administrador incorrecta');
         }
         return true;
     }
