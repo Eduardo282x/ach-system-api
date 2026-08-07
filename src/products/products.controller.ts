@@ -71,8 +71,18 @@ export class ProductsController {
         return await this.productsService.updateProduct(id, updateProductDto);
     }
 
-    @Delete(':id')
-    async deleteProduct(@Param('id', ParseIntPipe) id: number) {
-        return await this.productsService.deleteProduct(id);
+    @Get('/validate-password')
+    async validatePassword(
+        @Query('password') password: string
+    ) {
+        return await this.productsService.validatePassword({ password });
+    }
+
+    @Delete()
+    async deleteProduct(
+        @Query('id', ParseIntPipe) id: number,
+        @Query('password') password: string
+    ) {
+        return await this.productsService.deleteProduct({id, password});
     }
 }

@@ -3,6 +3,7 @@ import {
     Injectable,
     InternalServerErrorException,
     NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ExchangeRateDto, ProductDto } from './products.dto';
@@ -472,11 +473,22 @@ export class ProductsService {
         }
     }
 
-    async deleteProduct(id: number) {
+    async validatePassword({ password }: { password: string }): Promise<boolean> {
+        if (password !== process.env.PASSWORD_ADMIN) {
+            throw new UnauthorizedException('Contraseña de administrador incorrecta');
+        }
+        return true;
+    }
+
+    async deleteProduct({ id, password }: { id: number, password: string }) {
         try {
             const exists = await this.prismaService.product.findUnique({
                 where: { id },
             });
+
+            if(password !== process.env.PASSWORD_ADMIN) {
+                throw new UnauthorizedException('Contraseña de administrador incorrecta');
+            } 
 
             if (!exists) {
                 throw new NotFoundException(`Producto con id ${id} no encontrado`);
