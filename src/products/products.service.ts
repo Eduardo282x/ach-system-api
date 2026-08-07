@@ -6,7 +6,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ExchangeRateDto, ProductDto } from './products.dto';
+import { DeleteProductDto, ExchangeRateDto, ProductDto } from './products.dto';
 import axios from 'axios';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 
@@ -480,22 +480,22 @@ export class ProductsService {
         return true;
     }
 
-    async deleteProduct({ id, password }: { id: number, password: string }) {
+    async deleteProduct(deleteProductDto: DeleteProductDto) {
         try {
             const exists = await this.prismaService.product.findUnique({
-                where: { id },
+                where: { id: deleteProductDto.id },
             });
 
-            if(password !== process.env.PASSWORD_ADMIN) {
+            if(deleteProductDto.password !== process.env.PASSWORD_ADMIN) {
                 throw new UnauthorizedException('Contraseña de administrador incorrecta');
             } 
 
             if (!exists) {
-                throw new NotFoundException(`Producto con id ${id} no encontrado`);
+                throw new NotFoundException(`Producto con id ${deleteProductDto.id} no encontrado`);
             }
 
             const product = await this.prismaService.product.update({
-                where: { id },
+                where: { id: deleteProductDto.id },
                 data: { deleted: true },
             });
 

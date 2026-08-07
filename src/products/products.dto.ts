@@ -74,3 +74,12 @@ export class ExchangeRateDto {
     @IsEnum(ExchangeRateType)
     currency!: ExchangeRateType;
 }
+
+export class DeleteProductDto {
+    @IsNumber()
+    @Min(1, { message: 'El ID del producto debe ser un número positivo' })
+    id!: number;
+    @IsString()
+    @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+    password!: string;
+}

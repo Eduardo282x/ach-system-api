@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
-import { ExchangeRateDto, ProductDto } from './products.dto';
+import { DeleteProductDto, ExchangeRateDto, ProductDto } from './products.dto';
 import { ProductsService } from './products.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -71,18 +71,17 @@ export class ProductsController {
         return await this.productsService.updateProduct(id, updateProductDto);
     }
 
-    @Get('/validate-password')
+    @Post('/validate-password')
     async validatePassword(
-        @Query('password') password: string
+        @Body() password: string
     ) {
         return await this.productsService.validatePassword({ password });
     }
 
     @Delete()
     async deleteProduct(
-        @Query('id', ParseIntPipe) id: number,
-        @Query('password') password: string
+        @Body() deleteProductDto: DeleteProductDto
     ) {
-        return await this.productsService.deleteProduct({id, password});
+        return await this.productsService.deleteProduct(deleteProductDto);
     }
 }
