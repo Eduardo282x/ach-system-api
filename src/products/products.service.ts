@@ -6,7 +6,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ExchangeRateDto, ProductDto } from './products.dto';
+import { DeleteProductDto, ExchangeRateDto, ProductDto } from './products.dto';
 import axios from 'axios';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 
@@ -445,27 +445,27 @@ export class ProductsService {
 
         async validatePassword({ password }: { password: string }): Promise<boolean> {
         if (password !== process.env.PASSWORD_ADMIN) {
-            throw new UnauthorizedException('Contraseña de administrador incorrecta');
+            throw new BadRequestException('Contraseña de administrador incorrecta');
         }
         return true;
     }
 
-    async deleteProduct({ id, password }: { id: number, password: string }) {
+    async deleteProduct(deleteProduct: DeleteProductDto) {
         try {
             const exists = await this.prismaService.product.findUnique({
-                where: { id },
+                where: { id: deleteProduct.id },
             });
 
-            if(password !== process.env.PASSWORD_ADMIN) {
-                throw new UnauthorizedException('Contraseña de administrador incorrecta');
+            if(deleteProduct.password !== process.env.PASSWORD_ADMIN) {
+                throw new BadRequestException('Contraseña de administrador incorrecta');
             } 
 
             if (!exists) {
-                throw new NotFoundException(`Producto con id ${id} no encontrado`);
+                throw new NotFoundException(`Producto con id ${deleteProduct.id} no encontrado`);
             }
 
             const product = await this.prismaService.product.update({
-                where: { id },
+                where: { id: deleteProduct.id },
                 data: { deleted: true },
             });
 
