@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Res } from '@nestjs/common';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
+import { CreateChangeDto, CreateInvoiceDto, CreateReturnDto, GetInvoicesFilterDto } from './sales.dto';
 import { SalesService } from './sales.service';
 import { Response } from 'express';
 
@@ -13,6 +13,13 @@ export class SalesController {
         @Query() filter: GetInvoicesFilterDto,
     ) {
         return await this.salesService.getInvoices(filter);
+    }
+
+    @Get('/invoices/:invoiceId')
+    async getInvoiceById(
+        @Param('invoiceId', ParseIntPipe) invoiceId: number,
+    ) {
+        return await this.salesService.getInvoiceById(invoiceId);
     }
 
     @Get('/resumen')
@@ -57,6 +64,22 @@ export class SalesController {
         @CurrentUser() user,
     ) {
         return await this.salesService.payInvoiceCredit(invoiceId, user.id);
+    }
+
+    @Post('/return')
+    async returnInvoice(
+        @Body() createReturnDto: CreateReturnDto,
+        @CurrentUser() user,
+    ) {
+        return await this.salesService.returnInvoice(createReturnDto, user.id);
+    }
+
+    @Post('/change')
+    async changeInvoice(
+        @Body() createChangeDto: CreateChangeDto,
+        @CurrentUser() user,
+    ) {
+        return await this.salesService.changeInvoice(createChangeDto, user.id);
     }
     
 }

@@ -21,6 +21,7 @@ model Users {
   cashDrawerSessions CashDrawerSession[]
   inventoryMovements InventoryMovement[]
   invoices           Invoice[]
+  returns            Return[]
 }
 
 model Clients {
@@ -74,6 +75,7 @@ model Product {
   deleted          Boolean             @default(false)
   historyMovements InventoryMovement[]
   invoiceItems     InvoiceItem[]
+  returnItems      ReturnItem[]
 }
 
 model InventoryMovement {
@@ -117,9 +119,36 @@ model Invoice {
   user           Users             @relation(fields: [userId], references: [id])
   items          InvoiceItem[]
   paymentDetails PaymentDetail[]
+  returns        Return[]
 
   @@index([sessionId])
   @@index([createdAt])
+}
+
+model Return {
+  id        Int          @id @default(autoincrement())
+  invoiceId Int
+  type      ReturnType
+  reason    String
+  userId    Int
+  createdAt DateTime     @default(now())
+  invoice   Invoice      @relation(fields: [invoiceId], references: [id])
+  user      Users        @relation(fields: [userId], references: [id])
+  items     ReturnItem[]
+
+  @@index([invoiceId])
+  @@index([createdAt])
+}
+
+model ReturnItem {
+  id        Int          @id @default(autoincrement())
+  returnId  Int
+  productId Int
+  quantity  Decimal      @db.Decimal(10, 3)
+  condition ReturnCondition
+  createdAt DateTime     @default(now())
+  return    Return       @relation(fields: [returnId], references: [id])
+  product   Product      @relation(fields: [productId], references: [id])
 }
 
 model InvoiceItem {
@@ -207,6 +236,18 @@ enum InvoiceStatus {
   PAID
   PENDING
   CANCELLED
+  RETURN
+  CHANGE
+}
+
+enum ReturnType {
+  RETURN
+  CHANGE
+}
+
+enum ReturnCondition {
+  GOOD
+  DEFECTIVE
 }
 
 enum SessionStatus {

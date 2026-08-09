@@ -1,10 +1,17 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from 'src/generated/prisma/client';
-import { ExchangeRateType } from 'src/generated/prisma/enums';
+import { ExchangeRateType, ReturnCondition } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
+import {
+	CreateChangeDto,
+	CreateInvoiceDto,
+	CreateReturnDto,
+	GetInvoicesFilterDto,
+	RefundPaymentDto,
+	ReturnItemDto,
+} from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
 import dayjs from 'dayjs';
@@ -27,6 +34,58 @@ export class SalesService {
 		private readonly sessionsService: SessionsService,
 		private readonly configService: ConfigService,
 	) { }
+
+	private invoiceInclude = {
+		customer: {
+			select: {
+				id: true,
+				fullName: true,
+				identify: true,
+			},
+		},
+		user: {
+			select: {
+				id: true,
+				name: true,
+				role: true,
+			},
+		},
+		session: {
+			select: {
+				id: true,
+				cashDrawerId: true,
+			},
+		},
+		items: {
+			select: {
+				id: true,
+				quantity: true,
+				unitPrice: true,
+				hasDiscount: true,
+				subtotal: true,
+				product: {
+					select: {
+						id: true,
+						name: true,
+						barcode: true,
+						stock: true,
+						currency: true,
+					},
+				},
+			},
+		},
+		paymentDetails: {
+			include: {
+				paymentType: {
+					select: {
+						id: true,
+						name: true,
+						currency: true,
+					},
+				},
+			},
+		},
+	} as const;
 
 	private toTwoDecimals(value: number) {
 		return Math.round(value * 100) / 100;
@@ -1111,6 +1170,545 @@ export class SalesService {
 			console.log('error creating invoice:', error);
 			throw new BadRequestException(
 				`Error al crear Recibo: ${error.message || 'Error desconocido'}`,
+			);
+		}
+	}
+
+	async getInvoiceById(invoiceId: number) {
+		try {
+			const invoice = await this.prismaService.invoice.findUnique({
+				where: { id: invoiceId },
+				include: this.invoiceInclude,
+			});
+
+			if (!invoice) {
+				throw new NotFoundException(`Recibo con id ${invoiceId} no encontrado`);
+			}
+
+			return {
+				invoice,
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	private async validateReturnItems(invoice: any, items: ReturnItemDto[]) {
+		const invoiceItemsMap = new Map<number, any>(
+			invoice.items.map((item: any) => [item.id, item]),
+		);
+
+		const aggregated = new Map<number, { quantity: number; condition: ReturnCondition }>();
+		for (const item of items) {
+			const invoiceItem = invoiceItemsMap.get(item.invoiceItemId);
+			if (!invoiceItem) {
+				throw new BadRequestException(
+					`El ítem ${item.invoiceItemId} no pertenece al recibo`,
+				);
+			}
+
+			const current = aggregated.get(item.invoiceItemId) ?? {
+				quantity: 0,
+				condition: item.condition,
+			};
+			current.quantity += item.quantity;
+			aggregated.set(item.invoiceItemId, current);
+		}
+
+		const result: {
+			invoiceItemId: number;
+			productId: number;
+			productName: string;
+			quantity: number;
+			condition: ReturnCondition;
+		}[] = [];
+
+		for (const [invoiceItemId, data] of aggregated.entries()) {
+			const invoiceItem = invoiceItemsMap.get(invoiceItemId);
+			if (data.quantity > Number(invoiceItem.quantity)) {
+				throw new BadRequestException(
+					`La cantidad a devolver (${data.quantity}) supera la cantidad vendida (${invoiceItem.quantity}) para ${invoiceItem.product.name}`,
+				);
+			}
+
+			result.push({
+				invoiceItemId,
+				productId: invoiceItem.productId,
+				productName: invoiceItem.product.name,
+				quantity: this.toTwoDecimals(data.quantity),
+				condition: data.condition,
+			});
+		}
+
+		return result;
+	}
+
+	private async validateRefundPayments(invoice: any, payments: RefundPaymentDto[]) {
+		const paymentTypeIds = [
+			...new Set(payments.map((payment) => payment.paymentTypeId)),
+		];
+
+		const paymentTypes = await this.prismaService.typePayment.findMany({
+			where: { id: { in: paymentTypeIds } },
+		});
+
+		if (paymentTypes.length !== paymentTypeIds.length) {
+			throw new BadRequestException('Uno o más tipos de pago de devolución no existen');
+		}
+
+		const paymentTypeMap = new Map(paymentTypes.map((paymentType) => [paymentType.id, paymentType]));
+		const usdRate = Number(invoice.exchangeRateUsd?.rate ?? 0);
+
+		return payments.map((payment) => {
+			const paymentType = paymentTypeMap.get(payment.paymentTypeId);
+			if (!paymentType) {
+				throw new BadRequestException(
+					`Tipo de pago con id ${payment.paymentTypeId} no existe`,
+				);
+			}
+
+			const currency = paymentType.currency as ExchangeRateType;
+
+			if (currency === 'EUR') {
+				throw new BadRequestException(
+					'Los pagos en EUR no están soportados para devoluciones',
+				);
+			}
+
+			const factor = currency === 'BS' ? 1 : usdRate;
+			const amountBs = this.toTwoDecimals(payment.amount * factor);
+
+			return {
+				paymentTypeId: payment.paymentTypeId,
+				currency,
+				amount: this.toTwoDecimals(payment.amount),
+				amountBs,
+			};
+		});
+	}
+
+	async returnInvoice(createReturnDto: CreateReturnDto, userId: number) {
+		try {
+			const invoice = await this.prismaService.invoice.findUnique({
+				where: { id: createReturnDto.invoiceId },
+				include: {
+					...this.invoiceInclude,
+					exchangeRateUsd: {
+						select: { id: true, rate: true },
+					},
+					exchangeRateEur: {
+						select: { id: true, rate: true },
+					},
+				},
+			});
+
+			if (!invoice) {
+				throw new NotFoundException(
+					`Recibo con id ${createReturnDto.invoiceId} no encontrado`,
+				);
+			}
+
+			if (invoice.status !== 'PAID') {
+				throw new BadRequestException(
+					'Solo se puede devolver un recibo en estado Pagada',
+				);
+			}
+
+			const session = await this.prismaService.cashDrawerSession.findUnique({
+				where: { id: invoice.sessionId },
+			});
+
+			if (!session) {
+				throw new NotFoundException(
+					`Sesión de caja con id ${invoice.sessionId} no encontrada`,
+				);
+			}
+
+			if (session.closedAt !== null) {
+				throw new BadRequestException(
+					'La sesión de caja de la factura ya está cerrada, no se puede devolver',
+				);
+			}
+
+			const validatedItems = await this.validateReturnItems(invoice, createReturnDto.items);
+			const refundPayments = await this.validateRefundPayments(invoice, createReturnDto.payments);
+
+			const result = await this.prismaService.$transaction(async (tx) => {
+				const createdReturn = await tx.return.create({
+					data: {
+						invoiceId: invoice.id,
+						type: 'RETURN',
+						reason: createReturnDto.reason,
+						userId,
+					},
+				});
+
+				await tx.returnItem.createMany({
+					data: validatedItems.map((item) => ({
+						returnId: createdReturn.id,
+						productId: item.productId,
+						quantity: new Prisma.Decimal(item.quantity),
+						condition: item.condition,
+					})),
+				});
+
+				const goodItems = validatedItems.filter(
+					(item) => item.condition === 'GOOD',
+				);
+
+				if (goodItems.length > 0) {
+					await Promise.all(
+						goodItems.map((item) =>
+							tx.product.update({
+								where: { id: item.productId },
+								data: {
+									stock: {
+										increment: item.quantity,
+									},
+								},
+							}),
+						),
+					);
+
+					await tx.inventoryMovement.createMany({
+						data: goodItems.map((item) => ({
+							productId: item.productId,
+							quantity: item.quantity,
+							type: 'RETURN',
+							userId,
+							reason: `Devolución en recibo ${invoice.invoiceNumber} - ${item.productName}`,
+						})),
+					});
+				}
+
+				await tx.paymentDetail.createMany({
+					data: refundPayments.map((payment) => ({
+						invoiceId: invoice.id,
+						paymentTypeId: payment.paymentTypeId,
+						amountReceived: new Prisma.Decimal(-payment.amount),
+						amountChange: new Prisma.Decimal(0),
+						amountNet: new Prisma.Decimal(-payment.amount),
+						amountNetBs: new Prisma.Decimal(-payment.amountBs),
+						currency: payment.currency as ExchangeRateType,
+						denominations: undefined,
+					})),
+				});
+
+				const updatedInvoice = await tx.invoice.update({
+					where: { id: invoice.id },
+					data: { status: 'RETURN' },
+					include: this.invoiceInclude,
+				});
+
+				return { createdReturn, updatedInvoice };
+			});
+
+			try {
+				await this.sessionsService.refreshSessionTotals(invoice.sessionId);
+			} catch (error: Error | any) {
+				console.log('error refreshing session totals:', error);
+			}
+
+			return {
+				message: 'Devolución registrada correctamente',
+				return: result.createdReturn,
+				invoice: result.updatedInvoice,
+			};
+		} catch (error: Error | any) {
+			console.log('error creating return:', error);
+			throw new BadRequestException(
+				`Error al registrar devolución: ${error.message || 'Error desconocido'}`,
+			);
+		}
+	}
+
+	async changeInvoice(createChangeDto: CreateChangeDto, userId: number) {
+		try {
+			const invoice = await this.prismaService.invoice.findUnique({
+				where: { id: createChangeDto.invoiceId },
+				include: {
+					...this.invoiceInclude,
+					exchangeRateUsd: {
+						select: { id: true, rate: true },
+					},
+					exchangeRateEur: {
+						select: { id: true, rate: true },
+					},
+				},
+			});
+
+			if (!invoice) {
+				throw new NotFoundException(
+					`Recibo con id ${createChangeDto.invoiceId} no encontrado`,
+				);
+			}
+
+			if (invoice.status !== 'PAID') {
+				throw new BadRequestException(
+					'Solo se puede cambiar un recibo en estado Pagada',
+				);
+			}
+
+			const targetSession = await this.prismaService.cashDrawerSession.findUnique({
+				where: { id: createChangeDto.sessionId },
+			});
+
+			if (!targetSession) {
+				throw new NotFoundException(
+					`Sesión de caja con id ${createChangeDto.sessionId} no encontrada`,
+				);
+			}
+
+			if (targetSession.closedAt !== null) {
+				throw new BadRequestException(
+					'La sesión de caja destino está cerrada',
+				);
+			}
+
+			const validatedItems = await this.validateReturnItems(invoice, createChangeDto.returnedItems);
+
+			const requiredByProduct = new Map<number, number>();
+			for (const item of createChangeDto.replacementItems) {
+				requiredByProduct.set(
+					item.productId,
+					(requiredByProduct.get(item.productId) ?? 0) + item.quantity,
+				);
+			}
+
+			const productIds = Array.from(requiredByProduct.keys());
+
+			const replacementProducts = await this.prismaService.product.findMany({
+				where: { id: { in: productIds } },
+			});
+
+			if (replacementProducts.length !== productIds.length) {
+				throw new BadRequestException('Uno o más productos de reemplazo no existen');
+			}
+
+			const replacementProductMap = new Map(
+				replacementProducts.map((product) => [product.id, product]),
+			);
+
+			for (const [productId, quantity] of requiredByProduct.entries()) {
+				const product = replacementProductMap.get(productId)!;
+				if (Number(product.stock) < quantity) {
+					throw new BadRequestException(
+						`Stock insuficiente para ${product.name}. Disponible: ${Number(product.stock)}`,
+					);
+				}
+			}
+
+			let usdRate: { id: number; rate: number } | undefined;
+			let eurRate: { id: number; rate: number } | undefined;
+
+			const hasManualRateIds =
+				createChangeDto.exchangeRateUsdId !== undefined ||
+				createChangeDto.exchangeRateEurId !== undefined;
+
+			if (hasManualRateIds) {
+				if (!createChangeDto.exchangeRateUsdId || !createChangeDto.exchangeRateEurId) {
+					throw new BadRequestException(
+						'Si envías tasas manuales, debes enviar exchangeRateUsdId y exchangeRateEurId',
+					);
+				}
+
+				const rates = await this.prismaService.exchangeRate.findMany({
+					where: {
+						id: {
+							in: [
+								createChangeDto.exchangeRateUsdId,
+								createChangeDto.exchangeRateEurId,
+							],
+						},
+					},
+				});
+
+				const usdRateRecord = rates.find(
+					(rate) =>
+						rate.id === createChangeDto.exchangeRateUsdId &&
+						rate.currency === 'USD',
+				);
+				const eurRateRecord = rates.find(
+					(rate) =>
+						rate.id === createChangeDto.exchangeRateEurId &&
+						rate.currency === 'EUR',
+				);
+
+				if (!usdRateRecord || !eurRateRecord) {
+					throw new BadRequestException('Una o ambas tasas enviadas no son válidas');
+				}
+
+				usdRate = { id: usdRateRecord.id, rate: Number(usdRateRecord.rate) };
+				eurRate = { id: eurRateRecord.id, rate: Number(eurRateRecord.rate) };
+			} else {
+				const latestRatesByCurrency = await this.getLatestExchangeRatesByCurrency();
+				usdRate = latestRatesByCurrency.get('USD');
+				eurRate = latestRatesByCurrency.get('EUR');
+			}
+
+			if (!usdRate || usdRate.rate <= 0) {
+				throw new BadRequestException('No existe una tasa USD válida');
+			}
+
+			if (!eurRate || eurRate.rate <= 0) {
+				throw new BadRequestException('No existe una tasa EUR válida');
+			}
+
+			const invoiceNumber = await this.generateInvoiceNumber();
+
+			const result = await this.prismaService.$transaction(async (tx) => {
+				const createdReturn = await tx.return.create({
+					data: {
+						invoiceId: invoice.id,
+						type: 'CHANGE',
+						reason: createChangeDto.reason,
+						userId,
+					},
+				});
+
+				await tx.returnItem.createMany({
+					data: validatedItems.map((item) => ({
+						returnId: createdReturn.id,
+						productId: item.productId,
+						quantity: new Prisma.Decimal(item.quantity),
+						condition: item.condition,
+					})),
+				});
+
+				const goodItems = validatedItems.filter(
+					(item) => item.condition === 'GOOD',
+				);
+
+				if (goodItems.length > 0) {
+					await Promise.all(
+						goodItems.map((item) =>
+							tx.product.update({
+								where: { id: item.productId },
+								data: {
+									stock: {
+										increment: item.quantity,
+									},
+								},
+							}),
+						),
+					);
+
+					await tx.inventoryMovement.createMany({
+						data: goodItems.map((item) => ({
+							productId: item.productId,
+							quantity: item.quantity,
+							type: 'RETURN',
+							userId,
+							reason: `Cambio en recibo ${invoice.invoiceNumber} - ${item.productName}`,
+						})),
+					});
+				}
+
+				const newInvoice = await tx.invoice.create({
+					data: {
+						invoiceNumber,
+						totalAmountBs: new Prisma.Decimal(0),
+						totalAmountUsd: new Prisma.Decimal(0),
+						totalReceivedBs: new Prisma.Decimal(0),
+						totalReceivedUsd: new Prisma.Decimal(0),
+						totalChangeBs: new Prisma.Decimal(0),
+						totalChangeUsd: new Prisma.Decimal(0),
+						hasDiscount: false,
+						discountBs: new Prisma.Decimal(0),
+						discountUsd: new Prisma.Decimal(0),
+						exchangeRateUsdId: usdRate.id,
+						exchangeRateEurId: eurRate.id,
+						status: 'CHANGE',
+						userId,
+						customerId: invoice.customerId,
+						sessionId: createChangeDto.sessionId,
+						createdAt: this.getVenezuelaNow(),
+					},
+				});
+
+				const replacementItemsData = Array.from(
+					requiredByProduct.entries(),
+				).map(([productId, quantity]) => {
+					const product = replacementProductMap.get(productId)!;
+					return {
+						productId,
+						productName: product.name,
+						quantity,
+						unitPrice: Number(product.price),
+					};
+				});
+
+				await tx.invoiceItem.createMany({
+					data: replacementItemsData.map((item) => ({
+						invoiceId: newInvoice.id,
+						productId: item.productId,
+						unitPrice: new Prisma.Decimal(item.unitPrice),
+						hasDiscount: false,
+						quantity: new Prisma.Decimal(item.quantity),
+						subtotal: new Prisma.Decimal(0),
+					})),
+				});
+
+				await Promise.all(
+					replacementItemsData.map((item) =>
+						tx.product.update({
+							where: { id: item.productId },
+							data: {
+								stock: {
+									decrement: item.quantity,
+								},
+							},
+						}),
+					),
+				);
+
+				await tx.inventoryMovement.createMany({
+					data: replacementItemsData.map((item) => ({
+						productId: item.productId,
+						quantity: -item.quantity,
+						type: 'SALE',
+						userId,
+						reason: `Cambio recibo ${invoice.invoiceNumber} - salida recibo ${newInvoice.invoiceNumber} - ${item.productName}`,
+					})),
+				});
+
+				const updatedOriginalInvoice = await tx.invoice.update({
+					where: { id: invoice.id },
+					data: { status: 'CHANGE' },
+					include: this.invoiceInclude,
+				});
+
+				const fullNewInvoice = await tx.invoice.findUnique({
+					where: { id: newInvoice.id },
+					include: this.invoiceInclude,
+				});
+
+				return {
+					createdReturn,
+					newInvoice: fullNewInvoice,
+					updatedOriginalInvoice,
+				};
+			});
+
+			try {
+				await this.sessionsService.refreshSessionTotals(invoice.sessionId);
+				if (invoice.sessionId !== createChangeDto.sessionId) {
+					await this.sessionsService.refreshSessionTotals(createChangeDto.sessionId);
+				}
+			} catch (error: Error | any) {
+				console.log('error refreshing session totals:', error);
+			}
+
+			return {
+				message: 'Cambio registrado correctamente',
+				return: result.createdReturn,
+				invoice: result.updatedOriginalInvoice,
+				newInvoice: result.newInvoice,
+			};
+		} catch (error: Error | any) {
+			console.log('error creating change:', error);
+			throw new BadRequestException(
+				`Error al registrar cambio: ${error.message || 'Error desconocido'}`,
 			);
 		}
 	}

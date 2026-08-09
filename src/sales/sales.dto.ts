@@ -3,6 +3,7 @@ import {
 	ArrayMinSize,
 	IsArray,
 	IsBoolean,
+	IsEnum,
 	IsInt,
 	IsNumber,
 	IsObject,
@@ -131,4 +132,109 @@ export class CreateInvoiceDto {
 	@IsInt()
 	@Min(1)
 	exchangeRateEurId!: number;
+}
+
+export enum ReturnConditionEnum {
+	GOOD = 'GOOD',
+	DEFECTIVE = 'DEFECTIVE',
+}
+
+export class ReturnItemDto {
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	invoiceItemId!: number;
+
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 3 })
+	@Min(0.001)
+	quantity!: number;
+
+	@IsEnum(ReturnConditionEnum)
+	condition!: ReturnConditionEnum;
+}
+
+export class RefundPaymentDto {
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	paymentTypeId!: number;
+
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 2 })
+	@Min(0.01)
+	amount!: number;
+}
+
+export class CreateReturnDto {
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	invoiceId!: number;
+
+	@IsString()
+	reason!: string;
+
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => ReturnItemDto)
+	items!: ReturnItemDto[];
+
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => RefundPaymentDto)
+	payments!: RefundPaymentDto[];
+}
+
+export class ReplacementItemDto {
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	productId!: number;
+
+	@Type(() => Number)
+	@IsNumber({ maxDecimalPlaces: 3 })
+	@Min(0.001)
+	quantity!: number;
+}
+
+export class CreateChangeDto {
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	invoiceId!: number;
+
+	@IsString()
+	reason!: string;
+
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => ReturnItemDto)
+	returnedItems!: ReturnItemDto[];
+
+	@IsArray()
+	@ArrayMinSize(1)
+	@ValidateNested({ each: true })
+	@Type(() => ReplacementItemDto)
+	replacementItems!: ReplacementItemDto[];
+
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	sessionId!: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	exchangeRateUsdId?: number;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	exchangeRateEurId?: number;
 }

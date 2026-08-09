@@ -18,6 +18,9 @@ export class UsersService {
                 orderBy: {
                     id: 'asc',
                 },
+                where: {
+                    deleted: false
+                }
             });
 
             const usersWithoutPassword = users.map(({ password, ...user }) => user);
@@ -139,13 +142,16 @@ export class UsersService {
             if (!user) {
                 throw new NotFoundException(`Usuario con id ${id} no encontrado`);
             }
-            
-            if(user.role === 'ADMIN') {
+
+            if (user.role === 'ADMIN') {
                 throw new BadRequestException(`No se puede eliminar el usuario de Administrador`);
             }
 
-            const deletedUser = await this.prismaService.users.delete({
+            const deletedUser = await this.prismaService.users.update({
                 where: { id },
+                data: {
+                    deleted: true
+                }
             });
 
             const { password, ...userWithoutPassword } = deletedUser;
