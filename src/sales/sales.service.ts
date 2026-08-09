@@ -59,6 +59,7 @@ export class SalesService {
 		items: {
 			select: {
 				id: true,
+				productId: true,
 				quantity: true,
 				unitPrice: true,
 				hasDiscount: true,
@@ -1207,7 +1208,14 @@ export class SalesService {
 				);
 			}
 
-			const current = aggregated.get(item.invoiceItemId) ?? {
+			const existing = aggregated.get(item.invoiceItemId);
+			if (existing && existing.condition !== item.condition) {
+				throw new BadRequestException(
+					`El ítem ${item.invoiceItemId} no puede agregarse con condiciones distintas en una misma devolución`,
+				);
+			}
+
+			const current = existing ?? {
 				quantity: 0,
 				condition: item.condition,
 			};
@@ -1259,6 +1267,15 @@ export class SalesService {
 		const paymentTypeMap = new Map(paymentTypes.map((paymentType) => [paymentType.id, paymentType]));
 		const usdRate = Number(invoice.exchangeRateUsd?.rate ?? 0);
 
+		if (payments.some((payment) => {
+			const paymentType = paymentTypeMap.get(payment.paymentTypeId);
+			return paymentType?.currency === 'USD' && usdRate <= 0;
+		})) {
+			throw new BadRequestException(
+				'No existe una tasa USD válida para convertir el monto de devolución',
+			);
+		}
+
 		return payments.map((payment) => {
 			const paymentType = paymentTypeMap.get(payment.paymentTypeId);
 			if (!paymentType) {
@@ -1272,6 +1289,12 @@ export class SalesService {
 			if (currency === 'EUR') {
 				throw new BadRequestException(
 					'Los pagos en EUR no están soportados para devoluciones',
+				);
+			}
+
+			if (currency === 'USD' && usdRate <= 0) {
+				throw new BadRequestException(
+					'No existe una tasa USD válida para convertir el monto de devolución',
 				);
 			}
 

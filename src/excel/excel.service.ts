@@ -34,17 +34,17 @@ export class ExcelService {
         try {
             const productsToCreate = products.filter(item => item.barcode !== null && item.barcode !== undefined && item.barcode !== '').map(product => ({
                 name: product.name,
-                presentation: product.presentation,
-                barcode: product.barcode,
+                presentation: product.presentation ? product.presentation : '',
+                barcode: product.barcode.toString(),
                 price: product.price,
                 discountPrice: product.discountPrice,
                 currency: 'USD' as ExchangeRateType,
                 stock: product.stock,
-                serialNumber: product.serialNumber,
-                lote: product.lote,
-                brand: product.brand,
-                type: product.type,
-                description: product.description,
+                serialNumber: product.serialNumber ? product.serialNumber : '',
+                lote: product.lote ? product.lote : '',
+                brand: product.brand ? product.brand : '',
+                type: product.type ? product.type : '',
+                description: product.description ? product.description : '',
             }));
             await this.prismaService.product.createMany({
                 data: productsToCreate,
