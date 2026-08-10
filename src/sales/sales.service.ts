@@ -36,6 +36,13 @@ export class SalesService {
 	) { }
 
 	private invoiceInclude = {
+		originalInvoice: {
+			select: {
+				id: true,
+				invoiceNumber: true,
+				status: true,
+			},
+		},
 		customer: {
 			select: {
 				id: true,
@@ -220,6 +227,13 @@ export class SalesService {
 					skip,
 					take: size,
 					include: {
+						originalInvoice: {
+							select: {
+								id: true,
+								invoiceNumber: true,
+								status: true,
+							},
+						},
 						customer: {
 							select: {
 								id: true,
@@ -1577,6 +1591,27 @@ export class SalesService {
 				throw new BadRequestException('No existe una tasa EUR válida');
 			}
 
+			const ratesToBs: Record<ExchangeRateType, number> = {
+				BS: 1,
+				USD: usdRate.rate,
+				EUR: eurRate.rate,
+			};
+
+			const getFactorByCurrency = (currency: ExchangeRateType) => {
+				if (currency === 'BS') {
+					return 1;
+				}
+
+				const factor = ratesToBs[currency];
+				if (!factor || factor <= 0) {
+					throw new BadRequestException(
+						`No existe una tasa válida para la moneda ${currency}`,
+					);
+				}
+
+				return factor;
+			};
+
 			const invoiceNumber = await this.generateInvoiceNumber();
 
 			const result = await this.prismaService.$transaction(async (tx) => {
@@ -1645,6 +1680,7 @@ export class SalesService {
 						userId,
 						customerId: invoice.customerId,
 						sessionId: createChangeDto.sessionId,
+						originalInvoiceId: invoice.id,
 						createdAt: this.getVenezuelaNow(),
 					},
 				});
@@ -1653,11 +1689,15 @@ export class SalesService {
 					requiredByProduct.entries(),
 				).map(([productId, quantity]) => {
 					const product = replacementProductMap.get(productId)!;
+					const factor = getFactorByCurrency(product.currency as ExchangeRateType);
+					const unitPrice = Number(product.price);
+					const subtotal = this.toTwoDecimals(unitPrice * quantity * factor);
 					return {
 						productId,
 						productName: product.name,
 						quantity,
-						unitPrice: Number(product.price),
+						unitPrice,
+						subtotal,
 					};
 				});
 
@@ -1668,7 +1708,7 @@ export class SalesService {
 						unitPrice: new Prisma.Decimal(item.unitPrice),
 						hasDiscount: false,
 						quantity: new Prisma.Decimal(item.quantity),
-						subtotal: new Prisma.Decimal(0),
+						subtotal: new Prisma.Decimal(item.subtotal),
 					})),
 				});
 

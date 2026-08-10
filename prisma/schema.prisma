@@ -114,6 +114,11 @@ model Invoice {
   customerId     Int
   sessionId      Int
   createdAt      DateTime          @default(now())
+
+  originalInvoiceId Int?
+  originalInvoice   Invoice? @relation("InvoiceChange", fields: [originalInvoiceId], references: [id], onDelete: SetNull)
+  changedInvoices   Invoice[] @relation("InvoiceChange")
+
   customer       Clients           @relation(fields: [customerId], references: [id])
   session        CashDrawerSession @relation(fields: [sessionId], references: [id])
   user           Users             @relation(fields: [userId], references: [id])
@@ -123,6 +128,7 @@ model Invoice {
 
   @@index([sessionId])
   @@index([createdAt])
+  @@index([originalInvoiceId])
 }
 
 model Return {
