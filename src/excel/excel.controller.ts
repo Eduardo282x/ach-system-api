@@ -28,6 +28,13 @@ export class ExcelController {
         return this.excelService.uploadProductsExcel(productsData);
     }
 
+    @Post('/products/upload/prices')
+    @UseInterceptors(FileInterceptor('file'))
+    uploadOrUpdateProductExcel(@UploadedFile() file: { buffer: Buffer }) {
+        const productsData: ProductExcel[] = this.parseExcelToJson(file.buffer, 0) as ProductExcel[];
+        return this.excelService.updateOrCreateProductsExcel(productsData);
+    }
+
     parseExcelToJson(fileBuffer: Buffer, indexFile: number) {
         const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[indexFile];

@@ -10,5 +10,6 @@ import { SessionsService } from 'src/sessions/sessions.service';
   imports: [WebSocketModule],
   controllers: [ProductsController],
   providers: [ProductsService, PrismaService, ProductsSchedulerService, SessionsService],
+  exports: [ProductsService],
 })
 export class ProductsModule {}
