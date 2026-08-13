@@ -94,13 +94,17 @@ export class ExcelService {
                 await this.prismaService.product.create({
                     data: {
                         name: product.name,
-                        presentation: product.presentation,
+                        presentation: product.presentation ? product.presentation : '',
                         barcode,
-                        price: Number(product.price) || 0,
-                        stock: Number(product.stock) || 0,
-                        isDetail: false,
-                        parentId: null,
-                        unitsDetail: null,
+                        price: product.price,
+                        discountPrice: product.discountPrice,
+                        currency: 'USD' as ExchangeRateType,
+                        stock: product.stock,
+                        serialNumber: product.serialNumber ? product.serialNumber : '',
+                        lote: product.lote ? product.lote : '',
+                        brand: product.brand ? product.brand : '',
+                        type: product.type ? product.type : '',
+                        description: product.description ? product.description : '',
                     },
                 });
                 created++;
