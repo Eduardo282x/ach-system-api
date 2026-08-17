@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Prisma } from 'src/generated/prisma/client';
 import { SessionStatus } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ShiftsService } from 'src/shifts/shifts.service';
 import {
 	CloseSessionDto,
 	OpenSessionDto,
@@ -14,26 +13,22 @@ interface SessionFilter {
 	startDate?: string;
 	endDate?: string;
 	cashDrawerId?: number;
-	shiftId?: number;
 	userId?: number;
 }
 
 interface SessionGroupFilter {
 	date: string;
-	shiftId?: number;
 }
 
 interface SessionGroupRangeFilter{
 	startDate: string;
 	endDate: string;
-	shiftId?: number;
 }
 
 @Injectable()
 export class SessionsService {
 	constructor(
 		private readonly prismaService: PrismaService,
-		private readonly shiftsService: ShiftsService,
 	) { }
 
 	private getStartOfDayUtc(date: string) {
@@ -171,7 +166,7 @@ export class SessionsService {
 	}
 
 	async getSessions(filter?: SessionFilter) {
-		const { status, startDate, endDate, cashDrawerId, shiftId, userId } = filter || {};
+		const { status, startDate, endDate, cashDrawerId, userId } = filter || {};
 
 		const where: any = {};
 
@@ -197,10 +192,6 @@ export class SessionsService {
 
 		if(cashDrawerId){
 			where.cashDrawerId = cashDrawerId;
-		}
-
-		if (shiftId) {
-			where.shiftId = shiftId;
 		}
 
 		if (userId) {
@@ -230,14 +221,6 @@ export class SessionsService {
 							name: true,
 						},
 					},
-					shift: {
-						select: {
-							id: true,
-							name: true,
-							startTime: true,
-							endTime: true,
-						},
-					},
 				},
 			});
 
@@ -255,7 +238,6 @@ export class SessionsService {
 					totalInUsd: session.totalInUsd,
 					cashDrawer: session.cashDrawer,
 					user: session.user,
-					shift: session.shift,
 				};
 
 				if (!session.closedAt) {
@@ -275,7 +257,6 @@ export class SessionsService {
 					totalInUsd: session.totalInUsd,
 					cashDrawer: session.cashDrawer,
 					user: session.user,
-					shift: session.shift,
 				};
 
 				return [closeEvent, openEvent];
@@ -290,7 +271,7 @@ export class SessionsService {
 	}
 
 	async getSessionsGroup(filter: SessionGroupFilter) {
-		const { date, shiftId } = filter || {};
+		const { date } = filter || {};
 
 		const where: any = {};
 
@@ -314,10 +295,6 @@ export class SessionsService {
 			];
 		}
 
-		if (shiftId) {
-			where.shiftId = shiftId;
-		}
-
 		try {
 			const sessions = await this.prismaService.cashDrawerSession.findMany({
 				where,
@@ -337,14 +314,6 @@ export class SessionsService {
 							name: true,
 						},
 					},
-					shift: {
-						select: {
-							id: true,
-							name: true,
-							startTime: true,
-							endTime: true,
-						},
-					},
 				},
 			});
 
@@ -357,7 +326,7 @@ export class SessionsService {
 	}
 	
 	async getSessionsGroupRange(filter: SessionGroupRangeFilter) {
-		const { startDate, endDate, shiftId } = filter || {};
+		const { startDate, endDate } = filter || {};
 
 		const where: any = {};
 
@@ -381,10 +350,6 @@ export class SessionsService {
 			];
 		}
 
-		if (shiftId) {
-			where.shiftId = shiftId;
-		}
-
 		try {
 			const sessions = await this.prismaService.cashDrawerSession.findMany({
 				where,
@@ -402,14 +367,6 @@ export class SessionsService {
 						select: {
 							id: true,
 							name: true,
-						},
-					},
-					shift: {
-						select: {
-							id: true,
-							name: true,
-							startTime: true,
-							endTime: true,
 						},
 					},
 				},
@@ -487,15 +444,12 @@ export class SessionsService {
 				);
 			}
 
-			const shiftId = await this.shiftsService.findCurrentShift();
-
 			const session = await this.prismaService.cashDrawerSession.create({
 				data: {
 					userId,
 					cashDrawerId: openSessionDto.cashDrawerId,
 					openingBalance: new Prisma.Decimal(openSessionDto.openingBalance),
 					openingBalanceUsd: new Prisma.Decimal(openSessionDto.openingBalanceUsd),
-					...(shiftId && { shiftId }),
 				},
 				include: {
 					cashDrawer: {
@@ -509,14 +463,6 @@ export class SessionsService {
 							id: true,
 							name: true,
 						}
-					},
-					shift: {
-						select: {
-							id: true,
-							name: true,
-							startTime: true,
-							endTime: true,
-						},
 					},
 				},
 			});
@@ -534,7 +480,6 @@ export class SessionsService {
 				totalInUsd: session.totalInUsd,
 				cashDrawer: session.cashDrawer,
 				user: session.user,
-				shift: session.shift,
 			};
 
 			return {
@@ -642,14 +587,6 @@ export class SessionsService {
 							name: true,
 						},
 					},
-					shift: {
-						select: {
-							id: true,
-							name: true,
-							startTime: true,
-							endTime: true,
-						},
-					},
 				},
 			});
 
@@ -666,7 +603,6 @@ export class SessionsService {
 				totalInUsd: updatedSession.totalInUsd,
 				cashDrawer: updatedSession.cashDrawer,
 				user: updatedSession.user,
-				shift: updatedSession.shift,
 			};
 
 			return {

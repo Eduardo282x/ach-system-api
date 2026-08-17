@@ -108,11 +108,9 @@ model Invoice {
   userId         Int
   customerId     Int
   sessionId      Int
-  shiftId        Int?
   createdAt      DateTime          @default(now())
   customer       Clients           @relation(fields: [customerId], references: [id])
   session        CashDrawerSession @relation(fields: [sessionId], references: [id])
-  shift          Shift?            @relation(fields: [shiftId], references: [id])
   user           Users             @relation(fields: [userId], references: [id])
   items          InvoiceItem[]
   paymentDetails PaymentDetail[]
@@ -160,7 +158,6 @@ model CashDrawerSession {
   id                Int           @id @default(autoincrement())
   userId            Int
   cashDrawerId      Int
-  shiftId           Int?
   openedAt          DateTime      @default(now())
   closedAt          DateTime?
   openingBalance    Decimal       @db.Decimal(65, 2)
@@ -173,7 +170,6 @@ model CashDrawerSession {
   status            SessionStatus @default(OPEN)
   user              Users         @relation(fields: [userId], references: [id])
   cashDrawer        CashDrawer    @relation(fields: [cashDrawerId], references: [id])
-  shift             Shift?        @relation(fields: [shiftId], references: [id])
   invoices          Invoice[]
 }
 
@@ -183,20 +179,8 @@ model CashDrawer {
   cashDrawerSessions CashDrawerSession[]
 }
 
-model Shift {
-  id        Int                 @id @default(autoincrement())
-  name      String              @unique
-  startTime String // HH:mm formato 24h
-  endTime   String // HH:mm formato 24h
-  active    Boolean             @default(true)
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @default(now()) @updatedAt
-  sessions  CashDrawerSession[]
-  invoices  Invoice[]
-}
-
 enum Role {
-  ADMIN
+  ADMIN 
   CAJERO
   SUPERVISOR
 }

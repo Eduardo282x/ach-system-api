@@ -13,31 +13,25 @@ export class SessionsController {
         @Query('status', new ParseEnumPipe(SessionStatus, { optional: true })) status?: SessionStatus,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
-        @Query('shiftId') shiftId?: string,
         @Query('userId') userId?: string,
     ) {
-        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
         const parsedUserId = userId ? Number(userId) : undefined;
-        return await this.sessionsService.getSessions({status, startDate, endDate, shiftId: parsedShiftId, userId: parsedUserId});
+        return await this.sessionsService.getSessions({status, startDate, endDate, userId: parsedUserId});
     }
     
     @Get('/group')
     async getSessionsGroup(
         @Query('date') date: string,
-        @Query('shiftId') shiftId?: string,
     ) {
-        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
-        return await this.sessionsService.getSessionsGroup({date, shiftId: parsedShiftId});
+        return await this.sessionsService.getSessionsGroup({date});
     }
 
     @Get('/group-range')
     async getSessionsGroupRange(
         @Query('startDate') startDate: string,
         @Query('endDate') endDate: string,
-        @Query('shiftId') shiftId?: string,
     ) {
-        const parsedShiftId = shiftId ? Number(shiftId) : undefined;
-        return await this.sessionsService.getSessionsGroupRange({startDate, endDate, shiftId: parsedShiftId});
+        return await this.sessionsService.getSessionsGroupRange({startDate, endDate});
     }
 
     @Get('/cash-drawer')

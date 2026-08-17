@@ -3,7 +3,6 @@ import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { ShiftsService } from 'src/shifts/shifts.service';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
@@ -18,7 +17,6 @@ interface ResumenFilter {
 	date: string;
 	cashDrawerId?: string;
 	sessionId?: string;
-	shiftId?: string;
 }
 
 @Injectable()
@@ -26,7 +24,6 @@ export class SalesService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly sessionsService: SessionsService,
-		private readonly shiftsService: ShiftsService,
 	) { }
 
 	private toTwoDecimals(value: number) {
@@ -41,39 +38,7 @@ export class SalesService {
 		return new Date(`${date}T23:59:59.999Z`);
 	}
 
-	private async getShiftDateRange(date: string, shiftId?: number): Promise<{ start: Date; end: Date }> {
-		if (!shiftId) {
-			return {
-				start: this.getStartOfDayUtc(date),
-				end: this.getEndOfDayUtc(date),
-			};
-		}
-
-		const shift = await this.prismaService.shift.findUnique({
-			where: { id: shiftId },
-		});
-
-		if (!shift) {
-			return {
-				start: this.getStartOfDayUtc(date),
-				end: this.getEndOfDayUtc(date),
-			};
-		}
-
-		const [startHour, startMin] = shift.startTime.split(':').map(Number);
-		const [endHour, endMin] = shift.endTime.split(':').map(Number);
-
-		if (endHour < startHour) {
-			const startDate = new Date(date);
-			startDate.setUTCHours(startHour, startMin, 0, 0);
-			startDate.setUTCDate(startDate.getUTCDate() - 1);
-
-			const endDate = new Date(date);
-			endDate.setUTCHours(endHour, endMin, 0, 0);
-
-			return { start: startDate, end: endDate };
-		}
-
+	private async getShiftDateRange(date: string): Promise<{ start: Date; end: Date }> {
 		return {
 			start: this.getStartOfDayUtc(date),
 			end: this.getEndOfDayUtc(date),
@@ -149,7 +114,7 @@ export class SalesService {
 	async getInvoices(filter: GetInvoicesFilterDto) {
 		const where: any = {};
 
-		const { search, startDate, endDate, sessionId, userId, shiftId, page = 1, size = 20, credit } = filter;
+		const { search, startDate, endDate, sessionId, userId, page = 1, size = 20, credit } = filter;
 
 		if (search) {
 			where.OR = [
@@ -179,10 +144,6 @@ export class SalesService {
 
 		if (userId !== undefined && userId !== null) {
 			where.userId = userId;
-		}
-
-		if (shiftId !== undefined && shiftId !== null) {
-			where.shiftId = shiftId;
 		}
 
 		try {
@@ -221,14 +182,6 @@ export class SalesService {
 										name: true,
 									}
 								}
-							}
-						},
-						shift: {
-							select: {
-								id: true,
-								name: true,
-								startTime: true,
-								endTime: true,
 							}
 						},
 						items: {
@@ -282,7 +235,7 @@ export class SalesService {
 
 	async getResumenSales(filter: ResumenFilter) {
 		try {
-			const { date, sessionId, cashDrawerId, shiftId } = filter;
+			const { date, sessionId, cashDrawerId } = filter;
 			if (!date) {
 				throw new BadRequestException('La fecha es requerida');
 			}
@@ -296,16 +249,7 @@ export class SalesService {
 				}
 			}
 
-			let parsedShiftId: number | undefined;
-			if (shiftId !== undefined && shiftId !== '') {
-				parsedShiftId = Number(shiftId);
-
-				if (!Number.isInteger(parsedShiftId) || parsedShiftId <= 0) {
-					throw new BadRequestException('shiftId inválido');
-				}
-			}
-
-			const { start: startDate, end: endDate } = await this.getShiftDateRange(date, parsedShiftId);
+			const { start: startDate, end: endDate } = await this.getShiftDateRange(date);
 
 			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
 				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
@@ -318,7 +262,6 @@ export class SalesService {
 				},
 				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
 				...(cashDrawerId ? { cashDrawerId: Number(cashDrawerId) } : {}),
-				...(parsedShiftId ? { shiftId: parsedShiftId } : {}),
 			};
 
 			const [invoices, invoiceCount, paymentDetails, paymentTypes] = await Promise.all([
@@ -449,7 +392,6 @@ export class SalesService {
 			return {
 				date,
 				sessionId: parsedSessionId ?? null,
-				shiftId: parsedShiftId ?? null,
 				totalInvoice: invoiceCount,
 				total: {
 					amount: this.toTwoDecimals(totalAmountBs),
@@ -498,7 +440,6 @@ export class SalesService {
 				startDate: filter.date,
 				endDate: filter.date,
 				sessionId: filter.sessionId ? Number(filter.sessionId) : undefined,
-				shiftId: filter.shiftId ? Number(filter.shiftId) : undefined,
 			});
 
 			const workbook = new ExcelJS.Workbook();
@@ -507,7 +448,6 @@ export class SalesService {
 
 			resumenSheet.addRow(['Fecha', this.formatDateWithTime(resumenData.date)]);
 			resumenSheet.addRow(['Sesión', resumenData.sessionId ?? 'TODAS']);
-			resumenSheet.addRow(['Turno', resumenData.shiftId ?? 'TODOS']);
 			resumenSheet.addRow(['Cantidad de facturas', resumenData.totalInvoice]);
 			resumenSheet.addRow([]);
 
@@ -569,7 +509,6 @@ export class SalesService {
 				'Cajero',
 				'Caja',
 				'Sesión',
-				'Turno',
 				'Total (Bs)',
 				'Total (USD)',
 				'Recibido (Bs)',
@@ -597,7 +536,6 @@ export class SalesService {
 					invoice.user.name,
 					invoice.session.cashDrawer.name,
 					invoice.session.id,
-					invoice.shift?.name ?? 'Sin turno',
 					Number(invoice.totalAmountBs),
 					Number(invoice.totalAmountUsd),
 					Number(invoice.totalReceivedBs),
@@ -697,30 +635,6 @@ export class SalesService {
 				throw new BadRequestException(
 					`La sesión de caja con id ${createInvoiceDto.sessionId} ya está cerrada`,
 				);
-			}
-
-			let resolvedShiftId = createInvoiceDto.shiftId;
-
-			if (!resolvedShiftId) {
-				resolvedShiftId = await this.shiftsService.findCurrentShift();
-			}
-
-			if (resolvedShiftId) {
-				const shift = await this.prismaService.shift.findUnique({
-					where: { id: resolvedShiftId },
-				});
-
-				if (!shift) {
-					throw new NotFoundException(
-						`Turno con id ${resolvedShiftId} no encontrado`,
-					);
-				}
-
-				if (!shift.active) {
-					throw new BadRequestException(
-						`El turno "${shift.name}" está desactivado`,
-					);
-				}
 			}
 
 			const paymentTypeIds = [
@@ -997,7 +911,6 @@ export class SalesService {
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
 						createdAt: this.getVenezuelaNow(),
-						...(resolvedShiftId && { shiftId: resolvedShiftId }),
 					},
 				});
 
@@ -1068,14 +981,6 @@ export class SalesService {
 							select: {
 								id: true,
 								cashDrawerId: true
-							}
-						},
-						shift: {
-							select: {
-								id: true,
-								name: true,
-								startTime: true,
-								endTime: true,
 							}
 						},
 						items: {

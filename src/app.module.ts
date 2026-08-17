@@ -8,7 +8,6 @@ import { ClientsModule } from './clients/clients.module';
 import { ProductsModule } from './products/products.module';
 import { SalesModule } from './sales/sales.module';
 import { SessionsModule } from './sessions/sessions.module';
-import { ShiftsModule } from './shifts/shifts.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ConfigModule } from '@nestjs/config';
 import { ExcelModule } from './excel/excel.module';
@@ -24,7 +23,6 @@ import { FileLoggerService } from './common/logger/file-logger.service';
     ProductsModule,
     SalesModule,
     SessionsModule,
-    ShiftsModule,
     DashboardModule,
     ConfigModule.forRoot({
       isGlobal: true,
