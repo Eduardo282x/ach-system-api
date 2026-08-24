@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+docs
+.env
+.env.local
+.env.*.local
+.git
+.github
+.vscode
+*.md
+Dockerfile
+.dockerignore
+opencode.json
+opencode.json.example
+tsconfig.tsbuildinfo

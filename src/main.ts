@@ -11,19 +11,19 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    const logger = app.get(FileLoggerService);
+    // const logger = app.get(FileLoggerService);
 
     app.setGlobalPrefix('/api');
-    app.enableCors();
+    app.enableCors('*');
 
     app.useGlobalGuards(new AuthGuard(app.get(JwtService)))
 
     app.useGlobalInterceptors(
-        new LoggingInterceptor(logger),
+        // new LoggingInterceptor(logger),
         new ResponseInterceptor(),
     );
 
-    app.useGlobalFilters(new AllExceptionsFilter(logger));
+    // app.useGlobalFilters(new AllExceptionsFilter(logger));
 
     app.useGlobalPipes(new ValidationPipe({
         whitelist: true,
@@ -42,5 +42,6 @@ async function bootstrap() {
     }));
 
     await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+    console.log(`Aplicacion corriendo en el puerto ${process.env.PORT ?? 3000}`)
 }
 bootstrap();
