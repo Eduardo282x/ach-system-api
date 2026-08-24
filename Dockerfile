@@ -51,4 +51,4 @@ COPY --chown=node:node package.json ./
 
 EXPOSE 3004
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
