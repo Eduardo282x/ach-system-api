@@ -50,6 +50,10 @@ async function main() {
         },
     ];
 
+    await prisma.typePayment.createMany({
+        data: paymentTypes
+    })
+
     console.log('🎉 Seed completed!');
 }
 
