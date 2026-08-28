@@ -1361,12 +1361,6 @@ export class SalesService {
 				);
 			}
 
-			if (session.closedAt !== null) {
-				throw new BadRequestException(
-					'La sesión de caja de la factura ya está cerrada, no se puede devolver',
-				);
-			}
-
 			const validatedItems = await this.validateReturnItems(invoice, createReturnDto.items);
 			const refundPayments = await this.validateRefundPayments(invoice, createReturnDto.payments);
 
