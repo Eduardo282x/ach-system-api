@@ -692,6 +692,19 @@ export class SalesService {
 		return new Date(todayVenezuela);
 	}
 
+	private validateInvoiceVigencia(invoice: { createdAt: Date }, type: 'change' | 'return') {
+		const createdAtVen = dayjs(invoice.createdAt).tz('America/Caracas', true);
+		const todayVen = dayjs(this.getVenezuelaNow()).tz('America/Caracas');
+
+		const daysDiff = todayVen.startOf('day').diff(createdAtVen.startOf('day'), 'day');
+
+		if (daysDiff >= 2) {
+			throw new BadRequestException(
+				`El recibo principal tiene mas de 2 dias de vigencia, no se puede realizar ${type == 'return' ? 'la devolución' : 'el cambio'}`,
+			);
+		}
+	}
+
 	async createInvoice(createInvoiceDto: CreateInvoiceDto, userId: number) {
 		try {
 			const [customer, session] = await Promise.all([
@@ -1351,6 +1364,8 @@ export class SalesService {
 				);
 			}
 
+			this.validateInvoiceVigencia(invoice, 'return');
+
 			const session = await this.prismaService.cashDrawerSession.findUnique({
 				where: { id: invoice.sessionId },
 			});
@@ -1479,6 +1494,8 @@ export class SalesService {
 					'Solo se puede cambiar un recibo en estado Pagada',
 				);
 			}
+
+			this.validateInvoiceVigencia(invoice, 'change');
 
 			const targetSession = await this.prismaService.cashDrawerSession.findUnique({
 				where: { id: createChangeDto.sessionId },
