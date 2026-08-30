@@ -64,6 +64,7 @@ export class ClientsService {
 					fullName: createClientDto.fullName,
 					identify: createClientDto.identify || '',
 					phone: createClientDto.phone || '',
+					address: createClientDto.address || '',
 				},
 			});
 
@@ -104,6 +105,7 @@ export class ClientsService {
 					fullName: updateClientDto.fullName,
 					identify: updateClientDto.identify || '',
 					phone: updateClientDto.phone || '',
+					address: updateClientDto.address || '',
 				},
 			});
 

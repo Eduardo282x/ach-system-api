@@ -27,6 +27,7 @@ model Clients {
   id        Int       @id @default(autoincrement())
   fullName  String
   identify  String    @unique @default("")
+  address   String    @default("")
   phone     String    @default("")
   deleted   Boolean   @default(false)
   createdAt DateTime  @default(now())
@@ -180,7 +181,7 @@ model CashDrawer {
 }
 
 enum Role {
-  ADMIN 
+  ADMIN
   CAJERO
   SUPERVISOR
 }

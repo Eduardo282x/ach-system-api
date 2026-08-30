@@ -13,15 +13,19 @@ export class ClientDto {
 
 	@IsOptional()
 	@IsString()
-	@MaxLength(30, {
-		message: 'La cédula o identificación no puede exceder 30 caracteres',
+	@MaxLength(10, {
+		message: 'La cédula o identificación no puede exceder 10 caracteres',
 	})
 	identify?: string;
 
 	@IsOptional()
 	@IsString()
-	@MaxLength(30, {
-		message: 'El teléfono no puede exceder 30 caracteres',
+	@MaxLength(12, {
+		message: 'El teléfono no puede exceder 12 caracteres',
 	})
 	phone?: string;
+
+	@IsOptional()
+	@IsString()
+	address?: string;
 }
