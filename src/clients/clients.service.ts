@@ -29,6 +29,7 @@ export class ClientsService {
                     identify: true,
                     phone: true,
                     fullName: true,
+                    address: true,
                 }
 			});
 

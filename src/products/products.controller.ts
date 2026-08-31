@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Res } from '@nestjs/common';
 import { ExchangeRateDto, ProductDto } from './products.dto';
 import { ProductsService } from './products.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Response } from 'express';
+import { ExcelService } from 'src/excel/excel.service';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) { }
+    constructor(
+        private readonly productsService: ProductsService,
+        private readonly excelService: ExcelService,
+    ) { }
+
+    @Get('/template')
+    async downloadProductTemplate(@Res() res: Response) {
+        return await this.excelService.downloadProductTemplate(res);
+    }
 
     @Get()
     async getProducts(

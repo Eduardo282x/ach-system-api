@@ -29,7 +29,9 @@ export interface InventoryHistoryQuery {
 
 @Injectable()
 export class ProductsService {
-    constructor(private readonly prismaService: PrismaService) { }
+    constructor(
+        private readonly prismaService: PrismaService,
+    ) { }
 
     async getProducts(query: { search?: string, page?: number, size?: number }) {
         const { search, page = 1, size = 10 } = query;

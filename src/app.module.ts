@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaService } from './prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ClientsModule } from './clients/clients.module';
@@ -14,9 +13,11 @@ import { ExcelModule } from './excel/excel.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { FileLoggerService } from './common/logger/file-logger.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     AuthModule,
     UsersModule,
     ClientsModule,
@@ -32,7 +33,7 @@ import { FileLoggerService } from './common/logger/file-logger.service';
     WebSocketModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, FileLoggerService],
+  providers: [AppService, FileLoggerService],
   exports: [FileLoggerService],
 })
 export class AppModule { }
