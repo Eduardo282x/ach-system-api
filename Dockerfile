@@ -6,7 +6,7 @@ FROM node:22-bookworm-slim AS builder
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
     NODE_ENV=development
 
-RUN npm i -g pnpm@10
+RUN npm i -g pnpm@11
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ FROM node:22-bookworm-slim AS prod-deps
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 
-RUN npm i -g pnpm@10
+RUN npm i -g pnpm@11
 
 WORKDIR /app
 
