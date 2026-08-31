@@ -14,6 +14,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { FileLoggerService } from './common/logger/file-logger.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ExcelModule,
     ScheduleModule.forRoot(),
     WebSocketModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, FileLoggerService],

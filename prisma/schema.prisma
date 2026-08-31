@@ -57,23 +57,24 @@ model TypePayment {
 }
 
 model Product {
-  id               Int                 @id @default(autoincrement())
-  name             String
-  presentation     String
-  barcode          String              @unique
-  price            Decimal             @db.Decimal(10, 2)
-  currency         ExchangeRateType    @default(USD)
-  stock            Decimal             @db.Decimal(10, 3)
-  isDetail         Boolean             @default(false)
-  parentId         Int?
-  unitsDetail      Int?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @default(now()) @updatedAt
-  deleted          Boolean             @default(false)
-  historyMovements InventoryMovement[]
-  invoiceItems     InvoiceItem[]
-  productParent    Product?            @relation("ConvertUnits", fields: [parentId], references: [id])
-  productChild     Product[]           @relation("ConvertUnits")
+  id                    Int                    @id @default(autoincrement())
+  name                  String
+  presentation          String
+  barcode               String                 @unique
+  price                 Decimal                @db.Decimal(10, 2)
+  currency              ExchangeRateType       @default(USD)
+  stock                 Decimal                @db.Decimal(10, 3)
+  isDetail              Boolean                @default(false)
+  parentId              Int?
+  unitsDetail           Int?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt
+  deleted               Boolean                @default(false)
+  historyMovements      InventoryMovement[]
+  invoiceItems          InvoiceItem[]
+  productParent         Product?               @relation("ConvertUnits", fields: [parentId], references: [id])
+  productChild          Product[]              @relation("ConvertUnits")
+  inventoryEntryDetails InventoryEntryDetail[]
 
   @@index([parentId])
 }
@@ -209,4 +210,26 @@ enum InvoiceStatus {
 enum SessionStatus {
   OPEN
   CLOSED
+}
+
+model InventoryEntry {
+  id                    Int                    @id @default(autoincrement())
+  controlNumber         String                 @unique
+  title                 String                 @default("")
+  description           String                 @default("")
+  date                  DateTime
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  inventoryEntryDetails InventoryEntryDetail[]
+}
+
+model InventoryEntryDetail {
+  id               Int            @id @default(autoincrement())
+  inventoryEntryId Int
+  inventoryEntry   InventoryEntry @relation(fields: [inventoryEntryId], references: [id])
+  productId        Int
+  product          Product        @relation(fields: [productId], references: [id])
+  quantity         Decimal        @db.Decimal(10, 3)
+  unitPrice        Decimal        @db.Decimal(10, 2)
+  subtotal         Decimal        @db.Decimal(10, 2)
 }
