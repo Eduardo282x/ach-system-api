@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY src ./src
 
-RUN pnpm build
+RUN pnpm exec prisma generate && pnpm build
 
 # ---- Stage 2: prod deps ----
 FROM node:22-bookworm-slim AS prod-deps
