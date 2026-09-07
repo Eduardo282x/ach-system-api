@@ -15,6 +15,7 @@ import { WebSocketModule } from './web-socket/web-socket.module';
 import { FileLoggerService } from './common/logger/file-logger.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { SuppliersModule } from './suppliers/suppliers.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { InventoryModule } from './inventory/inventory.module';
     ScheduleModule.forRoot(),
     WebSocketModule,
     InventoryModule,
+    SuppliersModule,
   ],
   controllers: [AppController],
   providers: [AppService, FileLoggerService],

@@ -61,6 +61,7 @@ model Product {
   name                  String
   presentation          String
   barcode               String                 @unique
+  purchasePrice         Decimal                @db.Decimal(10, 2)
   price                 Decimal                @db.Decimal(10, 2)
   currency              ExchangeRateType       @default(USD)
   stock                 Decimal                @db.Decimal(10, 3)
@@ -70,6 +71,8 @@ model Product {
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @default(now()) @updatedAt
   deleted               Boolean                @default(false)
+  ivaId                 Int
+  iva                   Iva                    @relation(fields: [ivaId], references: [id])
   historyMovements      InventoryMovement[]
   invoiceItems          InvoiceItem[]
   productParent         Product?               @relation("ConvertUnits", fields: [parentId], references: [id])
@@ -77,6 +80,15 @@ model Product {
   inventoryEntryDetails InventoryEntryDetail[]
 
   @@index([parentId])
+}
+
+model Iva {
+  id         Int       @id @default(autoincrement())
+  name       String
+  percentage Decimal   @db.Decimal(5, 2)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  products   Product[]
 }
 
 model InventoryMovement {
@@ -232,4 +244,15 @@ model InventoryEntryDetail {
   quantity         Decimal        @db.Decimal(10, 3)
   unitPrice        Decimal        @db.Decimal(10, 2)
   subtotal         Decimal        @db.Decimal(10, 2)
+}
+
+model Supplier {
+  id        Int      @id @default(autoincrement())
+  name      String
+  identify  String   @unique @default("")
+  address   String   @default("")
+  phone     String   @default("")
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
