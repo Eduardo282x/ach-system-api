@@ -138,6 +138,7 @@ model InvoiceItem {
   invoiceId Int
   productId Int
   unitPrice Decimal  @db.Decimal(10, 2)
+  costPrice Decimal? @db.Decimal(10, 2)
   quantity  Decimal  @db.Decimal(10, 3)
   subtotal  Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
@@ -230,6 +231,8 @@ model InventoryEntry {
   title                 String                 @default("")
   description           String                 @default("")
   date                  DateTime
+  supplierId            Int
+  supplier              Supplier               @relation(fields: [supplierId], references: [id])
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   inventoryEntryDetails InventoryEntryDetail[]
@@ -247,12 +250,13 @@ model InventoryEntryDetail {
 }
 
 model Supplier {
-  id        Int      @id @default(autoincrement())
-  name      String
-  identify  String   @unique @default("")
-  address   String   @default("")
-  phone     String   @default("")
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id               Int              @id @default(autoincrement())
+  name             String
+  identify         String           @unique @default("")
+  address          String           @default("")
+  phone            String           @default("")
+  deleted          Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
+  inventoryEntries InventoryEntry[]
 }

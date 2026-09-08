@@ -113,7 +113,7 @@ export class InventoryService {
 
     async saveInventoryEntry(createInventoryEntryDto: CreateInventoryEntryDto, userId: number) {
         try {
-            const { controlNumber, title = '', description = '', date, details } = createInventoryEntryDto;
+            const { controlNumber, supplierId, title = '', description = '', date, details } = createInventoryEntryDto;
 
             const existingEntry = await this.prismaService.inventoryEntry.findUnique({
                 where: { controlNumber },
@@ -143,6 +143,7 @@ export class InventoryService {
                 const inventoryEntry = await tx.inventoryEntry.create({
                     data: {
                         controlNumber,
+                        supplierId,
                         title,
                         description,
                         date: parsedDate,

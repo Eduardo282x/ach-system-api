@@ -1,8 +1,9 @@
 import { PrismaClient } from '../src/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
+import "dotenv/config";
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Earo282*@localhost:5432/medclinical';
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Earo282*@localhost:5432/achsystem-base';
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
@@ -22,6 +23,13 @@ async function main() {
             role: 'ADMIN',
         }
     });
+
+    await prisma.iva.create({
+        data: {
+            name: 'IVA 16%',
+            percentage: 16.00,
+        }
+    })
 
     const paymentTypes: { name: string; currency: 'BS' | 'USD' }[] = [
         {

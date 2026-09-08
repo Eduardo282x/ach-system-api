@@ -71,6 +71,9 @@ export class CreateInventoryEntryDto {
     @IsNotEmpty({ message: 'La fecha es obligatoria' })
     date!: string;
 
+    @IsNumber()
+    supplierId!: number;
+
     @IsArray()
     @ArrayMinSize(1)
     @ValidateNested({ each: true })

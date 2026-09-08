@@ -788,6 +788,7 @@ export class SalesService {
 					productId: item.productId,
 					quantity: item.quantity,
 					unitPrice,
+					costPrice: Number(product.purchasePrice),
 					subtotal,
 					productName: product.name,
 				};
@@ -919,6 +920,7 @@ export class SalesService {
 						invoiceId: createdInvoice.id,
 						productId: item.productId,
 						unitPrice: new Prisma.Decimal(item.unitPrice),
+						costPrice: new Prisma.Decimal(item.costPrice ?? 0),
 						quantity: item.quantity,
 						subtotal: new Prisma.Decimal(item.subtotal),
 					})),

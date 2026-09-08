@@ -378,6 +378,8 @@ export class ProductsService {
                     isDetail: createProductDto.isDetail,
                     parentId: createProductDto.parentId || null,
                     unitsDetail: createProductDto.unitsDetail || null,
+                    ivaId: 1,
+                    purchasePrice: createProductDto.purchasePrice ?? createProductDto.price,
                 },
                 include: {
                     productParent: true, // Incluimos info del padre si existe

@@ -9,6 +9,7 @@ export interface ProductExcel {
     presentation: string;
     barcode: string;
     price: number;
+    purchasePrice: number;
     stock: number;
 }
 
@@ -17,5 +18,6 @@ export const PRODUCT_HEADER_MAP: Record<string, string> = {
     'Presentación': 'presentation',
     'Código de Barras': 'barcode',
     'Precio': 'price',
+    'Precio de Compra': 'purchasePrice',
     'Cantidad': 'stock',
 };

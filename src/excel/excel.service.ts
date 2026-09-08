@@ -11,6 +11,7 @@ interface ProductTemplate {
     presentation: string;
     barcode: string;
     price: number;
+    purchasePrice: number;
     stock: number;
     isDetail: boolean;
     parentId: number | null;
@@ -86,6 +87,7 @@ export class ExcelService {
                     presentation: product.presentation ?? '',
                     barcode,
                     price: Number(product.price) || 0,
+                    purchasePrice: Number(product.purchasePrice) || 0,
                     stock: Number(product.stock) || 0,
                     isDetail: false,
                     parentId: null,
@@ -95,7 +97,7 @@ export class ExcelService {
 
             if (productsToCreate.length > 0) {
                 await this.prismaService.product.createMany({
-                    data: productsToCreate,
+                    data: productsToCreate.map(item => ({...item, ivaId: 1, purchasePrice: item.purchasePrice || item.price })),
                     skipDuplicates: true,
                 });
             }
@@ -120,7 +122,7 @@ export class ExcelService {
             const workbook = new ExcelJS.Workbook();
             const sheet = workbook.addWorksheet('Productos');
 
-            sheet.addRow(['Nombre', 'Presentación', 'Código de Barras', 'Precio', 'Cantidad']);
+            sheet.addRow(['Nombre', 'Presentación', 'Código de Barras', 'Precio', 'Precio de Compra', 'Cantidad']);
             sheet.getRow(1).font = { bold: true };
             sheet.views = [{ state: 'frozen', ySplit: 1 }];
             sheet.columns = [
@@ -128,6 +130,7 @@ export class ExcelService {
                 { width: 20 },
                 { width: 18 },
                 { width: 12 },
+                { width: 14 },
                 { width: 12 },
             ];
 
