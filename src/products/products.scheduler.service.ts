@@ -26,8 +26,8 @@ export class ProductsSchedulerService implements OnApplicationBootstrap {
     }
 
     private async runAutomaticExchangeRate(source: string) {
-        const attempts = 3;
-        const delays = [2_000, 5_000, 10_000];
+        const attempts = 5;
+        const delays = [5_000, 10_000, 20_000, 30_000, 60_000];
 
         for (let attempt = 0; attempt < attempts; attempt++) {
             try {
