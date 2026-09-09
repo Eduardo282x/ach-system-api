@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -29,6 +30,8 @@ export interface InventoryHistoryQuery {
 
 @Injectable()
 export class ProductsService {
+    private readonly logger = new Logger(ProductsService.name);
+
     constructor(
         private readonly prismaService: PrismaService,
     ) { }
@@ -288,25 +291,44 @@ export class ProductsService {
             const urlDolar = 'https://ve.dolarapi.com/v1/dolares/oficial';
             const urlEuro = 'https://ve.dolarapi.com/v1/euros/oficial';
 
-            const responseDolar: ExchangeRateApi = await axios.get(urlDolar).then(res => res.data);
-            const responseEuro: ExchangeRateApi = await axios.get(urlEuro).then(res => res.data);
+            const [dolarResult, euroResult] = await Promise.allSettled([
+                axios.get<ExchangeRateApi>(urlDolar, { timeout: 10_000 }),
+                axios.get<ExchangeRateApi>(urlEuro, { timeout: 10_000 }),
+            ]);
+
+            if (dolarResult.status === 'rejected') {
+                this.logger.error('No se pudo obtener la tasa del dólar', dolarResult.reason);
+            }
+            if (euroResult.status === 'rejected') {
+                this.logger.error('No se pudo obtener la tasa del euro', euroResult.reason);
+            }
+
+            const responseDolar = dolarResult.status === 'fulfilled' ? dolarResult.value.data : null;
+            const responseEuro = euroResult.status === 'fulfilled' ? euroResult.value.data : null;
 
             const rates = [
-                {
+                responseDolar ? {
                     name: responseDolar.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseDolar.fuente.toUpperCase(),
                     rate: Math.round(responseDolar.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'USD',
                     date: new Date(responseDolar.fechaActualizacion),
                     isDefault: responseDolar.fuente.toLocaleLowerCase() == 'oficial',
-                },
-                {
+                } : null,
+                responseEuro ? {
                     name: responseEuro.fuente.toLocaleLowerCase() == 'oficial' ? 'BCV' : responseEuro.fuente.toUpperCase(),
                     rate: Math.round(responseEuro.promedio * 100) / 100, // Redondeamos a dos decimales
                     currency: 'EUR',
                     date: new Date(responseEuro.fechaActualizacion),
                     isDefault: false,
-                }
-            ];
+                } : null,
+            ].filter((rate): rate is NonNullable<typeof rate> => rate !== null);
+
+            if (rates.length === 0) {
+                return {
+                    message: 'No se pudieron obtener las tasas de cambio de la API.',
+                    exchangeRate: [],
+                };
+            }
 
             await this.prismaService.exchangeRate.createMany({
                 data: rates.map(rate => ({
@@ -315,7 +337,8 @@ export class ProductsService {
                     currency: rate.currency as ExchangeRateType,
                     isDefault: rate.isDefault,
                     date: rate.date,
-                }))
+                })),
+                skipDuplicates: true,
             });
 
             return await this.getExchangeRateToday();

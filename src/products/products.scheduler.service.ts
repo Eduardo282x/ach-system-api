@@ -15,7 +15,7 @@ export class ProductsSchedulerService implements OnApplicationBootstrap {
     ) { }
 
     async onApplicationBootstrap() {
-        await this.runAutomaticExchangeRate('inicio de la aplicacion');
+        void this.runAutomaticExchangeRate('inicio de la aplicacion');
     }
 
     @Cron('0 8,13 * * *', {
@@ -26,22 +26,35 @@ export class ProductsSchedulerService implements OnApplicationBootstrap {
     }
 
     private async runAutomaticExchangeRate(source: string) {
-        try {
-            const result = await this.productsService.saveAutomaticExchangeRate();
-            const message = result?.message || 'Tasas actualizadas automáticamente.';
+        const attempts = 3;
+        const delays = [2_000, 5_000, 10_000];
 
-            if (this.websocketGateway.server) {
-                this.websocketGateway.emitReminder('exchangeRateUpdate', {
-                    data: result.exchangeRate || [],
-                    message,
-                });
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            try {
+                const result = await this.productsService.saveAutomaticExchangeRate();
+                const message = result?.message || 'Tasas actualizadas automáticamente.';
+
+                if (this.websocketGateway.server) {
+                    this.websocketGateway.emitReminder('exchangeRateUpdate', {
+                        data: result.exchangeRate || [],
+                        message,
+                    });
+                }
+                this.logger.log(message);
+                return;
+            } catch (error: any) {
+                if (attempt < attempts - 1) {
+                    this.logger.warn(
+                        `Error ejecutando actualizacion automatica de tasa (${source}), intento ${attempt + 1}/${attempts}`,
+                    );
+                    await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+                } else {
+                    this.logger.error(
+                        `Error ejecutando actualizacion automatica de tasa (${source})`,
+                        error?.stack || error?.message || String(error),
+                    );
+                }
             }
-            this.logger.log(message);
-        } catch (error: any) {
-            this.logger.error(
-                `Error ejecutando actualizacion automatica de tasa (${source})`,
-                error?.stack || error?.message || String(error),
-            );
         }
     }
 
