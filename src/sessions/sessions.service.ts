@@ -3,6 +3,7 @@ import { Prisma } from 'src/generated/prisma/client';
 import { SessionStatus } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ShiftsService } from 'src/shifts/shifts.service';
+import { endOfDay, startOfDay } from 'src/common/utils/time.util';
 import {
 	CloseSessionDto,
 	OpenSessionDto,
@@ -37,11 +38,11 @@ export class SessionsService {
 	) { }
 
 	private getStartOfDayUtc(date: string) {
-		return new Date(`${date}T00:00:00.000Z`);
+		return startOfDay(date);
 	}
 
 	private getEndOfDayUtc(date: string) {
-		return new Date(`${date}T23:59:59.999Z`);
+		return endOfDay(date);
 	}
 
 	private toNumber(value: Prisma.Decimal | null | undefined) {
@@ -488,6 +489,12 @@ export class SessionsService {
 			}
 
 			const shiftId = await this.shiftsService.findCurrentShift();
+
+			if (!shiftId) {
+				throw new BadRequestException(
+					'No hay un turno activo para la hora actual. Configure la cobertura de turnos antes de abrir caja.',
+				);
+			}
 
 			const session = await this.prismaService.cashDrawerSession.create({
 				data: {

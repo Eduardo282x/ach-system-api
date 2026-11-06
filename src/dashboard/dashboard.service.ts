@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { endOfDay, startOfDay } from 'src/common/utils/time.util';
 
 interface SummaryFilter {
 	startDate: string;
@@ -15,11 +16,11 @@ export class DashboardService {
 	}
 
 	private getStartOfDayUtc(date: string) {
-		return new Date(`${date}T00:00:00.000Z`);
+		return startOfDay(date);
 	}
 
 	private getEndOfDayUtc(date: string) {
-		return new Date(`${date}T23:59:59.999Z`);
+		return endOfDay(date);
 	}
 
 	async getSummaryByDateRange(filter: SummaryFilter) {
@@ -45,6 +46,7 @@ export class DashboardService {
 				gte: start,
 				lte: end,
 			},
+			status: { not: 'CANCELLED' },
 		};
 
 		const [

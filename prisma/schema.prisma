@@ -21,6 +21,7 @@ model Users {
   cashDrawerSessions CashDrawerSession[]
   inventoryMovements InventoryMovement[]
   invoices           Invoice[]
+  inventoryEntries   InventoryEntry[]
 }
 
 model Clients {
@@ -61,6 +62,7 @@ model Product {
   presentation          String
   barcode               String                 @unique
   price                 Decimal                @db.Decimal(10, 2)
+  purchasePrice         Decimal                @default(0) @db.Decimal(10, 2)
   currency              ExchangeRateType       @default(USD)
   stock                 Decimal                @db.Decimal(10, 3)
   isDetail              Boolean                @default(false)
@@ -202,9 +204,13 @@ model InventoryEntry {
   title                 String                 @default("")
   description           String                 @default("")
   date                  DateTime
+  userId                Int?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
+  user                  Users?                 @relation(fields: [userId], references: [id])
   inventoryEntryDetails InventoryEntryDetail[]
+
+  @@index([userId])
 }
 
 model InventoryEntryDetail {
@@ -215,6 +221,7 @@ model InventoryEntryDetail {
   product          Product        @relation(fields: [productId], references: [id])
   quantity         Decimal        @db.Decimal(10, 3)
   unitPrice        Decimal        @db.Decimal(10, 2)
+  salePrice        Decimal?       @db.Decimal(10, 2)
   subtotal         Decimal        @db.Decimal(10, 2)
 }
 

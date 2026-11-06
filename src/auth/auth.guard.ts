@@ -25,7 +25,21 @@ export class AuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request: Request = context.switchToHttp().getRequest();
 
-    if (routesIgnores.includes(request.url)) return true;
+    if (routesIgnores.includes(request.url)) {
+      const ignoredAuthHeader = request.headers['authorization'];
+
+      if (ignoredAuthHeader) {
+        try {
+          const ignoredToken = ignoredAuthHeader.replace('Bearer ', '');
+          const ignoredPayload = this.jwtService.decode(ignoredToken) as ITokenExp;
+          request['user'] = ignoredPayload;
+        } catch {
+          // Las rutas ignoradas siguen siendo publicas aunque el token sea invalido.
+        }
+      }
+
+      return true;
+    }
 
     const authHeader = request.headers['authorization'];
     if (!authHeader) throw new UnauthorizedException('Token no enviado');

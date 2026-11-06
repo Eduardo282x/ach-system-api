@@ -50,8 +50,14 @@ export class CreateInventoryEntryDetailDto {
 
     @Type(() => Number)
     @IsNumber({ maxDecimalPlaces: 2 })
-    @Min(0, { message: 'El precio unitario debe ser un número positivo' })
+    @Min(0, { message: 'El precio de compra debe ser un número positivo' })
     unitPrice!: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber({ maxDecimalPlaces: 2 })
+    @Min(0, { message: 'El precio de venta debe ser un número positivo' })
+    salePrice?: number;
 }
 
 export class CreateInventoryEntryDto {

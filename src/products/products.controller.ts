@@ -24,8 +24,9 @@ export class ProductsController {
         @Query('size', ParseIntPipe) size: number,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string,
+        @Query('search') search?: string,
     ) {
-        return await this.productsService.getInventoryHistory({ page, size, startDate, endDate });
+        return await this.productsService.getInventoryHistory({ page, size, startDate, endDate, search });
     }
 
     @Get('/exchange-rate/today')

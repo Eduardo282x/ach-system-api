@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { minutesOfDay } from 'src/common/utils/time.util';
 import { CreateShiftDto, UpdateShiftDto } from './shifts.dto';
 
 @Injectable()
@@ -62,8 +63,7 @@ export class ShiftsService {
 	}
 
 	async findCurrentShift(): Promise<number | undefined> {
-		const now = new Date();
-		const currentMinutes = now.getHours() * 60 + now.getMinutes();
+		const currentMinutes = minutesOfDay();
 
 		const shifts = await this.prismaService.shift.findMany({
 			where: { active: true },
@@ -97,6 +97,20 @@ export class ShiftsService {
 		} catch (error) {
 			throw error;
 		}
+	}
+
+	async getCurrentShift() {
+		const shiftId = await this.findCurrentShift();
+
+		if (!shiftId) {
+			return { shift: null };
+		}
+
+		const shift = await this.prismaService.shift.findUnique({
+			where: { id: shiftId },
+		});
+
+		return { shift };
 	}
 
 	async createShift(dto: CreateShiftDto) {

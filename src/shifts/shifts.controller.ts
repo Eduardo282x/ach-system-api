@@ -11,6 +11,11 @@ export class ShiftsController {
 		return await this.shiftsService.getShifts();
 	}
 
+	@Get('/current')
+	async getCurrentShift() {
+		return await this.shiftsService.getCurrentShift();
+	}
+
 	@Post()
 	async createShift(@Body() dto: CreateShiftDto) {
 		return await this.shiftsService.createShift(dto);

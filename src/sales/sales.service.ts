@@ -3,16 +3,15 @@ import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { ShiftsService } from 'src/shifts/shifts.service';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import {
+	endOfDay,
+	localDateString,
+	shiftReportWindow,
+	startOfDay,
+} from 'src/common/utils/time.util';
 
 interface ResumenFilter {
 	date: string;
@@ -26,7 +25,6 @@ export class SalesService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly sessionsService: SessionsService,
-		private readonly shiftsService: ShiftsService,
 	) { }
 
 	private toTwoDecimals(value: number) {
@@ -34,18 +32,18 @@ export class SalesService {
 	}
 
 	private getStartOfDayUtc(date: string) {
-		return new Date(`${date}T00:00:00.000Z`);
+		return startOfDay(date);
 	}
 
 	private getEndOfDayUtc(date: string) {
-		return new Date(`${date}T23:59:59.999Z`);
+		return endOfDay(date);
 	}
 
 	private async getShiftDateRange(date: string, shiftId?: number): Promise<{ start: Date; end: Date }> {
 		if (!shiftId) {
 			return {
-				start: this.getStartOfDayUtc(date),
-				end: this.getEndOfDayUtc(date),
+				start: startOfDay(date),
+				end: endOfDay(date),
 			};
 		}
 
@@ -55,29 +53,12 @@ export class SalesService {
 
 		if (!shift) {
 			return {
-				start: this.getStartOfDayUtc(date),
-				end: this.getEndOfDayUtc(date),
+				start: startOfDay(date),
+				end: endOfDay(date),
 			};
 		}
 
-		const [startHour, startMin] = shift.startTime.split(':').map(Number);
-		const [endHour, endMin] = shift.endTime.split(':').map(Number);
-
-		if (endHour < startHour) {
-			const startDate = new Date(date);
-			startDate.setUTCHours(startHour, startMin, 0, 0);
-			startDate.setUTCDate(startDate.getUTCDate() - 1);
-
-			const endDate = new Date(date);
-			endDate.setUTCHours(endHour, endMin, 0, 0);
-
-			return { start: startDate, end: endDate };
-		}
-
-		return {
-			start: this.getStartOfDayUtc(date),
-			end: this.getEndOfDayUtc(date),
-		};
+		return shiftReportWindow(date, shift);
 	}
 
 	private async getLatestExchangeRatesByCurrency() {
@@ -305,7 +286,28 @@ export class SalesService {
 				}
 			}
 
-			const { start: startDate, end: endDate } = await this.getShiftDateRange(date, parsedShiftId);
+			let startDate: Date;
+			let endDate: Date;
+
+			if (parsedSessionId) {
+				const session = await this.prismaService.cashDrawerSession.findUnique({
+					where: { id: parsedSessionId },
+					select: { openedAt: true, closedAt: true },
+				});
+
+				if (!session) {
+					throw new NotFoundException(
+						`Sesión de caja con id ${parsedSessionId} no encontrada`,
+					);
+				}
+
+				startDate = session.openedAt;
+				endDate = session.closedAt ?? new Date();
+			} else {
+				const range = await this.getShiftDateRange(date, parsedShiftId);
+				startDate = range.start;
+				endDate = range.end;
+			}
 
 			if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
 				throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
@@ -316,8 +318,9 @@ export class SalesService {
 					gte: startDate,
 					lte: endDate,
 				},
+				status: { not: 'CANCELLED' },
 				...(parsedSessionId ? { sessionId: parsedSessionId } : {}),
-				...(cashDrawerId ? { cashDrawerId: Number(cashDrawerId) } : {}),
+				...(cashDrawerId ? { session: { cashDrawerId: Number(cashDrawerId) } } : {}),
 				...(parsedShiftId ? { shiftId: parsedShiftId } : {}),
 			};
 
@@ -494,9 +497,27 @@ export class SalesService {
 	async getResumenSalesExcel(filter: ResumenFilter, res: Response) {
 		try {
 			const resumenData = await this.getResumenSales(filter);
+
+			let detailStartDate = filter.date;
+			let detailEndDate = filter.date;
+			let detailWindow: { start: Date; end: Date } | null = null;
+
+			if (filter.shiftId) {
+				const shift = await this.prismaService.shift.findUnique({
+					where: { id: Number(filter.shiftId) },
+				});
+
+				if (shift) {
+					detailWindow = shiftReportWindow(filter.date, shift);
+					detailStartDate = localDateString(detailWindow.start);
+					detailEndDate = localDateString(detailWindow.end);
+				}
+			}
+
 			const invoices = await this.getInvoices({
-				startDate: filter.date,
-				endDate: filter.date,
+				...(filter.sessionId
+					? {}
+					: { startDate: detailStartDate, endDate: detailEndDate }),
 				sessionId: filter.sessionId ? Number(filter.sessionId) : undefined,
 				shiftId: filter.shiftId ? Number(filter.shiftId) : undefined,
 			});
@@ -505,7 +526,7 @@ export class SalesService {
 			const resumenSheet = workbook.addWorksheet('Resumen de Pagos');
 			const detalleSheet = workbook.addWorksheet('Detalle de Facturas');
 
-			resumenSheet.addRow(['Fecha', this.formatDateWithTime(resumenData.date)]);
+			resumenSheet.addRow(['Fecha', resumenData.date]);
 			resumenSheet.addRow(['Sesión', resumenData.sessionId ?? 'TODAS']);
 			resumenSheet.addRow(['Turno', resumenData.shiftId ?? 'TODOS']);
 			resumenSheet.addRow(['Cantidad de facturas', resumenData.totalInvoice]);
@@ -580,7 +601,20 @@ export class SalesService {
 				'Productos',
 			]);
 
-			for (const invoice of invoices.invoices) {
+			const invoiceList = invoices.invoices.filter((invoice) => {
+				if (invoice.status === 'CANCELLED') {
+					return false;
+				}
+
+				if (detailWindow) {
+					const createdAt = new Date(invoice.createdAt);
+					return createdAt >= detailWindow.start && createdAt <= detailWindow.end;
+				}
+
+				return true;
+			});
+
+			for (const invoice of invoiceList) {
 				const payments = invoice.paymentDetails
 					.map((p) => `${p.paymentType.name}: ${Number(p.amountNet)} ${p.currency}`)
 					.join(' | ');
@@ -664,12 +698,6 @@ export class SalesService {
 		}
 	}
 
-	private getVenezuelaNow(): Date {
-		const today = new Date();
-		const todayVenezuela = dayjs(today).add(-4, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-		return new Date(todayVenezuela);
-	}
-
 	async createInvoice(createInvoiceDto: CreateInvoiceDto, userId: number) {
 		try {
 			const [customer, session] = await Promise.all([
@@ -693,34 +721,35 @@ export class SalesService {
 				);
 			}
 
-			if (session.closedAt !== null) {
+			if (session.closedAt !== null || session.status !== 'OPEN') {
 				throw new BadRequestException(
 					`La sesión de caja con id ${createInvoiceDto.sessionId} ya está cerrada`,
 				);
 			}
 
-			let resolvedShiftId = createInvoiceDto.shiftId;
-
-			if (!resolvedShiftId) {
-				resolvedShiftId = await this.shiftsService.findCurrentShift();
+			// El turno de la factura siempre es el turno con el que se abrió la sesión.
+			// Si el turno actual ya cambió, la venta sigue perteneciendo a la sesión del usuario.
+			if (!session.shiftId) {
+				throw new BadRequestException(
+					'No se pueden registrar ventas sin turno. La sesión de caja no tiene un turno asociado.',
+				);
 			}
 
-			if (resolvedShiftId) {
-				const shift = await this.prismaService.shift.findUnique({
-					where: { id: resolvedShiftId },
-				});
+			const resolvedShiftId = session.shiftId;
+			const shift = await this.prismaService.shift.findUnique({
+				where: { id: resolvedShiftId },
+			});
 
-				if (!shift) {
-					throw new NotFoundException(
-						`Turno con id ${resolvedShiftId} no encontrado`,
-					);
-				}
+			if (!shift) {
+				throw new NotFoundException(
+					`Turno con id ${resolvedShiftId} no encontrado`,
+				);
+			}
 
-				if (!shift.active) {
-					throw new BadRequestException(
-						`El turno "${shift.name}" está desactivado`,
-					);
-				}
+			if (!shift.active) {
+				throw new BadRequestException(
+					`El turno "${shift.name}" está desactivado`,
+				);
 			}
 
 			const paymentTypeIds = [
@@ -996,8 +1025,8 @@ export class SalesService {
 						status: isCreditPayment ? 'PENDING' : 'PAID',
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
-						createdAt: this.getVenezuelaNow(),
-						...(resolvedShiftId && { shiftId: resolvedShiftId }),
+						createdAt: new Date(),
+						shiftId: resolvedShiftId,
 					},
 				});
 
@@ -1142,14 +1171,22 @@ export class SalesService {
 				throw new NotFoundException(`Factura con id ${invoiceId} no encontrada`);
 			}
 
-			await this.prismaService.invoice.update({
+			if (invoice.status !== 'PENDING') {
+				throw new BadRequestException(
+					`La factura ${invoice.invoiceNumber} no está pendiente de pago`,
+				);
+			}
+
+			const updatedInvoice = await this.prismaService.invoice.update({
 				where: { id: invoiceId },
 				data: { status: 'PAID', userId },
 			});
 
+			await this.sessionsService.refreshSessionTotals(invoice.sessionId);
+
 			return {
 				message: 'Crédito pagado correctamente.',
-				invoice
+				invoice: updatedInvoice,
 			};
 
 		} catch (error: Error | any) {

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { endOfDay, parseDateOnly, startOfDay } from 'src/common/utils/time.util';
 import { CreateInventoryEntryDetailDto, CreateInventoryEntryDto, GetInventoryEntriesFilterDto } from './inventory.dto';
 
 @Injectable()
@@ -8,11 +9,11 @@ export class InventoryService {
     constructor(private readonly prismaService: PrismaService) { }
 
     private getStartOfDayUtc(date: string) {
-        return new Date(`${date}T00:00:00.000Z`);
+        return startOfDay(date);
     }
 
     private getEndOfDayUtc(date: string) {
-        return new Date(`${date}T23:59:59.999Z`);
+        return endOfDay(date);
     }
 
     async getInventoryEntries(filter: GetInventoryEntriesFilterDto) {
@@ -56,6 +57,8 @@ export class InventoryService {
                                         name: true,
                                         presentation: true,
                                         barcode: true,
+                                        price: true,
+                                        purchasePrice: true,
                                     },
                                 },
                             },
@@ -92,6 +95,8 @@ export class InventoryService {
                                     name: true,
                                     presentation: true,
                                     barcode: true,
+                                    price: true,
+                                    purchasePrice: true,
                                 },
                             },
                         },
@@ -124,16 +129,23 @@ export class InventoryService {
             }
 
             const productIds = details.map((detail) => detail.productId);
+
+            if (productIds.length !== new Set(productIds).size) {
+                throw new BadRequestException(
+                    'Un producto está repetido en el detalle. Agrupe las cantidades antes de guardar.',
+                );
+            }
+
             const products = await this.prismaService.product.findMany({
-                where: { id: { in: productIds } },
+                where: { id: { in: productIds }, deleted: false },
                 select: { id: true },
             });
 
-            if (products.length !== new Set(productIds).size) {
+            if (products.length !== productIds.length) {
                 throw new BadRequestException('Uno o más productos del detalle no existen');
             }
 
-            const parsedDate = new Date(date);
+            const parsedDate = parseDateOnly(date);
 
             if (Number.isNaN(parsedDate.getTime())) {
                 throw new BadRequestException('Formato de fecha inválido. Use YYYY-MM-DD');
@@ -146,50 +158,62 @@ export class InventoryService {
                         title,
                         description,
                         date: parsedDate,
+                        userId,
                     },
                 });
 
-                const inventoryEntryDetails = await Promise.all(
-                    details.map(async (detail: CreateInventoryEntryDetailDto) => {
-                        const subtotal = Number(detail.quantity) * Number(detail.unitPrice);
+                const inventoryEntryDetails: any[] = [];
 
-                        await tx.product.update({
-                            where: { id: detail.productId },
-                            data: {
-                                stock: { increment: detail.quantity },
-                            },
-                        });
+                for (const detail of details as CreateInventoryEntryDetailDto[]) {
+                    const subtotal = Number(detail.quantity) * Number(detail.unitPrice);
+                    const salePrice =
+                        detail.salePrice !== undefined && detail.salePrice !== null
+                            ? Number(detail.salePrice)
+                            : undefined;
 
-                        await tx.inventoryMovement.create({
-                            data: {
-                                productId: detail.productId,
-                                quantity: detail.quantity,
-                                type: 'RESTOCK',
-                                reason: `Entrada de inventario N° ${controlNumber}`,
-                                userId,
-                            },
-                        });
+                    await tx.product.update({
+                        where: { id: detail.productId },
+                        data: {
+                            stock: { increment: detail.quantity },
+                            purchasePrice: detail.unitPrice,
+                            ...(salePrice !== undefined && { price: salePrice }),
+                        },
+                    });
 
-                        return tx.inventoryEntryDetail.create({
-                            data: {
-                                inventoryEntryId: inventoryEntry.id,
-                                productId: detail.productId,
-                                quantity: detail.quantity,
-                                unitPrice: detail.unitPrice,
-                                subtotal,
-                            },
-                            include: {
-                                product: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        barcode: true,
-                                    },
+                    await tx.inventoryMovement.create({
+                        data: {
+                            productId: detail.productId,
+                            quantity: detail.quantity,
+                            type: 'RESTOCK',
+                            reason: `Entrada de inventario N° ${controlNumber}`,
+                            userId,
+                        },
+                    });
+
+                    const createdDetail = await tx.inventoryEntryDetail.create({
+                        data: {
+                            inventoryEntryId: inventoryEntry.id,
+                            productId: detail.productId,
+                            quantity: detail.quantity,
+                            unitPrice: detail.unitPrice,
+                            salePrice: salePrice ?? null,
+                            subtotal,
+                        },
+                        include: {
+                            product: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    barcode: true,
+                                    price: true,
+                                    purchasePrice: true,
                                 },
                             },
-                        });
-                    }),
-                );
+                        },
+                    });
+
+                    inventoryEntryDetails.push(createdDetail);
+                }
 
                 return {
                     ...inventoryEntry,

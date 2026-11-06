@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { DeleteProductDto, ExchangeRateDto, ProductDto } from './products.dto';
 import axios from 'axios';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
+import { endOfDay, startOfDay } from 'src/common/utils/time.util';
 
 export interface ExchangeRateApi {
     fuente: string;
@@ -25,6 +26,7 @@ export interface InventoryHistoryQuery {
     size: number;
     startDate?: string;
     endDate?: string;
+    search?: string;
 }
 
 
@@ -99,18 +101,29 @@ export class ProductsService {
     }
 
     private getStartOfDayUtc(date: string) {
-        return new Date(`${date}T00:00:00.000Z`);
+        return startOfDay(date);
     }
 
     private getEndOfDayUtc(date: string) {
-        return new Date(`${date}T23:59:59.999Z`);
+        return endOfDay(date);
     }
 
     async getInventoryHistory(query: InventoryHistoryQuery) {
-        const { page, size, startDate, endDate } = query;
+        const { page, size, startDate, endDate, search } = query;
         const where: any = {};
         const skip = (page - 1) * size;
         const take = size;
+
+        if (search) {
+            where.product = {
+                is: {
+                    OR: [
+                        { name: { contains: search, mode: 'insensitive' } },
+                        { barcode: { contains: search, mode: 'insensitive' } },
+                    ],
+                },
+            };
+        }
 
         if (startDate && endDate) {
             const start = this.getStartOfDayUtc(startDate);
@@ -138,6 +151,7 @@ export class ProductsService {
                             presentation: true,
                             barcode: true,
                             price: true,
+                            purchasePrice: true,
                             currency: true,
                         }
                     },
@@ -372,6 +386,7 @@ export class ProductsService {
                     presentation: createProductDto.presentation,
                     barcode: createProductDto.barcode,
                     price: createProductDto.price,
+                    purchasePrice: createProductDto.purchasePrice ?? 0,
                     currency: createProductDto.currency,
                     stock: createProductDto.stock,
                     isDetail: createProductDto.isDetail,
