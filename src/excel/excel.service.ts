@@ -267,6 +267,7 @@ export class ExcelService {
         controlNumber?: string,
     ): Promise<ImportContext> {
         const products = await tx.product.findMany({
+            where: { deleted: false },
             select: {
                 id: true,
                 name: true,
