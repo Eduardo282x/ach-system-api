@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
-import { DeleteProductDto, ExchangeRateDto, ProductDto } from './products.dto';
+import { DeleteProductDto, ExchangeRateDto, ProductDto, UpdateProductDto } from './products.dto';
 import { ProductsService } from './products.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -67,7 +67,7 @@ export class ProductsController {
     @Put(':id')
     async updateProduct(
         @Param('id', ParseIntPipe) id: number,
-        @Body() updateProductDto: ProductDto,
+        @Body() updateProductDto: UpdateProductDto,
     ) {
         return await this.productsService.updateProduct(id, updateProductDto);
     }
