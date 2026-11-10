@@ -53,22 +53,113 @@ Opciones:
   --limit=N            Procesa como máximo N facturas (útil para probar).
   --help, -h           Muestra esta ayuda.
 
+También acepta la fecha como argumento posicional: scripts/... 2026-11-09
+
+Nota sobre npm: npm descarta flags sueltos como --apply y convierte --clave=valor
+en variables npm_config_*. Por eso, con npm usa el script dedicado o las variables
+de entorno:
+  npm run sales:recalc-shifts:apply -- --date=2026-11-09
+  $env:SHIFT_RECALC_APPLY="true"; npm run sales:recalc-shifts -- --date=2026-11-09
+
+Con pnpm o node directo, --apply funciona normal.
+
 Ejemplos:
   pnpm sales:recalc-shifts
   pnpm sales:recalc-shifts -- --date=2026-11-09
   pnpm sales:recalc-shifts:apply -- --date=2026-11-09
+  node --env-file=.env -r ts-node/register scripts/recalculate-shift-sales.ts --apply --date=2026-11-09
 `.trim());
 }
+
+function isTruthy(value?: string) {
+	return value !== undefined && ['true', '1', 'yes', 'si', 'sí'].includes(value.toLowerCase());
+}
+
+function readEnvConfig(): Partial<Options> {
+	const config: Partial<Options> = {};
+	const env = process.env;
+
+	if (isTruthy(env.SHIFT_RECALC_APPLY)) {
+		config.apply = true;
+	}
+
+	if (env.SHIFT_RECALC_DATE) {
+		config.from = env.SHIFT_RECALC_DATE;
+		config.to = env.SHIFT_RECALC_DATE;
+	}
+
+	if (env.SHIFT_RECALC_FROM) {
+		config.from = env.SHIFT_RECALC_FROM;
+	}
+
+	if (env.SHIFT_RECALC_TO) {
+		config.to = env.SHIFT_RECALC_TO;
+	}
+
+	if (env.SHIFT_RECALC_LIMIT) {
+		config.limit = Number(env.SHIFT_RECALC_LIMIT);
+	}
+
+	if (isTruthy(env.SHIFT_RECALC_CLEAR_UNRESOLVED)) {
+		config.clearUnresolved = true;
+	}
+
+	if (isTruthy(env.SHIFT_RECALC_INCLUDE_CANCELLED)) {
+		config.includeCancelled = true;
+	}
+
+	return config;
+}
+
+function readNpmConfig(): Partial<Options> {
+	const config: Partial<Options> = {};
+	const env = process.env;
+
+	if (isTruthy(env.npm_config_apply)) {
+		config.apply = true;
+	}
+
+	if (isTruthy(env.npm_config_include_cancelled)) {
+		config.includeCancelled = true;
+	}
+
+	if (isTruthy(env.npm_config_clear_unresolved)) {
+		config.clearUnresolved = true;
+	}
+
+	if (env.npm_config_date) {
+		config.from = env.npm_config_date;
+		config.to = env.npm_config_date;
+	}
+
+	if (env.npm_config_from) {
+		config.from = env.npm_config_from;
+	}
+
+	if (env.npm_config_to) {
+		config.to = env.npm_config_to;
+	}
+
+	if (env.npm_config_limit) {
+		config.limit = Number(env.npm_config_limit);
+	}
+
+	return config;
+}
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function parseArgs(argv: string[]): Options {
 	const options: Options = {
 		apply: false,
 		clearUnresolved: false,
 		includeCancelled: false,
+		...readNpmConfig(),
+		...readEnvConfig(),
 	};
 
-	for (const rawArg of argv) {
-		const arg = rawArg.trim();
+	for (let index = 0; index < argv.length; index++) {
+		const arg = argv[index].trim();
 
 		if (!arg || arg === '--') {
 			continue;
@@ -94,11 +185,32 @@ function parseArgs(argv: string[]): Options {
 			process.exit(0);
 		}
 
+		if (DATE_PATTERN.test(arg)) {
+			options.from = arg;
+			options.to = arg;
+			continue;
+		}
+
+		if (arg === '--date') {
+			const value = argv[++index];
+			assertDate(value, 'date');
+			options.from = value;
+			options.to = value;
+			continue;
+		}
+
 		if (arg.startsWith('--date=')) {
 			const value = arg.slice('--date='.length);
 			assertDate(value, 'date');
 			options.from = value;
 			options.to = value;
+			continue;
+		}
+
+		if (arg === '--from') {
+			const value = argv[++index];
+			assertDate(value, 'from');
+			options.from = value;
 			continue;
 		}
 
@@ -109,6 +221,13 @@ function parseArgs(argv: string[]): Options {
 			continue;
 		}
 
+		if (arg === '--to') {
+			const value = argv[++index];
+			assertDate(value, 'to');
+			options.to = value;
+			continue;
+		}
+
 		if (arg.startsWith('--to=')) {
 			const value = arg.slice('--to='.length);
 			assertDate(value, 'to');
@@ -116,18 +235,29 @@ function parseArgs(argv: string[]): Options {
 			continue;
 		}
 
+		if (arg === '--limit') {
+			options.limit = parseLimit(argv[++index]);
+			continue;
+		}
+
 		if (arg.startsWith('--limit=')) {
-			const value = Number(arg.slice('--limit='.length));
-
-			if (!Number.isInteger(value) || value <= 0) {
-				throw new Error('--limit debe ser un entero mayor a 0');
-			}
-
-			options.limit = value;
+			options.limit = parseLimit(arg.slice('--limit='.length));
 			continue;
 		}
 
 		throw new Error(`Opción no reconocida: ${arg}`);
+	}
+
+	if (options.from) {
+		assertDate(options.from, 'from');
+	}
+
+	if (options.to) {
+		assertDate(options.to, 'to');
+	}
+
+	if (options.limit !== undefined && (!Number.isInteger(options.limit) || options.limit <= 0)) {
+		throw new Error('--limit debe ser un entero mayor a 0');
 	}
 
 	if (options.from && options.to && options.from > options.to) {
@@ -137,9 +267,19 @@ function parseArgs(argv: string[]): Options {
 	return options;
 }
 
-function assertDate(value: string, name: string) {
-	if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-		throw new Error(`--${name} debe tener el formato YYYY-MM-DD (recibido: "${value}")`);
+function parseLimit(value: string | undefined) {
+	const parsed = Number(value);
+
+	if (!Number.isInteger(parsed) || parsed <= 0) {
+		throw new Error('--limit debe ser un entero mayor a 0');
+	}
+
+	return parsed;
+}
+
+function assertDate(value: string | undefined, name: string) {
+	if (!value || !DATE_PATTERN.test(value)) {
+		throw new Error(`--${name} debe tener el formato YYYY-MM-DD (recibido: "${value ?? ''}")`);
 	}
 
 	if (Number.isNaN(startOfDay(value).getTime())) {
@@ -404,7 +544,10 @@ async function main() {
 
 		if (!options.apply) {
 			console.log('\nDRY-RUN: no se modificó la base de datos.');
-			console.log('Ejecuta el script con --apply para aplicar los cambios.');
+			console.log('Para aplicar los cambios:');
+			console.log('  pnpm sales:recalc-shifts:apply');
+			console.log('  npm run sales:recalc-shifts:apply');
+			console.log('  $env:SHIFT_RECALC_APPLY="true"; npm run sales:recalc-shifts');
 			return;
 		}
 
