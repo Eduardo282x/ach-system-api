@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "products:archive": "node --env-file=.env -r ts-node/register scripts/archive-products.ts",
-    "products:archive:apply": "node --env-file=.env -r ts-node/register scripts/archive-products.ts --apply"
+    "products:archive:apply": "node --env-file=.env -r ts-node/register scripts/archive-products.ts --apply",
+    "sales:recalc-shifts": "node --env-file=.env -r ts-node/register scripts/recalculate-shift-sales.ts",
+    "sales:recalc-shifts:apply": "node --env-file=.env -r ts-node/register scripts/recalculate-shift-sales.ts --apply"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

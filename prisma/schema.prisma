@@ -128,10 +128,12 @@ model InvoiceItem {
   id        Int      @id @default(autoincrement())
   invoiceId Int
   productId Int
-  unitPrice Decimal  @db.Decimal(10, 2)
-  quantity  Decimal  @db.Decimal(10, 3)
-  subtotal  Decimal  @db.Decimal(10, 2)
-  createdAt DateTime @default(now())
+  unitPrice    Decimal  @db.Decimal(10, 2)
+  unitCost     Decimal  @default(0) @db.Decimal(10, 2)
+  quantity     Decimal  @db.Decimal(10, 3)
+  subtotal     Decimal  @db.Decimal(10, 2)
+  costSubtotal Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt    DateTime @default(now())
   invoice   Invoice  @relation(fields: [invoiceId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
 }

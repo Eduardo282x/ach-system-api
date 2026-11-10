@@ -3,6 +3,7 @@ import { Prisma } from 'src/generated/prisma/client';
 import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SessionsService } from 'src/sessions/sessions.service';
+import { ShiftsService } from 'src/shifts/shifts.service';
 import { CreateInvoiceDto, GetInvoicesFilterDto } from './sales.dto';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
@@ -25,6 +26,7 @@ export class SalesService {
 	constructor(
 		private readonly prismaService: PrismaService,
 		private readonly sessionsService: SessionsService,
+		private readonly shiftsService: ShiftsService,
 	) { }
 
 	private toTwoDecimals(value: number) {
@@ -727,15 +729,19 @@ export class SalesService {
 				);
 			}
 
-			// El turno de la factura siempre es el turno con el que se abrió la sesión.
-			// Si el turno actual ya cambió, la venta sigue perteneciendo a la sesión del usuario.
-			if (!session.shiftId) {
+			// La venta se sella con el turno vigente al momento de facturar, no con el
+			// turno con el que se abrió la sesión: una sesión puede quedarse abierta y
+			// cruzar el cambio de turno, y esas ventas deben caer en su turno real.
+			const createdAt = new Date();
+			const currentShiftId = await this.shiftsService.findCurrentShift(createdAt);
+			const resolvedShiftId = currentShiftId ?? session.shiftId;
+
+			if (!resolvedShiftId) {
 				throw new BadRequestException(
-					'No se pueden registrar ventas sin turno. La sesión de caja no tiene un turno asociado.',
+					'No se pueden registrar ventas sin turno. No hay un turno activo que cubra este horario y la sesión de caja no tiene un turno asociado.',
 				);
 			}
 
-			const resolvedShiftId = session.shiftId;
 			const shift = await this.prismaService.shift.findUnique({
 				where: { id: resolvedShiftId },
 			});
@@ -894,8 +900,10 @@ export class SalesService {
 				}
 
 				const unitPrice = Number(product.price);
+				const unitCost = Number(product.purchasePrice);
 				const factor = getFactorByCurrency(product.currency as ExchangeRateType);
 				const subtotal = this.toTwoDecimals(unitPrice * item.quantity * factor);
+				const costSubtotal = this.toTwoDecimals(unitCost * item.quantity * factor);
 
 				totalAmountBs += subtotal;
 
@@ -903,7 +911,9 @@ export class SalesService {
 					productId: item.productId,
 					quantity: item.quantity,
 					unitPrice,
+					unitCost,
 					subtotal,
+					costSubtotal,
 					productName: product.name,
 				};
 			});
@@ -1025,7 +1035,7 @@ export class SalesService {
 						status: isCreditPayment ? 'PENDING' : 'PAID',
 						customerId: createInvoiceDto.customerId,
 						sessionId: createInvoiceDto.sessionId,
-						createdAt: new Date(),
+						createdAt,
 						shiftId: resolvedShiftId,
 					},
 				});
@@ -1035,8 +1045,10 @@ export class SalesService {
 						invoiceId: createdInvoice.id,
 						productId: item.productId,
 						unitPrice: new Prisma.Decimal(item.unitPrice),
+						unitCost: new Prisma.Decimal(item.unitCost),
 						quantity: item.quantity,
 						subtotal: new Prisma.Decimal(item.subtotal),
+						costSubtotal: new Prisma.Decimal(item.costSubtotal),
 					})),
 				});
 

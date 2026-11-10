@@ -4,6 +4,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ExchangeRateType } from 'src/generated/prisma/enums';
 import { APP_TIMEZONE, endOfDay, localDateString, startOfDay } from 'src/common/utils/time.util';
 
 dayjs.extend(utc);
@@ -36,6 +37,8 @@ interface TrendAccumulator {
 	totalItems: number;
 	totalSalesBs: number;
 	totalSalesUsd: number;
+	totalCostBs: number;
+	totalCostUsd: number;
 	receivedBs: number;
 	receivedUsd: number;
 	changeBs: number;
@@ -147,6 +150,8 @@ export class DashboardService {
 			totalItems: 0,
 			totalSalesBs: 0,
 			totalSalesUsd: 0,
+			totalCostBs: 0,
+			totalCostUsd: 0,
 			receivedBs: 0,
 			receivedUsd: 0,
 			changeBs: 0,
@@ -262,8 +267,12 @@ export class DashboardService {
 						totalItems: 0,
 						totalSalesBs: 0,
 						totalSalesUsd: 0,
-						netIncomeBs: 0,
-						netIncomeUsd: 0,
+						totalCostBs: 0,
+						totalCostUsd: 0,
+						profitBs: 0,
+						profitUsd: 0,
+						netCashBs: 0,
+						netCashUsd: 0,
 					},
 				};
 			}
@@ -300,9 +309,16 @@ export class DashboardService {
 				totalReceivedUsd: true,
 				totalChangeBs: true,
 				totalChangeUsd: true,
+				exchangeRateUsd: {
+					select: {
+						rate: true,
+					},
+				},
 				items: {
 					select: {
 						quantity: true,
+						subtotal: true,
+						costSubtotal: true,
 					},
 				},
 			},
@@ -321,6 +337,12 @@ export class DashboardService {
 				continue;
 			}
 
+			const usdRate = Number(invoice.exchangeRateUsd?.rate ?? 0);
+			const invoiceCostBs = invoice.items.reduce(
+				(acc, item) => acc + Number(item.costSubtotal),
+				0,
+			);
+
 			period.totalInvoices += 1;
 			period.totalItems += invoice.items.reduce(
 				(acc, item) => acc + Number(item.quantity),
@@ -328,6 +350,8 @@ export class DashboardService {
 			);
 			period.totalSalesBs += Number(invoice.totalAmountBs);
 			period.totalSalesUsd += Number(invoice.totalAmountUsd);
+			period.totalCostBs += invoiceCostBs;
+			period.totalCostUsd += usdRate > 0 ? invoiceCostBs / usdRate : 0;
 			period.receivedBs += Number(invoice.totalReceivedBs);
 			period.receivedUsd += Number(invoice.totalReceivedUsd);
 			period.changeBs += Number(invoice.totalChangeBs);
@@ -343,8 +367,12 @@ export class DashboardService {
 			totalItems: this.toThreeDecimals(period.totalItems),
 			totalSalesBs: this.toTwoDecimals(period.totalSalesBs),
 			totalSalesUsd: this.toTwoDecimals(period.totalSalesUsd),
-			netIncomeBs: this.toTwoDecimals(period.receivedBs - period.changeBs),
-			netIncomeUsd: this.toTwoDecimals(period.receivedUsd - period.changeUsd),
+			totalCostBs: this.toTwoDecimals(period.totalCostBs),
+			totalCostUsd: this.toTwoDecimals(period.totalCostUsd),
+			profitBs: this.toTwoDecimals(period.totalSalesBs - period.totalCostBs),
+			profitUsd: this.toTwoDecimals(period.totalSalesUsd - period.totalCostUsd),
+			netCashBs: this.toTwoDecimals(period.receivedBs - period.changeBs),
+			netCashUsd: this.toTwoDecimals(period.receivedUsd - period.changeUsd),
 		}));
 
 		const totals = mappedPeriods.reduce(
@@ -353,16 +381,24 @@ export class DashboardService {
 				totalItems: acc.totalItems + period.totalItems,
 				totalSalesBs: acc.totalSalesBs + period.totalSalesBs,
 				totalSalesUsd: acc.totalSalesUsd + period.totalSalesUsd,
-				netIncomeBs: acc.netIncomeBs + period.netIncomeBs,
-				netIncomeUsd: acc.netIncomeUsd + period.netIncomeUsd,
+				totalCostBs: acc.totalCostBs + period.totalCostBs,
+				totalCostUsd: acc.totalCostUsd + period.totalCostUsd,
+				profitBs: acc.profitBs + period.profitBs,
+				profitUsd: acc.profitUsd + period.profitUsd,
+				netCashBs: acc.netCashBs + period.netCashBs,
+				netCashUsd: acc.netCashUsd + period.netCashUsd,
 			}),
 			{
 				totalInvoices: 0,
 				totalItems: 0,
 				totalSalesBs: 0,
 				totalSalesUsd: 0,
-				netIncomeBs: 0,
-				netIncomeUsd: 0,
+				totalCostBs: 0,
+				totalCostUsd: 0,
+				profitBs: 0,
+				profitUsd: 0,
+				netCashBs: 0,
+				netCashUsd: 0,
 			},
 		);
 
@@ -382,8 +418,12 @@ export class DashboardService {
 				totalItems: this.toThreeDecimals(totals.totalItems),
 				totalSalesBs: this.toTwoDecimals(totals.totalSalesBs),
 				totalSalesUsd: this.toTwoDecimals(totals.totalSalesUsd),
-				netIncomeBs: this.toTwoDecimals(totals.netIncomeBs),
-				netIncomeUsd: this.toTwoDecimals(totals.netIncomeUsd),
+				totalCostBs: this.toTwoDecimals(totals.totalCostBs),
+				totalCostUsd: this.toTwoDecimals(totals.totalCostUsd),
+				profitBs: this.toTwoDecimals(totals.profitBs),
+				profitUsd: this.toTwoDecimals(totals.profitUsd),
+				netCashBs: this.toTwoDecimals(totals.netCashBs),
+				netCashUsd: this.toTwoDecimals(totals.netCashUsd),
 			},
 		};
 	}
@@ -420,6 +460,7 @@ export class DashboardService {
 			customerFrequency,
 			productSales,
 			lowStockProducts,
+			paymentTypes,
 		] = await Promise.all([
 			this.prismaService.invoice.findMany({
 				where: invoiceWhere,
@@ -447,12 +488,26 @@ export class DashboardService {
 							cashDrawerId: true,
 						},
 					},
+					exchangeRateUsd: {
+						select: {
+							id: true,
+							rate: true,
+						},
+					},
+					exchangeRateEur: {
+						select: {
+							id: true,
+							rate: true,
+						},
+					},
 					items: {
 						select: {
 							id: true,
 							quantity: true,
 							unitPrice: true,
+							unitCost: true,
 							subtotal: true,
+							costSubtotal: true,
 							product: {
 								select: {
 									id: true,
@@ -498,6 +553,7 @@ export class DashboardService {
 				_sum: {
 					quantity: true,
 					subtotal: true,
+					costSubtotal: true,
 				},
 				_count: {
 					productId: true,
@@ -526,6 +582,16 @@ export class DashboardService {
 					stock: true,
 					presentation: true,
 					price: true,
+					currency: true,
+				},
+			}),
+			this.prismaService.typePayment.findMany({
+				orderBy: {
+					createdAt: 'asc',
+				},
+				select: {
+					id: true,
+					name: true,
 					currency: true,
 				},
 			}),
@@ -567,35 +633,30 @@ export class DashboardService {
 		const customerMap = new Map(customers.map((customer) => [customer.id, customer]));
 		const productMap = new Map(products.map((product) => [product.id, product]));
 
-		const ingresos = invoices.reduce(
-			(acc, invoice) => {
-				const amountBs = Number(invoice.totalReceivedBs);
-				const changeBs = Number(invoice.totalChangeBs);
-				const amountUsd = Number(invoice.totalReceivedUsd);
-				const changeUsd = Number(invoice.totalChangeUsd);
-
-				acc.amountBs += amountBs;
-				acc.changeAmountBs += changeBs;
-				acc.amountUsd += amountUsd;
-				acc.changeAmountUsd += changeUsd;
-
-				return acc;
-			},
-			{
-				amountBs: 0,
-				changeAmountBs: 0,
-				amountUsd: 0,
-				changeAmountUsd: 0,
-			},
-		);
+		// Facturado, costo y ganancia. Incluye facturas PAID y PENDING (crédito).
+		let totalCostBs = 0;
+		let totalCostUsd = 0;
+		let itemsWithoutCost = 0;
 
 		const totalSales = invoices.reduce(
 			(acc, invoice) => {
 				const amountBs = Number(invoice.totalAmountBs);
 				const amountUsd = Number(invoice.totalAmountUsd);
+				const usdRate = Number(invoice.exchangeRateUsd?.rate ?? 0);
 
 				acc.amountBs += amountBs;
 				acc.amountUsd += amountUsd;
+
+				for (const item of invoice.items) {
+					const itemCostBs = Number(item.costSubtotal);
+
+					totalCostBs += itemCostBs;
+					totalCostUsd += usdRate > 0 ? itemCostBs / usdRate : 0;
+
+					if (Number(item.unitCost) <= 0) {
+						itemsWithoutCost += 1;
+					}
+				}
 
 				return acc;
 			},
@@ -604,6 +665,233 @@ export class DashboardService {
 				amountUsd: 0,
 			},
 		);
+
+		const profitBs = totalSales.amountBs - totalCostBs;
+		const profitUsd = totalSales.amountUsd - totalCostUsd;
+		const marginPercent =
+			totalSales.amountBs > 0 ? (profitBs / totalSales.amountBs) * 100 : 0;
+
+		const paidInvoices = invoices.filter((invoice) => invoice.status === 'PAID').length;
+		const pendingInvoices = invoices.filter((invoice) => invoice.status === 'PENDING').length;
+
+		const receivable = invoices
+			.filter((invoice) => invoice.status === 'PENDING')
+			.reduce(
+				(acc, invoice) => {
+					acc.amountBs += Number(invoice.totalAmountBs);
+					acc.amountUsd += Number(invoice.totalAmountUsd);
+					return acc;
+				},
+				{
+					amountBs: 0,
+					amountUsd: 0,
+				},
+			);
+
+		// Cobros reales agrupados por método de pago. Los equivalentes usan la
+		// tasa USD/EUR de cada factura, igual que el cierre de caja.
+		type PaymentAccumulator = {
+			paymentTypeId: number;
+			payment: string;
+			currency: ExchangeRateType;
+			received: number;
+			change: number;
+			net: number;
+			receivedBs: number;
+			changeBs: number;
+			netBs: number;
+			receivedUsd: number;
+			changeUsd: number;
+			netUsd: number;
+		};
+
+		const paymentMap = new Map<number, PaymentAccumulator>();
+
+		for (const paymentType of paymentTypes) {
+			paymentMap.set(paymentType.id, {
+				paymentTypeId: paymentType.id,
+				payment: paymentType.name,
+				currency: paymentType.currency as ExchangeRateType,
+				received: 0,
+				change: 0,
+				net: 0,
+				receivedBs: 0,
+				changeBs: 0,
+				netBs: 0,
+				receivedUsd: 0,
+				changeUsd: 0,
+				netUsd: 0,
+			});
+		}
+
+		for (const invoice of invoices) {
+			const usdRate = Number(invoice.exchangeRateUsd?.rate ?? 0);
+			const eurRate = Number(invoice.exchangeRateEur?.rate ?? 0);
+
+			for (const payment of invoice.paymentDetails) {
+				const isCreditPayment = payment.paymentType.name
+					.toLowerCase()
+					.includes('credito');
+
+				// En una factura a crédito pendiente, el "pago" de tipo crédito
+				// representa el saldo por cobrar, no dinero cobrado.
+				if (invoice.status === 'PENDING' && isCreditPayment) {
+					continue;
+				}
+
+				const currency = payment.currency as ExchangeRateType;
+				const rateToBs =
+					currency === 'BS' ? 1 : currency === 'USD' ? usdRate : eurRate;
+				const received = Number(payment.amountReceived);
+				const change = Number(payment.amountChange);
+				const net = received - change;
+				const receivedBs = received * rateToBs;
+				const changeBs = change * rateToBs;
+				const netBs = net * rateToBs;
+				const receivedUsd = usdRate > 0 ? receivedBs / usdRate : 0;
+				const changeUsd = usdRate > 0 ? changeBs / usdRate : 0;
+				const netUsd = usdRate > 0 ? netBs / usdRate : 0;
+
+				const current = paymentMap.get(payment.paymentTypeId) ?? {
+					paymentTypeId: payment.paymentTypeId,
+					payment: payment.paymentType.name,
+					currency,
+					received: 0,
+					change: 0,
+					net: 0,
+					receivedBs: 0,
+					changeBs: 0,
+					netBs: 0,
+					receivedUsd: 0,
+					changeUsd: 0,
+					netUsd: 0,
+				};
+
+				current.received += received;
+				current.change += change;
+				current.net += net;
+				current.receivedBs += receivedBs;
+				current.changeBs += changeBs;
+				current.netBs += netBs;
+				current.receivedUsd += receivedUsd;
+				current.changeUsd += changeUsd;
+				current.netUsd += netUsd;
+
+				paymentMap.set(payment.paymentTypeId, current);
+			}
+		}
+
+		const paymentBreakdown = Array.from(paymentMap.values())
+			.map((item) => ({
+				...item,
+				received: this.toTwoDecimals(item.received),
+				change: this.toTwoDecimals(item.change),
+				net: this.toTwoDecimals(item.net),
+				receivedBs: this.toTwoDecimals(item.receivedBs),
+				changeBs: this.toTwoDecimals(item.changeBs),
+				netBs: this.toTwoDecimals(item.netBs),
+				receivedUsd: this.toTwoDecimals(item.receivedUsd),
+				changeUsd: this.toTwoDecimals(item.changeUsd),
+				netUsd: this.toTwoDecimals(item.netUsd),
+			}))
+			.sort((a, b) => b.netBs - a.netBs);
+
+		type CollectedCurrency = {
+			received: number;
+			change: number;
+			net: number;
+		};
+
+		const collected = paymentBreakdown.reduce(
+			(acc, item) => {
+				if (item.currency === 'BS') {
+					acc.original.bs.received += item.received;
+					acc.original.bs.change += item.change;
+					acc.original.bs.net += item.net;
+					acc.conversions.bsToUsd += item.netUsd;
+				} else if (item.currency === 'USD') {
+					acc.original.usd.received += item.received;
+					acc.original.usd.change += item.change;
+					acc.original.usd.net += item.net;
+					acc.conversions.usdToBs += item.netBs;
+				} else {
+					acc.original.eur.received += item.received;
+					acc.original.eur.change += item.change;
+					acc.original.eur.net += item.net;
+				}
+
+				acc.equivalents.totalBs.received += item.receivedBs;
+				acc.equivalents.totalBs.change += item.changeBs;
+				acc.equivalents.totalBs.net += item.netBs;
+				acc.equivalents.totalUsd.received += item.receivedUsd;
+				acc.equivalents.totalUsd.change += item.changeUsd;
+				acc.equivalents.totalUsd.net += item.netUsd;
+
+				return acc;
+			},
+			{
+				original: {
+					bs: { received: 0, change: 0, net: 0 },
+					usd: { received: 0, change: 0, net: 0 },
+					eur: { received: 0, change: 0, net: 0 },
+				} as Record<'bs' | 'usd' | 'eur', CollectedCurrency>,
+				equivalents: {
+					totalBs: { received: 0, change: 0, net: 0 },
+					totalUsd: { received: 0, change: 0, net: 0 },
+				} as Record<'totalBs' | 'totalUsd', CollectedCurrency>,
+				conversions: {
+					bsToUsd: 0,
+					usdToBs: 0,
+				},
+				grandTotal: {
+					bs: 0,
+					usd: 0,
+				},
+			},
+		);
+
+		collected.grandTotal.bs = collected.equivalents.totalBs.net;
+		collected.grandTotal.usd = collected.equivalents.totalUsd.net;
+
+		const collectedResponse = {
+			original: {
+				bs: {
+					received: this.toTwoDecimals(collected.original.bs.received),
+					change: this.toTwoDecimals(collected.original.bs.change),
+					net: this.toTwoDecimals(collected.original.bs.net),
+				},
+				usd: {
+					received: this.toTwoDecimals(collected.original.usd.received),
+					change: this.toTwoDecimals(collected.original.usd.change),
+					net: this.toTwoDecimals(collected.original.usd.net),
+				},
+				eur: {
+					received: this.toTwoDecimals(collected.original.eur.received),
+					change: this.toTwoDecimals(collected.original.eur.change),
+					net: this.toTwoDecimals(collected.original.eur.net),
+				},
+			},
+			equivalents: {
+				totalBs: {
+					received: this.toTwoDecimals(collected.equivalents.totalBs.received),
+					change: this.toTwoDecimals(collected.equivalents.totalBs.change),
+					net: this.toTwoDecimals(collected.equivalents.totalBs.net),
+				},
+				totalUsd: {
+					received: this.toTwoDecimals(collected.equivalents.totalUsd.received),
+					change: this.toTwoDecimals(collected.equivalents.totalUsd.change),
+					net: this.toTwoDecimals(collected.equivalents.totalUsd.net),
+				},
+			},
+			conversions: {
+				bsToUsd: this.toTwoDecimals(collected.conversions.bsToUsd),
+				usdToBs: this.toTwoDecimals(collected.conversions.usdToBs),
+			},
+			grandTotal: {
+				bs: this.toTwoDecimals(collected.grandTotal.bs),
+				usd: this.toTwoDecimals(collected.grandTotal.usd),
+			},
+		};
 
 		const frequentCustomers = customerFrequency.map((item) => ({
 			customerId: item.customerId,
@@ -612,34 +900,51 @@ export class DashboardService {
 			totalInvoices: item._count.customerId,
 		}));
 
-		const topProducts = productSales.map((item) => ({
-			productId: item.productId,
-			name: productMap.get(item.productId)?.name || 'N/A',
-			barcode: productMap.get(item.productId)?.barcode || '',
-			presentation: productMap.get(item.productId)?.presentation || '',
-			totalQuantitySold: item._sum.quantity ?? 0,
-			totalAmountBs: this.toTwoDecimals(Number(item._sum.subtotal ?? 0)),
-			totalInvoices: item._count.productId,
-		}));
+		const topProducts = productSales.map((item) => {
+			const totalAmountBs = this.toTwoDecimals(Number(item._sum.subtotal ?? 0));
+			const totalCostBs = this.toTwoDecimals(Number(item._sum.costSubtotal ?? 0));
+
+			return {
+				productId: item.productId,
+				name: productMap.get(item.productId)?.name || 'N/A',
+				barcode: productMap.get(item.productId)?.barcode || '',
+				presentation: productMap.get(item.productId)?.presentation || '',
+				totalQuantitySold: item._sum.quantity ?? 0,
+				totalAmountBs,
+				totalCostBs,
+				totalProfitBs: this.toTwoDecimals(totalAmountBs - totalCostBs),
+				totalInvoices: item._count.productId,
+			};
+		});
 
 		return {
 			range: {
 				startDate,
 				endDate,
 			},
-			ingresos: {
-				amountBs: this.toTwoDecimals(ingresos.amountBs),
-				changeAmountBs: this.toTwoDecimals(ingresos.changeAmountBs),
-				totalNetBs: this.toTwoDecimals(ingresos.amountBs - ingresos.changeAmountBs),
-				amountUsd: this.toTwoDecimals(ingresos.amountUsd),
-				changeAmountUsd: this.toTwoDecimals(ingresos.changeAmountUsd),
-				totalNetUsd: this.toTwoDecimals(ingresos.amountUsd - ingresos.changeAmountUsd),
-			},
 			totalSales: {
 				amountBs: this.toTwoDecimals(totalSales.amountBs),
 				amountUsd: this.toTwoDecimals(totalSales.amountUsd),
 			},
+			totalCost: {
+				amountBs: this.toTwoDecimals(totalCostBs),
+				amountUsd: this.toTwoDecimals(totalCostUsd),
+			},
+			profit: {
+				amountBs: this.toTwoDecimals(profitBs),
+				amountUsd: this.toTwoDecimals(profitUsd),
+				marginPercent: this.toTwoDecimals(marginPercent),
+				itemsWithoutCost,
+			},
 			totalInvoices,
+			paidInvoices,
+			pendingInvoices,
+			receivable: {
+				amountBs: this.toTwoDecimals(receivable.amountBs),
+				amountUsd: this.toTwoDecimals(receivable.amountUsd),
+			},
+			collected: collectedResponse,
+			paymentBreakdown,
 			invoices,
 			frequentCustomers,
 			topProducts,

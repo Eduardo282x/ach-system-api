@@ -62,8 +62,12 @@ export class ShiftsService {
 		}
 	}
 
-	async findCurrentShift(): Promise<number | undefined> {
-		const currentMinutes = minutesOfDay();
+	/**
+	 * Devuelve el turno activo que cubre el instante indicado (por defecto, ahora).
+	 * Se usa para sellar la factura con el turno real de la venta.
+	 */
+	async findCurrentShift(at: Date = new Date()): Promise<number | undefined> {
+		const currentMinutes = minutesOfDay(at);
 
 		const shifts = await this.prismaService.shift.findMany({
 			where: { active: true },

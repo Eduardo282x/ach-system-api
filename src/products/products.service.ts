@@ -228,6 +228,25 @@ export class ProductsService {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    private assertPurchasePriceNotGreaterThanPrice(
+        purchasePrice: number | null | undefined,
+        price: number | null | undefined,
+        label: string,
+    ) {
+        const purchase = Number(purchasePrice ?? 0);
+        const sale = Number(price ?? 0);
+
+        if (!Number.isFinite(purchase) || !Number.isFinite(sale)) {
+            return;
+        }
+
+        if (purchase > sale) {
+            throw new BadRequestException(
+                `El precio de compra ${label} no puede ser mayor al precio de venta.`,
+            );
+        }
+    }
+
     async getExchangeRateToday() {
         try {
             const rates = await this.prismaService.exchangeRate.findMany({
@@ -372,6 +391,12 @@ export class ProductsService {
                 throw new BadRequestException('Un producto padre no puede tener un producto padre asociado.');
             }
 
+            this.assertPurchasePriceNotGreaterThanPrice(
+                createProductDto.purchasePrice,
+                createProductDto.price,
+                createProductDto.isDetail ? 'del producto detalle' : 'del producto',
+            );
+
             // 1. Verificar si el código de barras ya existe
             const exists = await this.prismaService.product.findUnique({
                 where: { barcode: createProductDto.barcode },
@@ -468,6 +493,38 @@ export class ProductsService {
 
                 const { child, ...productData } = updateProductDto;
                 const existingChild = product.productChild[0] ?? null;
+
+                const nextPrice =
+                    productData.price !== undefined
+                        ? Number(productData.price)
+                        : Number(product.price);
+                const nextPurchasePrice =
+                    productData.purchasePrice !== undefined
+                        ? Number(productData.purchasePrice)
+                        : Number(product.purchasePrice);
+
+                this.assertPurchasePriceNotGreaterThanPrice(
+                    nextPurchasePrice,
+                    nextPrice,
+                    `del producto ${product.name}`,
+                );
+
+                if (child) {
+                    const childPrice =
+                        child.price !== undefined
+                            ? Number(child.price)
+                            : Number(existingChild?.price ?? 0);
+                    const childPurchasePrice =
+                        child.purchasePrice !== undefined
+                            ? Number(child.purchasePrice)
+                            : Number(existingChild?.purchasePrice ?? 0);
+
+                    this.assertPurchasePriceNotGreaterThanPrice(
+                        childPurchasePrice,
+                        childPrice,
+                        `del producto detalle ${child.name}`,
+                    );
+                }
 
                 if (productData.barcode) {
                     const exists = await tx.product.findUnique({
